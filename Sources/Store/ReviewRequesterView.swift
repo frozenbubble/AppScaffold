@@ -211,14 +211,14 @@ public struct ReviewRequesterView: View {
 
 
 @available(iOS 16.0, *)
-struct FeedbackButtonStyle: ButtonStyle {
+public struct FeedbackButtonStyle: ButtonStyle {
     // Custom properties for your button style
     var backgroundColor: Color = .blue
     var foregroundColor: Color = .white
     var cornerRadius: CGFloat = 32
     var padding: CGFloat = 12
 
-    func makeBody(configuration: Configuration) -> some View {
+    public func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(.title3)
             .fontWeight(.medium)
@@ -243,7 +243,7 @@ struct FeedbackButtonStyle: ButtonStyle {
 }
 
 @available(iOS 16.0, *)
-extension View {
+public extension View {
     func reviewRequester(isPresented: Binding<Bool>) -> some View {
         self
             .sheet(isPresented: isPresented) {
