@@ -23,7 +23,7 @@ public struct ColoredLabelStyle: LabelStyle {
 
 //TODO: what's new page
 @available(iOS 16.0, *)
-public struct SettingsView<CustomContent: View, PaywallContent: View>: View {
+public struct SettingsViewScaffold<CustomContent: View, PaywallContent: View>: View {
     let appId: String
     let customContent: CustomContent
     let paywallContent: PaywallContent
@@ -138,7 +138,7 @@ public struct SettingsView<CustomContent: View, PaywallContent: View>: View {
 @available(iOS 16.0, *)
 #Preview {
     NavigationStack {
-        SettingsView(appId: "") {
+        SettingsViewScaffold(appId: "") {
             Image(systemName: "person")
             
             Section {
