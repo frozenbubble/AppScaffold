@@ -23,8 +23,10 @@ public struct ColoredLabelStyle: LabelStyle {
 
 //TODO: what's new page
 @available(iOS 16.0, *)
-public struct SettingsView: View {
+public struct SettingsView<CustomContent: View, PaywallContent: View>: View {
     let appId: String
+    let customContent: CustomContent
+    let paywallContent: PaywallContent
     
     @Environment(\.dismiss) var dismiss
     
@@ -35,12 +37,16 @@ public struct SettingsView: View {
     
     @State var displayFeedback = false
     
-    public init(appId: String) {
+    public init(appId: String, @ViewBuilder content: () -> CustomContent, paywallContent: () -> PaywallContent) {
         self.appId = appId
+        self.customContent = content()
+        self.paywallContent = paywallContent()
     }
     
     public var body: some View {
         List {
+            customContent
+            
             Section {
                 NavigationLink {
                     WebView(url: URL(string: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/"))
@@ -59,13 +65,15 @@ public struct SettingsView: View {
                         displayPaywall = true
                     } label: {
                         HStack {
-                            Label("Premium", systemImage: "crown").labelStyle(ColoredLabelStyle(iconColor: Color.accentColor))
+                            Label("Premium", systemImage: "crown").labelStyle(ColoredLabelStyle(iconColor: AppScaffold.accent))
                             Spacer()
                         }
                     }
                 }
                 .buttonStyle(BorderlessButtonStyle())
-//                .fullScreenPaywall(isPresented: $displayPaywall)
+                .fullScreenCover(isPresented: $displayPaywall) {
+                    paywallContent
+                }
             }
             
             Section {
@@ -130,7 +138,15 @@ public struct SettingsView: View {
 @available(iOS 16.0, *)
 #Preview {
     NavigationStack {
-        SettingsView(appId: "")
+        SettingsView(appId: "") {
+            Image(systemName: "person")
+            
+            Section {
+                Text("Custom content")
+            }
+        } paywallContent: {
+            EmptyView()
+        }
     }
 }
 
