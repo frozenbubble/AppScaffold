@@ -33,4 +33,12 @@ public struct EventTrackingService {
             defaults.set(currentReviewRequests + 1, forKey: reviewRequestsKey)
         }
     }
+    
+    public func trackUserProperty(property: String, value: MixpanelType, includeAsAction: Bool = false) {
+        Mixpanel.mainInstance().people.set(property: property, to: value)
+        
+        if includeAsAction {
+            trackAction()
+        }
+    }
 }
