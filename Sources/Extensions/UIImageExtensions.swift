@@ -2,7 +2,7 @@ import SwiftUI
 import AVFoundation
 import CryptoKit
 
-extension UIImage {
+public extension UIImage {
     func applyFilter(_ filter: CIFilter?, context: CIContext) -> UIImage {
         guard let filter else { return self }
         
@@ -51,6 +51,7 @@ extension UIImage {
         return resized
     }
     
+    //TODO: check if we should use height
     func resize(toWidth newWidth: Double) -> UIImage {
         let aspectRatio = self.size.height / self.size.width
         let newHeight = CGFloat(newWidth) * aspectRatio
