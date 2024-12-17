@@ -15,7 +15,7 @@ let package = Package(
             targets: ["AppScaffold"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/mixpanel/mixpanel-swift", branch: "master"),
+        .package(url: "https://github.com/mixpanel/mixpanel-swift", .upToNextMajor(from: "4.3.0")),
         .package(url: "https://github.com/hmlongco/Resolver.git", .upToNextMajor(from: "1.5.1")),
         .package(url: "https://github.com/RevenueCat/purchases-ios-spm", .upToNextMajor(from: "5.14.0")),
         .package(url: "https://github.com/SwiftUIX/SwiftUIX.git", .upToNextMajor(from: "0.2.3")),
