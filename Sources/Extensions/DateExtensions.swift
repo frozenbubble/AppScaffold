@@ -154,7 +154,7 @@ public extension Date {
 ///   - startDate: The starting date.
 ///   - endDate: The ending date.
 /// - Returns: An array of dates between the two dates.
-func getDatesBetween(_ startDate: Date, _ endDate: Date) -> [Date] {
+public func getDatesBetween(_ startDate: Date, _ endDate: Date) -> [Date] {
     var dates = [Date]()
     var currentDate = startDate.startOfDay
     
@@ -168,7 +168,7 @@ func getDatesBetween(_ startDate: Date, _ endDate: Date) -> [Date] {
 /// Gets all days in the month of the specified date.
 /// - Parameter date: The date for which to get the days in the month.
 /// - Returns: An array of dates representing each day in the month.
-func daysInMonth(for date: Date) -> [Date] {
+public func daysInMonth(for date: Date) -> [Date] {
     guard let range = Calendar.current.range(of: .day, in: .month, for: date),
           let startOfMonth = Calendar.current.date(from: Calendar.current.dateComponents([.year, .month], from: date)) else {
         return []
