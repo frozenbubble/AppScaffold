@@ -2,15 +2,15 @@ import Resolver
 import SwiftUI
 
 public struct AppColorScheme {
-    let accent: Color
-    let accent2: Color
-    let accent3: Color
+    public let accent: Color
+    public let accent2: Color
+    public let accent3: Color
     
-    let secondaryAccent: Color
-    let secondaryAccent2: Color
-    let secondaryAccent3: Color
+    public let secondaryAccent: Color
+    public let secondaryAccent2: Color
+    public let secondaryAccent3: Color
     
-    init(
+    public init(
         accent: Color = .blue,
         accent2: Color = .cyan,
         accent3: Color = .blue,
