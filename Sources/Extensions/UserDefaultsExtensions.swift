@@ -1,6 +1,6 @@
 import Foundation
 
-extension UserDefaults {
+public extension UserDefaults {
     static func reset(for keys: [String]) {
         let defaults = UserDefaults.standard
         keys.forEach { defaults.removeObject(forKey: $0) }
