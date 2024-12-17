@@ -32,6 +32,7 @@ class PurchaseViewModel {
         return AppScaffold.defaultOffering
     }
     
+    
     @MainActor
     func fetchOfferings() async {
         defer {
@@ -47,6 +48,7 @@ class PurchaseViewModel {
         }
     }
     
+    @MainActor
     func updateIsUserSubscribedCached(force: Bool = false) async {
         if let statusUpdateTime, statusUpdateTime.timeIntervalSinceNow < 60, !force {
             return
@@ -56,6 +58,7 @@ class PurchaseViewModel {
         statusUpdateTime = Date()
     }
     
+    @MainActor
     func isUserSubscribed() async -> Bool {
         do {
             let customerInfo = try await Purchases.shared.customerInfo()
@@ -72,14 +75,9 @@ class PurchaseViewModel {
         }
     }
     
-//    func isUserEligibleForTrial() async -> Bool {
-//        let offerings = try? await Purchases.shared.offerings()
-//        if let product = offerings?.current?.availablePackages.first?.storeProduct {
-//            let eligibility = await Purchases.shared.checkTrialOrIntroDiscountEligibility(product: product)
-//            return eligibility == .eligible
-//        }
-//
-//        return false
+    
+//    func getDefaultOffering() async -> Offering? {
+//        return await Purchases.shared.offerings().current
 //    }
     
     func isUserEligibleForTrial() async -> Bool {

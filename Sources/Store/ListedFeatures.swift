@@ -58,27 +58,27 @@ struct PlanComparisonItem: View {
 }
 
 @available(iOS 17.0, *)
-public struct PaywallContent<Content: View>: View {
-    let eligibleForTrial: Bool
+public struct ListedFeatures<HeaderContent: View, TrialContent: View>: View {
     let primaryBackgroundColor: Color
     let secondaryBackgroundColor: Color
     let features: [PlanCompareRow]
-    let headerContent: Content
+    let headerContent: HeaderContent
+    let trialContent: TrialContent
 
     let screenWidth = UIScreen.main.bounds.width
     
     public init(
-        eligibleForTrial: Bool,
         primaryBackgroundColor: Color = Color(UIColor.systemBackground),
         secondaryBackgroundColor: Color = Color(UIColor.systemFill),
         features: [PlanCompareRow],
-        @ViewBuilder headerContent: () -> Content
+        @ViewBuilder headerContent: () -> HeaderContent,
+        @ViewBuilder trialContent: () -> TrialContent = { EmptyView() }
     ) {
-        self.eligibleForTrial = eligibleForTrial
         self.primaryBackgroundColor = primaryBackgroundColor
         self.secondaryBackgroundColor = secondaryBackgroundColor
         self.features = features
         self.headerContent = headerContent()
+        self.trialContent = trialContent()
     }
     
     struct SkewedRoundedRectangle: View {
@@ -122,6 +122,7 @@ public struct PaywallContent<Content: View>: View {
                 .fontWeight(.semibold)
                 .padding(.bottom, 12)
 
+                // Features
                 VStack(spacing: 4) {
 //                    Text("Features")
 //                        .font(.title3)
@@ -148,6 +149,9 @@ public struct PaywallContent<Content: View>: View {
                     }
                 }
                 .padding()
+                
+                // Trial
+                trialContent
 
                 Rectangle()
                     .frame(height: 150)
@@ -161,13 +165,12 @@ public struct PaywallContent<Content: View>: View {
         .coordinateSpace(name: CoordinateSpaces.scrollView)
         .edgesIgnoringSafeArea(.all)
         .background(secondaryBackgroundColor)
-//        .pageView("Paywall")
     }
 }
 
 @available(iOS 17.0, *)
 #Preview {
-    PaywallContent(eligibleForTrial: true, features: []) {
+    ListedFeatures(features: []) {
         Image(systemName: "heart")
             .resizable()
             .scaledToFit()
