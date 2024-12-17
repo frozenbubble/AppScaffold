@@ -3,7 +3,7 @@ import SwiftUIX
 
 @available(iOS 16.0, *)
 public struct ColoredLabelStyle: LabelStyle {
-    var iconColor = Color.accentColor
+    var iconColor = AppScaffold.colors.accent
     let textColor = Color.primary
     
     public func makeBody(configuration: Configuration) -> some View {
@@ -93,7 +93,7 @@ public struct SettingsView: View {
                         displayFeedback = true
                     } label: {
                         HStack {
-                            Label("Feedback", systemImage: "text.bubble").labelStyle(ColoredLabelStyle(iconColor: Color.accentColor))
+                            Label("Feedback", systemImage: "text.bubble").labelStyle(ColoredLabelStyle(iconColor: AppScaffold.colors.accent))
                             Spacer()
                         }
                     }

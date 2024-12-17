@@ -1,29 +1,51 @@
 import Resolver
+import SwiftUI
+
+public struct AppColorScheme {
+    let accent: Color
+    let accent2: Color
+    let accent3: Color
+    
+    let secondaryAccent: Color
+    let secondaryAccent2: Color
+    let secondaryAccent3: Color
+    
+    init(
+        accent: Color = .blue,
+        accent2: Color = .cyan,
+        accent3: Color = .blue,
+        secondaryAccent: Color = .green,
+        secondaryAccent2: Color = .green,
+        secondaryAccent3: Color = .green
+    ) {
+        self.accent = accent
+        self.accent2 = accent2
+        self.accent3 = accent3
+        self.secondaryAccent = secondaryAccent
+        self.secondaryAccent2 = secondaryAccent2
+        self.secondaryAccent3 = secondaryAccent3
+    }
+}
 
 public enum AppScaffold {
-    @MainActor
-    static var initialised: Bool = false
+    @MainActor static var initialised: Bool = false
     
-    @MainActor
-    private static var _appName: String = ""
+    @MainActor private static var _appName: String = ""
+    @MainActor public static var appName: String { _appName }
     
-    @MainActor
-    public static var appName: String {
-        get { _appName }
-    }
+    @MainActor private static var _defaultOffering: String = ""
+    @MainActor public static var defaultOffering: String { _defaultOffering }
     
-    @MainActor
-    private static var _defaultOffering: String = ""
+    @MainActor private static var _colors: AppColorScheme = AppColorScheme()
+    @MainActor public static var colors: AppColorScheme { _colors }
     
-    @MainActor
-    public static var defaultOffering: String {
-        get { _defaultOffering }
-    }
+    @MainActor public static var accent: Color { colors.accent }
     
     @MainActor
     public static func initialise(
         appName: String,
         defaultOffering: String = "default",
+        colors: AppColorScheme? = nil,
         thresholds: [Int] = [15, 80]
     ) {
         Self._appName = appName
@@ -33,6 +55,8 @@ public enum AppScaffold {
             EventTrackingService(thresholds: [1, 3, 5, 10])
         }
         
+        _colors = colors ?? AppColorScheme()
+        
         initialised = true
     }
     
@@ -41,3 +65,32 @@ public enum AppScaffold {
         assert(initialised, "AppScaffold not initialised. Call AppScaffold.initialise() during app init.")
     }
 }
+
+//@available(iOS 16.0, *)
+//struct ColorsPreview: View {
+//    let colors = AppColorScheme(
+//        accent: .cyan
+//    )
+//    
+//    @State var colorScheme: ColorScheme = .light
+//    
+//    init() {
+//        AppScaffold.initialise(appName: "AppScaffold", colors: colors)
+//    }
+//    
+//    var body: some View {
+//        ZStack {
+//            AppScaffold.colors.accent.ignoresSafeArea()
+//        }
+//        .preferredColorScheme(colorScheme)
+//        .task {
+//            try? await Task.sleep(for: .seconds(1.5))
+//            colorScheme = .dark
+//        }
+//    }
+//}
+//
+//@available(iOS 16.0, *)
+//#Preview {
+//    ColorsPreview()
+//}

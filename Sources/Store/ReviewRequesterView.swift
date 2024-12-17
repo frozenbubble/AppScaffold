@@ -123,7 +123,7 @@ public struct FeedbackView: View {
                         .fontWeight(.semibold)
                         .padding()
                         .frame(maxWidth: .infinity)
-                        .background(Color.accentColor)
+                        .background(AppScaffold.colors.accent)
                         .foregroundStyle(.black)
                         .clipShape(RoundedRectangle(cornerRadius: 12))
                     }
@@ -157,7 +157,7 @@ public struct ReviewRequesterView: View {
                 feedbackSelector
             }
         }
-//        .tint(.accent)
+        .tint(AppScaffold.colors.accent)
         .frame(maxWidth: .infinity)
     }
     
@@ -213,8 +213,8 @@ public struct ReviewRequesterView: View {
 @available(iOS 16.0, *)
 public struct FeedbackButtonStyle: ButtonStyle {
     // Custom properties for your button style
-    var backgroundColor: Color = .blue
-    var foregroundColor: Color = .white
+//    var backgroundColor: Color = .blue
+//    var foregroundColor: Color = .white
     var cornerRadius: CGFloat = 32
     var padding: CGFloat = 12
 
@@ -226,17 +226,17 @@ public struct FeedbackButtonStyle: ButtonStyle {
             .frame(maxWidth: .infinity)
             .background(
                 RoundedRectangle(cornerRadius: cornerRadius)
-//                    .fill(configuration.isPressed? Color.clear : Color.secondary)
+//                    .fill(AppScaffold.colors.accent)
 //                    .fill(.secondary)
                     .stroke(
-                        Color.accentColor,
+                        AppScaffold.colors.accent,
                         lineWidth: 3
                     )
-                    .opacity(configuration.isPressed ? 0.8 : 1.0) // Slight transparency when pressed
             )
+            .opacity(configuration.isPressed ? 0.6 : 1.0)
             .contentShape(RoundedRectangle(cornerRadius: cornerRadius))
             .padding(.horizontal, 20)
-            .foregroundColor(foregroundColor)
+//            .foregroundColor(foregroundColor)
             .scaleEffect(configuration.isPressed ? 0.95 : 1.0) // Scale effect when pressed
             .animation(.easeInOut(duration: 0.2), value: configuration.isPressed)
     }
@@ -271,7 +271,7 @@ fileprivate struct ReviewRequesterPreview: View {
 
 @available(iOS 16.0, *)
 #Preview {
-    AppScaffold.initialise(appName: "AppScaffold")
+    AppScaffold.initialise(appName: "AppScaffold", colors: .init(accent: Color.systemYellow))
     
     return ReviewRequesterPreview()
 }
