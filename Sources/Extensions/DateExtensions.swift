@@ -92,6 +92,10 @@ public extension Date {
         return thisTime.hour! > otherTime.hour! || (thisTime.hour! == otherTime.hour! && thisTime.minute! > otherTime.minute!)
     }
     
+    func toDateComponents(_ components: Set<Calendar.Component>) -> DateComponents {
+        return Calendar.current.dateComponents(components, from: self)
+    }
+    
     // MARK: - Start and End of Periods
     
     /// The start of the day for the date.
