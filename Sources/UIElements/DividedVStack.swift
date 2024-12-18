@@ -18,7 +18,7 @@ public struct DividedVStack<Content: View>: View {
 }
 
 @available(iOS 15.0, *)
-struct DividedVStackLayout: _VariadicView_UnaryViewRoot {
+public struct DividedVStackLayout: _VariadicView_UnaryViewRoot {
     var spacing: CGFloat
 
     public init(spacing: CGFloat) {

@@ -114,7 +114,6 @@ public struct SettingsViewScaffold<CustomContent: View, PaywallContent: View>: V
                 .buttonStyle(BorderlessButtonStyle())
             }
         }
-        .navigationTitle("Settings")
 //        .scrollContentBackground(.hidden)
 //        .background(.editorBackground2)
 //        .navigationBarBackButtonHidden()
