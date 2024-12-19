@@ -1,5 +1,10 @@
 import Resolver
+import Mixpanel
+import RevenueCat
 import SwiftUI
+import OSLog
+
+fileprivate let logger = Logger(subsystem: "ButterBiscuit.AppScaffold", category: "Main")
 
 public struct AppColorScheme {
     public let accent: Color
@@ -46,24 +51,40 @@ public enum AppScaffold {
     public static func initialise(
         appName: String,
         defaultOffering: String = "default",
-        colors: AppColorScheme? = nil,
-        thresholds: [Int] = [15, 80]
+        colors: AppColorScheme? = nil
     ) {
         Self._appName = appName
         Self._defaultOffering = defaultOffering
-        
-        Resolver.register { EventTrackingService(thresholds: thresholds) }.scope(.shared)
-        Resolver.register { PurchaseViewModel() }.scope(.shared)
         
         _colors = colors ?? AppColorScheme()
         
         initialised = true
     }
     
-    @MainActor
-    public static func assertInitialised() {
-        assert(initialised, "AppScaffold not initialised. Call AppScaffold.initialise() during app init.")
+    func useEventTracking(mixPanelKey: String? = nil, thresholds: [Int] = [15, 80]){
+        if let mixPanelKey {
+            Mixpanel.initialize(token: mixPanelKey, trackAutomaticEvents: true) //TODO: check
+        } else if !isPreview {
+            logger.error("Mixpanel key is required for event tracking. Please provide a key.")
+        }
+        
+        Resolver.register { EventTrackingService(thresholds: thresholds) }.scope(.shared)
     }
+    
+    func usePurchases(revenueCatKey: String) {
+        Purchases.logLevel = .info
+        Purchases.configure(withAPIKey: revenueCatKey)
+        Resolver.register { PurchaseViewModel() }.scope(.shared)
+    }
+    
+    func useMockPurchases(isUserSubscribed: Bool) {
+        //TODO: implement
+    }
+    
+//    @MainActor
+//    public static func assertInitialised() {
+//        assert(initialised, "AppScaffold not initialised. Call AppScaffold.initialise() during app init.")
+//    }
 }
 
 //@available(iOS 16.0, *)
@@ -94,3 +115,23 @@ public enum AppScaffold {
 //#Preview {
 //    ColorsPreview()
 //}
+
+//public class AppScaffold2 {
+//    private init() {}
+//    
+//    lazy var purchaseVM: PurchaseViewModel = {
+//        PurchaseViewModel()
+//    }()
+//    
+//    public static func initialise() {
+//        
+//    }
+//}
+
+
+//AppScaffold.useName(appName: "")
+//AppScaffold.useColors {
+//    
+//}
+//AppScaffold.usePurchases(key: "")
+//AppScaffold.useEventTracking(key: "", thresholds: [15, 80])

@@ -44,7 +44,7 @@ public struct FeedbackView: View {
     var title: String// = "What best describes your experience?"
     
     @Environment(\.dismiss) var dismiss
-    @Injected var tracking: EventTrackingService
+    @SafeInjected var tracking: EventTrackingService
     
     @State var issueType: IssueType? = nil
     @State var feedback: String = ""
@@ -145,7 +145,7 @@ public struct ReviewRequesterView: View {
 
     @Environment(\.dismiss) var dismiss
     @Environment(\.requestReview) var requestReview
-    @Injected var tracking: EventTrackingService
+    @SafeInjected var tracking: EventTrackingService
 
     @State var displayFeedbackRequest = false
     
@@ -272,6 +272,7 @@ fileprivate struct ReviewRequesterPreview: View {
 
 @available(iOS 17.0, *)
 #Preview {
+//    Resolver.register { EventTrackingService(thresholds: [10, 100]) }.scope(.shared)
     AppScaffold.initialise(appName: "AppScaffold", colors: .init(accent: Color.systemYellow))
     
     return ReviewRequesterPreview()
