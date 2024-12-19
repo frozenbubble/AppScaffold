@@ -4,19 +4,19 @@ import OSLog
 
 @available(iOS 17.0, *)
 @Observable
-class PurchaseViewModel {
-    var inProgress = false
-    var displayError = false
-    var errorMessage = ""
-    var offerings = [String: Offering]()
-    var isUserSubscribedCached = true
+public class PurchaseViewModel {
+    public var inProgress = false
+    public var displayError = false
+    public var errorMessage = ""
+    public var offerings = [String: Offering]()
+    public var isUserSubscribedCached = true
     
     @ObservationIgnored var statusUpdateTime: Date?
     
     private let log: Logger = Logger(subsystem: "ButterBiscuit.MemeCreator", category: "PurchaseViewModel")
     
     @MainActor
-    var subscriptionPlanForToday: String {
+    public var subscriptionPlanForToday: String {
         let calendar = Calendar.current
         let today = Date()
         
@@ -34,7 +34,7 @@ class PurchaseViewModel {
     
     
     @MainActor
-    func fetchOfferings() async {
+    public func fetchOfferings() async {
         defer {
             inProgress = false
         }
@@ -49,7 +49,7 @@ class PurchaseViewModel {
     }
     
     @MainActor
-    func updateIsUserSubscribedCached(force: Bool = false) async {
+    public func updateIsUserSubscribedCached(force: Bool = false) async {
         if let statusUpdateTime, statusUpdateTime.timeIntervalSinceNow < 60, !force {
             return
         }
@@ -59,7 +59,7 @@ class PurchaseViewModel {
     }
     
     @MainActor
-    func isUserSubscribed() async -> Bool {
+    public func isUserSubscribed() async -> Bool {
         do {
             let customerInfo = try await Purchases.shared.customerInfo()
             if customerInfo.entitlements["premium"]?.isActive ?? false {
@@ -80,7 +80,7 @@ class PurchaseViewModel {
 //        return await Purchases.shared.offerings().current
 //    }
     
-    func isUserEligibleForTrial() async -> Bool {
+    public func isUserEligibleForTrial() async -> Bool {
         do {
             let offerings = try await Purchases.shared.offerings()
             

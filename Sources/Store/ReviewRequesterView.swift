@@ -222,16 +222,17 @@ public struct FeedbackButtonStyle: ButtonStyle {
         configuration.label
             .font(.title3)
             .fontWeight(.medium)
+//            .foregroundStyle(.white)
             .padding(padding)
             .frame(maxWidth: .infinity)
             .background(
                 RoundedRectangle(cornerRadius: cornerRadius)
-//                    .fill(AppScaffold.colors.accent)
+                    .fill(AppScaffold.accent)
 //                    .fill(.secondary)
-                    .stroke(
-                        AppScaffold.colors.accent,
-                        lineWidth: 3
-                    )
+//                    .stroke(
+//                        AppScaffold.colors.accent,
+//                        lineWidth: 3
+//                    )
             )
             .opacity(configuration.isPressed ? 0.6 : 1.0)
             .contentShape(RoundedRectangle(cornerRadius: cornerRadius))
