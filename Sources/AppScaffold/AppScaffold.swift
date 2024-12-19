@@ -27,6 +27,7 @@ public struct AppColorScheme {
     }
 }
 
+@available(iOS 17.0, *)
 public enum AppScaffold {
     @MainActor static var initialised: Bool = false
     
@@ -51,9 +52,8 @@ public enum AppScaffold {
         Self._appName = appName
         Self._defaultOffering = defaultOffering
         
-        Resolver.register {
-            EventTrackingService(thresholds: [1, 3, 5, 10])
-        }
+        Resolver.register { EventTrackingService(thresholds: thresholds) }.scope(.shared)
+        Resolver.register { PurchaseViewModel() }.scope(.shared)
         
         _colors = colors ?? AppColorScheme()
         
