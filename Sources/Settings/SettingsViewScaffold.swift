@@ -1,7 +1,7 @@
 import SwiftUI
 import SwiftUIX
 
-@available(iOS 16.0, *)
+@available(iOS 17.0, *)
 public struct ColoredLabelStyle: LabelStyle {
     var iconColor = AppScaffold.colors.accent
     let textColor = Color.primary
@@ -22,7 +22,7 @@ public struct ColoredLabelStyle: LabelStyle {
 }
 
 //TODO: what's new page
-@available(iOS 16.0, *)
+@available(iOS 17.0, *)
 public struct SettingsViewScaffold<CustomContent: View, PaywallContent: View>: View {
     let appId: String
     let customContent: CustomContent
@@ -134,7 +134,7 @@ public struct SettingsViewScaffold<CustomContent: View, PaywallContent: View>: V
     }
 }
 
-@available(iOS 16.0, *)
+@available(iOS 17.0, *)
 #Preview {
     NavigationStack {
         SettingsViewScaffold(appId: "") {

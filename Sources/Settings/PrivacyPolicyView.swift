@@ -1,6 +1,7 @@
 import SwiftUI
 import MarkdownUI
 
+@available(iOS 17.0, *)
 struct PrivacyPolicyView: View {
     @State var privacy = ""
     
@@ -37,6 +38,7 @@ struct PrivacyPolicyView: View {
     }
 }
 
+@available(iOS 17.0, *)
 #Preview {
     PrivacyPolicyView()
 }

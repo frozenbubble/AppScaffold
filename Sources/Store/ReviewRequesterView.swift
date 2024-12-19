@@ -3,7 +3,7 @@ import Resolver
 import StoreKit
 import Mixpanel
 
-@available(iOS 16.0, *)
+@available(iOS 17.0, *)
 enum IssueType: String, Identifiable, CaseIterable {
     case userExperience = "User Experience"
     case featureRequest = "Feature Request"
@@ -39,7 +39,7 @@ enum IssueType: String, Identifiable, CaseIterable {
     }
 }
 
-@available(iOS 16.0, *)
+@available(iOS 17.0, *)
 public struct FeedbackView: View {
     var title: String// = "What best describes your experience?"
     
@@ -135,7 +135,7 @@ public struct FeedbackView: View {
     }
 }
 
-@available(iOS 16.0, *)
+@available(iOS 17.0, *)
 public struct ReviewRequesterView: View {
     var onNegativeFeedback: (() -> Void)?
     
@@ -210,7 +210,7 @@ public struct ReviewRequesterView: View {
 }
 
 
-@available(iOS 16.0, *)
+@available(iOS 17.0, *)
 public struct FeedbackButtonStyle: ButtonStyle {
     // Custom properties for your button style
 //    var backgroundColor: Color = .blue
@@ -243,7 +243,7 @@ public struct FeedbackButtonStyle: ButtonStyle {
     }
 }
 
-@available(iOS 16.0, *)
+@available(iOS 17.0, *)
 public extension View {
     func reviewRequester(isPresented: Binding<Bool>) -> some View {
         self
@@ -256,7 +256,7 @@ public extension View {
     }
 }
 
-@available(iOS 16.0, *)
+@available(iOS 17.0, *)
 fileprivate struct ReviewRequesterPreview: View {
     @State var present: Bool = false
     
@@ -270,7 +270,7 @@ fileprivate struct ReviewRequesterPreview: View {
     }
 }
 
-@available(iOS 16.0, *)
+@available(iOS 17.0, *)
 #Preview {
     AppScaffold.initialise(appName: "AppScaffold", colors: .init(accent: Color.systemYellow))
     
