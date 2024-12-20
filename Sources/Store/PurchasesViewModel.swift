@@ -3,8 +3,23 @@ import RevenueCat
 import Resolver
 
 @available(iOS 17.0, *)
+public protocol PurchaseService {
+    var inProgress: Bool { get set }
+    var displayError: Bool { get set }
+    var errorMessage: String { get set }
+    var offerings: [String: Offering] { get set }
+    var isUserSubscribedCached: Bool { get set }
+    var subscriptionPlanForToday: String { get }
+    
+    @MainActor func fetchOfferings() async
+    func updateIsUserSubscribedCached(force: Bool) async
+    func isUserSubscribed() async -> Bool
+    func isUserEligibleForTrial() async -> Bool
+}
+
+@available(iOS 17.0, *)
 @Observable
-public class PurchaseViewModel {
+public class PurchaseViewModel: PurchaseService {
     public var inProgress = false
     public var displayError = false
     public var errorMessage = ""
@@ -12,37 +27,32 @@ public class PurchaseViewModel {
     public var isUserSubscribedCached = true
     
     @ObservationIgnored var statusUpdateTime: Date?
+    @ObservationIgnored private var defaultOfferingName: String?
+    @ObservationIgnored private var promoOfferingName: String?
+    @ObservationIgnored private var promoPredicate: () -> Bool
     
-    @MainActor
-    public var subscriptionPlanForToday: String {
-//        let calendar = Calendar.current
-//        let today = Date()
-        
-//        let weekOfMonth = calendar.component(.weekOfMonth, from: today)
-        
-//        if weekOfMonth == 3 {
-//            return AppConfig.currentPromotionalOffering ?? AppConfig.currentDefaultOffering
-//        } else {
-//            return AppConfig.currentDefaultOffering
-//        }
-        
-        //TODO: revise
-        return AppScaffold.defaultOffering
+    //TODO revise
+    init(defaultOfferingName: String? = nil, promoOfferingName: String? = nil, promoPredicate: @escaping () -> Bool = { false }) {
+        self.defaultOfferingName = defaultOfferingName
+        self.promoOfferingName = promoOfferingName
+        self.promoPredicate = promoPredicate
     }
     
+//    @MainActor
+    public var subscriptionPlanForToday: String {
+        return "" //AppScaffold.defaultOffering
+    }
     
     @MainActor
     public func fetchOfferings() async {
         defer {
             inProgress = false
         }
-        
         inProgress = true
-        
         do {
             offerings = try await Purchases.shared.offerings().all
         } catch {
-            //TODO: handle errors
+            // Handle errors
         }
     }
     
@@ -51,7 +61,6 @@ public class PurchaseViewModel {
         if let statusUpdateTime, statusUpdateTime.timeIntervalSinceNow < 60, !force {
             return
         }
-        
         isUserSubscribedCached = await isUserSubscribed()
         statusUpdateTime = Date()
     }
@@ -60,59 +69,40 @@ public class PurchaseViewModel {
     public func isUserSubscribed() async -> Bool {
         do {
             let customerInfo = try await Purchases.shared.customerInfo()
-            if customerInfo.entitlements["premium"]?.isActive ?? false {
-                applog.debug("User is on Premiun")
-                return true
-            } else {
-                applog.debug("User doesn't have Premium")
-                return false
-            }
+            return customerInfo.entitlements["premium"]?.isActive ?? false
         } catch {
-            applog.error("Error fetching customer info: \(error.localizedDescription)")
             return false
         }
     }
     
-    
-//    func getDefaultOffering() async -> Offering? {
-//        return await Purchases.shared.offerings().current
-//    }
-    
     public func isUserEligibleForTrial() async -> Bool {
         do {
             let offerings = try await Purchases.shared.offerings()
-            
-            // Ensure there's a current offering
             guard let currentOffering = offerings.current else {
                 return false
             }
-            
-            // Iterate through all available packages in the current offering
             for package in currentOffering.availablePackages {
                 let product = package.storeProduct
                 let eligibility = await Purchases.shared.checkTrialOrIntroDiscountEligibility(product: product)
-                
-                // If any product is eligible, return true
                 if eligibility == .eligible {
                     return true
                 }
             }
         } catch {
-            // Handle potential errors (e.g., network issues)
-            applog.error("Error fetching offerings: \(error)")
+            return false
         }
-        
-        // If no products are eligible, return false
         return false
     }
 }
+
+
 
 public extension AppScaffold {
     @available(iOS 17.0, *)
     static func usePurchases(revenueCatKey: String) {
         Purchases.logLevel = .info
         Purchases.configure(withAPIKey: revenueCatKey)
-        Resolver.register { PurchaseViewModel() }.scope(.shared)
+        Resolver.register { PurchaseViewModel() as PurchaseService }.scope(.shared)
     }
 }
 

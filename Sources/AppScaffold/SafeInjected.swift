@@ -18,6 +18,7 @@ public struct SafeInjected<Service> {
 
     public var wrappedValue: Service {
         guard let service = service else {
+            applog.error("Resolver Error: \(String(describing: Service.self)) is not registered in the container. You might be missing an AppScaffold initialiser call.")
             fatalError("Service \(String(describing: Service.self)) is not available in Resolver.")
         }
         

@@ -38,25 +38,14 @@ public enum AppScaffold {
     @MainActor private static var _appName: String = ""
     @MainActor public static var appName: String { _appName }
     
-    @MainActor private static var _defaultOffering: String = ""
-    @MainActor public static var defaultOffering: String { _defaultOffering }
-    
     @MainActor private static var _colors: AppColorScheme = AppColorScheme()
     @MainActor public static var colors: AppColorScheme { _colors }
     
     @MainActor public static var accent: Color { colors.accent }
     
     @MainActor
-    public static func configure(
-        appName: String,
-        defaultOffering: String = "default",
-        colors: AppColorScheme? = nil
-    ) {
+    public static func configure(appName: String, colors: AppColorScheme? = nil) {
         Self._appName = appName
-        Self._defaultOffering = defaultOffering
-        
         _colors = colors ?? AppColorScheme()
-        
-        initialised = true
     }
 }

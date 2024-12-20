@@ -1,30 +1,34 @@
 import SwiftUI
 import OSLog
 import SwiftyBeaver
+import Resolver
 
 enum SandboxError: Error {
     case error
 }
 
-@available(iOS 15.0, *)
+@available(iOS 17.0, *)
 struct Sandbox: View {
-//    let logger = Logger(subsystem: "ButterBiscuit.AppScaffold", category: "Sandbox")
-    var body: some View {
-        VStack {
-            Text("Hello, World!")
-        }
-        .onAppear {
-//            try! err()
-//            Log.warning("asd")
-        }
-    }
+    @SafeInjected var purchaseVM: PurchaseService
     
-    func err() throws {
-        throw SandboxError.error
+    var body: some View {
+        ZStack {
+            if purchaseVM.inProgress {
+                ProgressView()
+            } else {
+                Text("Ready")
+            }
+        }
+        .task {
+            await purchaseVM.fetchOfferings()
+        }
     }
 }
 
-@available(iOS 15.0, *)
+@available(iOS 17.0, *)
 #Preview {
+    AppScaffold.useLogger()
+    AppScaffold.useMockPurchases()
+    
     return Sandbox()
 }
