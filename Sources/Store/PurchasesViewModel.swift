@@ -12,7 +12,7 @@ public protocol PurchaseService {
     var subscriptionPlanForToday: String { get }
     
     @MainActor func fetchOfferings() async
-    func updateIsUserSubscribedCached(force: Bool) async
+    @MainActor func updateIsUserSubscribedCached(force: Bool) async
     func isUserSubscribed() async -> Bool
     func isUserEligibleForTrial() async -> Bool
 }

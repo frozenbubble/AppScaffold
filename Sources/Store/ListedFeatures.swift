@@ -9,7 +9,7 @@ public enum PlanComparisonValue {
 }
 
 @available(iOS 17.0, *)
-public struct PlanCompareRow {
+public struct FeatureEntry {
     let icon: String
     let name: String
     var description: String
@@ -28,6 +28,14 @@ public struct PlanCompareRow {
         self.description = description
         self.basic = basic
         self.pro = pro
+    }
+}
+
+@available(iOS 17.0, *)
+@resultBuilder
+public struct FeatureEntryBuilder {
+    public static func buildBlock(_ components: FeatureEntry...) -> [FeatureEntry] {
+        components
     }
 }
 
@@ -61,7 +69,7 @@ struct PlanComparisonItem: View {
 public struct ListedFeatures<HeaderContent: View, TrialContent: View>: View {
     let primaryBackgroundColor: Color
     let secondaryBackgroundColor: Color
-    let features: [PlanCompareRow]
+    let features: [FeatureEntry]
     let headerContent: HeaderContent
     let trialContent: TrialContent
 
@@ -70,13 +78,14 @@ public struct ListedFeatures<HeaderContent: View, TrialContent: View>: View {
     public init(
         primaryBackgroundColor: Color = Color(UIColor.systemBackground),
         secondaryBackgroundColor: Color = Color(UIColor.systemFill),
-        features: [PlanCompareRow],
+        @FeatureEntryBuilder features: () -> [FeatureEntry],
+//        features: [FeatureEntry],
         @ViewBuilder headerContent: () -> HeaderContent,
         @ViewBuilder trialContent: () -> TrialContent = { EmptyView() }
     ) {
         self.primaryBackgroundColor = primaryBackgroundColor
         self.secondaryBackgroundColor = secondaryBackgroundColor
-        self.features = features
+        self.features = features()
         self.headerContent = headerContent()
         self.trialContent = trialContent()
     }
@@ -124,11 +133,6 @@ public struct ListedFeatures<HeaderContent: View, TrialContent: View>: View {
 
                 // Features
                 VStack(spacing: 4) {
-//                    Text("Features")
-//                        .font(.title3)
-//                        .fontWeight(.semibold)
-//                        .padding(.bottom, 12)
-
                     ForEach(Array(features.enumerated()), id: \.offset) { (offset, element) in
                         let feature = element
                         
@@ -170,7 +174,9 @@ public struct ListedFeatures<HeaderContent: View, TrialContent: View>: View {
 
 @available(iOS 17.0, *)
 #Preview {
-    ListedFeatures(features: []) {
+    ListedFeatures {
+        
+    } headerContent: {
         Image(systemName: "heart")
             .resizable()
             .scaledToFit()

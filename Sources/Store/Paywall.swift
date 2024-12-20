@@ -6,20 +6,18 @@ import RevenueCat
 @available(iOS 17.0, *)
 public struct Paywall<Content: View>: View {
     var offeringName: String?
-    var features: [PlanCompareRow]
-    var headerContent: Content
     var onFinish: (() -> Void)? = nil
+    var paywallContent: Content
     
-    public init(offering: String? = nil, features: [PlanCompareRow] = [], @ViewBuilder headerContent: () -> Content, onFinish: (() -> Void)? = nil) {
+    public init(offering: String? = nil, features: [FeatureEntry] = [], @ViewBuilder paywallContent: () -> Content, onFinish: (() -> Void)? = nil) {
         self.onFinish = onFinish
-        self.features = features
-        self.headerContent = headerContent()
+        self.paywallContent = paywallContent()
         self.offeringName = offering
     }
     
     @Environment(\.dismiss) var dismiss
-    @Injected var vm: PurchaseViewModel
-    
+    @Injected var vm: PurchaseService
+    @Injected var eventTracking: EventTrackingService
     @AppStorage(AppScaffoldStorageKeys.actions) var actions = 0
     
     @State var eligibleForTrial = true
@@ -28,16 +26,10 @@ public struct Paywall<Content: View>: View {
     public var body: some View {
         ZStack(alignment: .bottom) {
             if vm.isUserSubscribedCached {
-                ListedFeatures(features: features) {
-                    headerContent
-                }
-                .paidUserFooter()
+                paywallContent.paidUserFooter()
             } else if let offeringName {
                 if let currentOffering = vm.offerings[offeringName] {
-                    ListedFeatures(features: features) {
-                        headerContent
-                    }
-                    .paywallFooter(
+                    paywallContent.paywallFooter(
                         offering: currentOffering,
                         condensed: true,
                         purchaseStarted: handlePurchaseStarted,
@@ -49,8 +41,10 @@ public struct Paywall<Content: View>: View {
                     )
                 } else if vm.inProgress {
                     ZStack {
+                        paywallContent
                         Rectangle()
-                            .fill(Color.clear)
+                            .fill(Color.secondary)
+                            .ignoresSafeArea()
                         ProgressView()
                     }
                 } else {
@@ -59,12 +53,13 @@ public struct Paywall<Content: View>: View {
                             .fill(Color.clear)
                         Text("Could not load subscription plan.")
                     }
+                    .onAppear {
+                        eventTracking.trackEvent("Error", ["type": "Could not load subscription plan."])
+                        applog.error("Could not load subscription plan.")
+                    }
                 }
             } else {
-                ListedFeatures(features: features) {
-                    headerContent
-                }
-                .paywallFooter(
+                paywallContent.paywallFooter(
                     condensed: true,
                     purchaseStarted: handlePurchaseStarted,
                     purchaseCompleted: handlePurchaseCompleted,
@@ -135,7 +130,8 @@ public struct Paywall<Content: View>: View {
 
 @available(iOS 17.0, *)
 #Preview {
-    Resolver.register { PurchaseViewModel() }
+    _ = AppScaffold.useMockPurchases()
+    AppScaffold.useEventTracking()
     
     return Paywall() {
         

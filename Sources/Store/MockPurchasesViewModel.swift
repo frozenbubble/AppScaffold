@@ -41,7 +41,7 @@ public class MockPurchaseViewModel: PurchaseService {
 //        offerings = ["mock1": Offering(), "mock2": Offering()]
     }
     
-    public func updateIsUserSubscribedCached(force: Bool = false) async {
+    @MainActor public func updateIsUserSubscribedCached(force: Bool = false) async {
         isUserSubscribedCached = true
     }
     
@@ -56,8 +56,11 @@ public class MockPurchaseViewModel: PurchaseService {
 
 public extension AppScaffold {
     @available(iOS 17.0, *)
-    static func useMockPurchases() {
-        Resolver.register { MockPurchaseViewModel() as PurchaseService }.scope(.shared)
+    static func useMockPurchases() -> MockPurchaseViewModel {
+        let vm = MockPurchaseViewModel()
+        Resolver.register { vm as PurchaseService }.scope(.shared)
+        
+        return vm
     }
 }
 
