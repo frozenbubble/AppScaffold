@@ -1,5 +1,6 @@
 import Foundation
 import Mixpanel
+import Resolver
 
 public struct EventTrackingService {
     let thresholds: [Int]
@@ -40,5 +41,17 @@ public struct EventTrackingService {
         if includeAsAction {
             trackAction()
         }
+    }
+}
+
+public extension AppScaffold {
+    func useEventTracking(mixPanelKey: String? = nil, thresholds: [Int] = [15, 80]){
+        if let mixPanelKey {
+            Mixpanel.initialize(token: mixPanelKey, trackAutomaticEvents: true) //TODO: check
+        } else if !isPreview {
+            applog.error("Mixpanel key is required for event tracking. Please provide a key.")
+        }
+        
+        Resolver.register { EventTrackingService(thresholds: thresholds) }.scope(.shared)
     }
 }

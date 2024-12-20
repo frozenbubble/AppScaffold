@@ -72,7 +72,7 @@ public extension UIImage {
                 try data.write(to: fileURL)
                 return fileURL
             } catch {
-                print("Error saving image to temporary file: \(error)")
+                applog.error("Error saving image to temporary file: \(error)")
                 return nil
             }
         }

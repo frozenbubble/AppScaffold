@@ -12,13 +12,7 @@ public struct SafeInjected<Service> {
         if let resolved = Resolver.optional(Service.self) {
             self.service = resolved
         } else {
-            let errorMessage = "Resolver Error: \(String(describing: Service.self)) is not registered in the container. You might be missing an AppScaffold initialiser call."
-            
-            if isPreview {
-                print(errorMessage)
-            } else {
-                logger.warning("\(errorMessage)")
-            }
+            applog.error("Resolver Error: \(String(describing: Service.self)) is not registered in the container. You might be missing an AppScaffold initialiser call.")
         }
     }
 
@@ -26,6 +20,7 @@ public struct SafeInjected<Service> {
         guard let service = service else {
             fatalError("Service \(String(describing: Service.self)) is not available in Resolver.")
         }
+        
         return service
     }
 }

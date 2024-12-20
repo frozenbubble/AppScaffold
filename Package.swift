@@ -17,9 +17,10 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/mixpanel/mixpanel-swift", .upToNextMajor(from: "4.3.0")),
         .package(url: "https://github.com/hmlongco/Resolver.git", .upToNextMajor(from: "1.5.1")),
-        .package(url: "https://github.com/RevenueCat/purchases-ios-spm", .upToNextMajor(from: "5.14.0")),
+        .package(url: "https://github.com/RevenueCat/purchases-ios-spm.git", .upToNextMajor(from: "5.0.0")),
         .package(url: "https://github.com/SwiftUIX/SwiftUIX.git", .upToNextMajor(from: "0.2.3")),
         .package(url: "https://github.com/gonzalezreal/swift-markdown-ui", .upToNextMajor(from: "2.4.1")),
+        .package(url: "https://github.com/SwiftyBeaver/SwiftyBeaver.git", .upToNextMajor(from: "2.0.0")),
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -33,6 +34,7 @@ let package = Package(
                 .product(name: "RevenueCatUI", package: "purchases-ios-spm"),
                 .product(name: "SwiftUIX", package: "SwiftUIX"),
                 .product(name: "MarkdownUI", package: "swift-markdown-ui"),
+                .product(name: "SwiftyBeaver", package: "SwiftyBeaver"),
             ],
             path: "Sources"
         ),

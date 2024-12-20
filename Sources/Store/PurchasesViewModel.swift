@@ -1,6 +1,6 @@
 import Foundation
 import RevenueCat
-import OSLog
+import Resolver
 
 @available(iOS 17.0, *)
 @Observable
@@ -13,14 +13,12 @@ public class PurchaseViewModel {
     
     @ObservationIgnored var statusUpdateTime: Date?
     
-    private let log: Logger = Logger(subsystem: "ButterBiscuit.MemeCreator", category: "PurchaseViewModel")
-    
     @MainActor
     public var subscriptionPlanForToday: String {
-        let calendar = Calendar.current
-        let today = Date()
+//        let calendar = Calendar.current
+//        let today = Date()
         
-        let weekOfMonth = calendar.component(.weekOfMonth, from: today)
+//        let weekOfMonth = calendar.component(.weekOfMonth, from: today)
         
 //        if weekOfMonth == 3 {
 //            return AppConfig.currentPromotionalOffering ?? AppConfig.currentDefaultOffering
@@ -63,14 +61,14 @@ public class PurchaseViewModel {
         do {
             let customerInfo = try await Purchases.shared.customerInfo()
             if customerInfo.entitlements["premium"]?.isActive ?? false {
-                log.debug("User is on Premiun")
+                applog.debug("User is on Premiun")
                 return true
             } else {
-                log.debug("User doesn't have Premium")
+                applog.debug("User doesn't have Premium")
                 return false
             }
         } catch {
-            log.error("Error fetching customer info: \(error.localizedDescription)")
+            applog.error("Error fetching customer info: \(error.localizedDescription)")
             return false
         }
     }
@@ -101,11 +99,20 @@ public class PurchaseViewModel {
             }
         } catch {
             // Handle potential errors (e.g., network issues)
-            print("Error fetching offerings: \(error)")
+            applog.error("Error fetching offerings: \(error)")
         }
         
         // If no products are eligible, return false
         return false
+    }
+}
+
+public extension AppScaffold {
+    @available(iOS 17.0, *)
+    func usePurchases(revenueCatKey: String) {
+        Purchases.logLevel = .info
+        Purchases.configure(withAPIKey: revenueCatKey)
+        Resolver.register { PurchaseViewModel() }.scope(.shared)
     }
 }
 

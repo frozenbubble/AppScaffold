@@ -88,8 +88,7 @@ public struct Paywall<Content: View>: View {
     }
     
     func handlePurchaseStarted(product: Package) {
-        print("\(product.identifier)")
-        print(product.storeProduct.productIdentifier)
+        applog.debug("Purchase started. Product: \(product.identifier) - \(product.storeProduct.productIdentifier)")
     }
 
     func handlePurchaseCompleted(_ customerInfo: CustomerInfo) {

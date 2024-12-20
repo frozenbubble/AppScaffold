@@ -50,7 +50,6 @@ public struct FeedbackView: View {
     @State var feedback: String = ""
     
     public init(title: String = "What best describes your experience?") {
-        AppScaffold.assertInitialised()
         self.title = title
     }
 
@@ -273,7 +272,7 @@ fileprivate struct ReviewRequesterPreview: View {
 @available(iOS 17.0, *)
 #Preview {
 //    Resolver.register { EventTrackingService(thresholds: [10, 100]) }.scope(.shared)
-    AppScaffold.initialise(appName: "AppScaffold", colors: .init(accent: Color.systemYellow))
+    AppScaffold.configure(appName: "AppScaffold", colors: .init(accent: Color.systemYellow))
     
     return ReviewRequesterPreview()
 }

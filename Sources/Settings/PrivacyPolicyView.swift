@@ -29,11 +29,11 @@ struct PrivacyPolicyView: View {
                 
                 privacy = contentsWithAppName
             } catch {
-                print("catch")
+                applog.error("Privacy policy contents could not be loaded")
                 // contents could not be loaded
             }
         } else {
-            print("not found")
+            applog.error("Privacy policy not found")
         }
     }
 }
