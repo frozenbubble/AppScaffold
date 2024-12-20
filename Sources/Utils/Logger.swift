@@ -3,7 +3,7 @@ import SwiftyBeaver
 public let applog = SwiftyBeaver.self
 
 public extension AppScaffold {
-    func useLogger() {
+    static func useLogger() {
         let console = ConsoleDestination()
         applog.addDestination(console)
     }

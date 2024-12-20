@@ -45,7 +45,7 @@ public struct EventTrackingService {
 }
 
 public extension AppScaffold {
-    func useEventTracking(mixPanelKey: String? = nil, thresholds: [Int] = [15, 80]){
+    static func useEventTracking(mixPanelKey: String? = nil, thresholds: [Int] = [15, 80]){
         if let mixPanelKey {
             Mixpanel.initialize(token: mixPanelKey, trackAutomaticEvents: true) //TODO: check
         } else if !isPreview {

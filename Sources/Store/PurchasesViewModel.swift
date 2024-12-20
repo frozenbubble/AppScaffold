@@ -109,7 +109,7 @@ public class PurchaseViewModel {
 
 public extension AppScaffold {
     @available(iOS 17.0, *)
-    func usePurchases(revenueCatKey: String) {
+    static func usePurchases(revenueCatKey: String) {
         Purchases.logLevel = .info
         Purchases.configure(withAPIKey: revenueCatKey)
         Resolver.register { PurchaseViewModel() }.scope(.shared)
