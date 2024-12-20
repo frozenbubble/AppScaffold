@@ -4,7 +4,7 @@ import RevenueCatUI
 import RevenueCat
 
 @available(iOS 17.0, *)
-public struct Paywall<Content: View>: View {
+public struct PaywallScaffold<Content: View>: View {
     var offeringName: String?
     var onFinish: (() -> Void)? = nil
     var paywallContent: Content
@@ -133,7 +133,7 @@ public struct Paywall<Content: View>: View {
     _ = AppScaffold.useMockPurchases()
     AppScaffold.useEventTracking()
     
-    return Paywall() {
+    return PaywallScaffold() {
         
     }
 }
