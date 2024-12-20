@@ -40,14 +40,14 @@ public struct FeatureEntryBuilder {
 }
 
 @available(iOS 17.0, *)
-struct PlanComparisonItem: View {
+public struct PlanComparisonItem: View {
     let value: PlanComparisonValue
     
     public init(_ value: PlanComparisonValue) {
         self.value = value
     }
 
-    var body: some View {
+    public var body: some View {
         switch value {
         case .present:
             Image(systemName: "checkmark.circle.fill")
@@ -66,11 +66,12 @@ struct PlanComparisonItem: View {
 }
 
 @available(iOS 17.0, *)
-public struct ListedFeatures<HeaderContent: View, TrialContent: View>: View {
+public struct ListedFeatures<HeaderContent: View, HeadlineContent: View, TrialContent: View>: View {
     let primaryBackgroundColor: Color
     let secondaryBackgroundColor: Color
     let features: [FeatureEntry]
     let headerContent: HeaderContent
+    let headlineContent: HeadlineContent
     let trialContent: TrialContent
 
     let screenWidth = UIScreen.main.bounds.width
@@ -79,22 +80,16 @@ public struct ListedFeatures<HeaderContent: View, TrialContent: View>: View {
         primaryBackgroundColor: Color = Color(UIColor.systemBackground),
         secondaryBackgroundColor: Color = Color(UIColor.systemFill),
         @FeatureEntryBuilder features: () -> [FeatureEntry],
-//        features: [FeatureEntry],
         @ViewBuilder headerContent: () -> HeaderContent,
+        @ViewBuilder headlineContent: () -> HeadlineContent = { EmptyView() },
         @ViewBuilder trialContent: () -> TrialContent = { EmptyView() }
     ) {
         self.primaryBackgroundColor = primaryBackgroundColor
         self.secondaryBackgroundColor = secondaryBackgroundColor
         self.features = features()
         self.headerContent = headerContent()
+        self.headlineContent = headlineContent()
         self.trialContent = trialContent()
-    }
-    
-    struct SkewedRoundedRectangle: View {
-        var body: some View {
-            RoundedRectangle(cornerRadius: 8)
-                .transformEffect(CGAffineTransform(a: 1, b: 0, c: -0.12, d: 1, tx: 0, ty: 0)) // Adjust 'c' for horizontal skew
-        }
     }
     
     public var body: some View {
@@ -107,30 +102,9 @@ public struct ListedFeatures<HeaderContent: View, TrialContent: View>: View {
             }
 
             VStack {
-                Text("Unlock all features with")
-                    .font(.title3)
-                    .fontWeight(.medium)
-                    .padding(.top)
-                HStack {
-                    Text(AppScaffold.appName)
-                        .font(.system(.title2, design: .rounded))
-                    ZStack {
-                        SkewedRoundedRectangle()
-                            .foregroundStyle(LinearGradient(colors: [Color.accentColor, Color.accentColor], startPoint: .top, endPoint: .bottom))
-                            .offset(x: 2)
-                        
-                        Text("Premium")
-                            .padding(4)
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
-//                            .foregroundStyle(Color.systemGray4)
-                            .foregroundStyle(.black)
-                    }
-                    .frame(maxWidth: 100)
-                }
-                .font(.title2)
-                .fontWeight(.semibold)
-                .padding(.bottom, 12)
-
+                // Headline
+                headlineContent
+                
                 // Features
                 VStack(spacing: 4) {
                     ForEach(Array(features.enumerated()), id: \.offset) { (offset, element) in

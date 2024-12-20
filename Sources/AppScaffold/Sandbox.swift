@@ -12,15 +12,13 @@ struct Sandbox: View {
     @SafeInjected var purchaseVM: PurchaseService
     
     var body: some View {
+//        ListedFeatures.SkewedRoundedRectangle()
         ZStack {
-            if purchaseVM.inProgress {
-                ProgressView()
-            } else {
-                Text("Ready")
-            }
-        }
-        .task {
-            await purchaseVM.fetchOfferings()
+            SkewedRoundedRectangle(cornerRadius: 12)
+                .frame(width: 200, height: 50)
+            Circle()
+                .fill(Color.red)
+                .frame(width: 50, height: 50)
         }
     }
 }
@@ -28,7 +26,7 @@ struct Sandbox: View {
 @available(iOS 17.0, *)
 #Preview {
     AppScaffold.useLogger()
-    AppScaffold.useMockPurchases()
+    _ = AppScaffold.useMockPurchases()
     
     return Sandbox()
 }
