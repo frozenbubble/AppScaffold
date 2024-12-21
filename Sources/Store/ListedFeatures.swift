@@ -115,7 +115,7 @@ public struct ListedFeatures<HeaderContent: View, HeadlineContent: View, TrialCo
                                 .resizable()
                                 .scaledToFit()
                                 .frame(width: 32, height: 32)
-                                .foregroundStyle(Color.accentColor)
+                                .foregroundStyle(AppScaffold.accent)
                             VStack(alignment: .leading, spacing: 10) {
                                 Text(feature.name).font(.headline)
                                 Text(feature.description)
