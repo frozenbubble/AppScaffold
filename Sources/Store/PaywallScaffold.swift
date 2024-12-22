@@ -16,8 +16,8 @@ public struct PaywallScaffold<Content: View>: View {
     }
     
     @Environment(\.dismiss) var dismiss
-    @Injected var vm: PurchaseService
-    @Injected var eventTracking: EventTrackingService
+    @SafeInjected var vm: PurchaseService
+    @SafeInjected var eventTracking: EventTrackingService
     @AppStorage(AppScaffoldStorageKeys.actions) var actions = 0
     
     @State var eligibleForTrial = true

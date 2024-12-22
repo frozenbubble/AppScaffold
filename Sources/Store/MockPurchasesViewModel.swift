@@ -42,7 +42,7 @@ public class MockPurchaseViewModel: PurchaseService {
     }
     
     @MainActor public func updateIsUserSubscribedCached(force: Bool = false) async {
-        isUserSubscribedCached = true
+        isUserSubscribedCached = force //TODO: revise
     }
     
     public func isUserSubscribed() async -> Bool {

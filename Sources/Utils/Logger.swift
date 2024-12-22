@@ -7,18 +7,12 @@ public extension AppScaffold {
         let console = ConsoleDestination()
         applog.addDestination(console)
         
-//        console.levelString.info = "ℹ️ INFO"
-//        console.levelString.debug = "🐞 DEBUG"
-//        console.levelString.warning = "⚠️ WARNING"
-//        console.levelString.error = "❌ ERROR"
-//        console.levelString.verbose = "🔍 VERBOSE"
-//        console.levelString.critical = "🚨 CRITICAL"
-        
-        console.levelString.verbose = "🟣 VERBOSE"
-        console.levelString.debug = "🟢 DEBUG"
-        console.levelString.info = "🔵 INFO"
-        console.levelString.warning = "🟡 WARNING"
-        console.levelString.error = "🔴 ERROR"
-        console.levelString.critical = "🚨 CRITICAL"
+        console.levelColor.verbose = "🟣"
+        console.levelColor.debug = "🟢"
+        console.levelColor.info = "🔵"
+        console.levelColor.warning = "🟡"
+        console.levelColor.error = "🔴"
+        console.levelColor.critical = "🚨"
+        console.levelColor.fault = "💥"
     }
 }
