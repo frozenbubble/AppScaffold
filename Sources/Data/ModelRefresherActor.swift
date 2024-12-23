@@ -3,7 +3,7 @@ import SwiftData
 import OSLog
 
 @available(iOS 17, *)
-public actor ReminderRefresherActor<T: PersistentModel>: ModelActor {
+public actor ModelRefresherActor <T: PersistentModel>: ModelActor {
     public let modelContainer: ModelContainer
     public let modelExecutor: any ModelExecutor
     let processItem: (T) -> ()
@@ -15,7 +15,7 @@ public actor ReminderRefresherActor<T: PersistentModel>: ModelActor {
         self.processItem = processItem
     }
     
-    public func refreshReminders() {
+    public func processModels() {
         applog.debug("Processing items...")
         let fetchDescriptor: FetchDescriptor<T> = FetchDescriptor<T>() // predicate: #Predicate { $0.isValid }
         let items = try? modelContext.fetch(fetchDescriptor)
