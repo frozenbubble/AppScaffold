@@ -3,11 +3,11 @@ import BackgroundTasks
 import SwiftData
 
 @available(iOS 17, *)
-class BackgroundTaskManager {
+public class BackgroundTaskManager {
     let taskId: String
     let action: () throws -> Void
     
-    init(taskId: String, action: @escaping () throws -> Void) {
+    public init(taskId: String, action: @escaping () throws -> Void) {
         self.taskId = taskId
         self.action = action
         
