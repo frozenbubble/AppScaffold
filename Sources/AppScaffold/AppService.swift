@@ -1,10 +1,8 @@
 import Resolver
 import OSLog
 
-fileprivate let logger = Logger(subsystem: "ButterBiscuit.AppScaffold", category: "Injection")
-
 @propertyWrapper
-public struct SafeInjected<Service> {
+public struct AppService<Service> {
     
     private var service: Service?
 
@@ -25,3 +23,6 @@ public struct SafeInjected<Service> {
         return service
     }
 }
+
+@available(*, deprecated, message: "Use AppService instead.")
+typealias SafeInjected<T> = AppService<T>

@@ -24,3 +24,11 @@ public extension AppScaffold {
 //        console.levelColor.fault = "☠️ "
     }
 }
+
+//TODO: impelement custom destination
+public class CloudDestination: BaseDestination {
+    public override func send(_ level: SwiftyBeaver.Level, msg: String, thread: String, file: String,
+                       function: String, line: Int, context: Any? = nil) -> String? {
+        return nil
+    }
+}

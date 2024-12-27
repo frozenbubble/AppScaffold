@@ -44,7 +44,7 @@ public struct FeedbackView: View {
     var title: String// = "What best describes your experience?"
     
     @Environment(\.dismiss) var dismiss
-    @SafeInjected var tracking: EventTrackingService
+    @AppService var tracking: EventTrackingService
     
     @State var issueType: IssueType? = nil
     @State var feedback: String = ""
@@ -144,7 +144,7 @@ public struct ReviewRequesterView: View {
 
     @Environment(\.dismiss) var dismiss
     @Environment(\.requestReview) var requestReview
-    @SafeInjected var tracking: EventTrackingService
+    @AppService var tracking: EventTrackingService
 
     @State var displayFeedbackRequest = false
     

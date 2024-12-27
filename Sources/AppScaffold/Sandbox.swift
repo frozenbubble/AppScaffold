@@ -9,7 +9,7 @@ enum SandboxError: Error {
 
 @available(iOS 17.0, *)
 struct Sandbox: View {
-    @SafeInjected var purchaseVM: PurchaseService
+    @AppService var purchaseVM: PurchaseService
     
     var body: some View {
 //        ListedFeatures.SkewedRoundedRectangle()
