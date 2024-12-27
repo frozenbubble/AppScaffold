@@ -27,6 +27,7 @@ struct Sandbox: View {
 #Preview {
     AppScaffold.useLogger()
     _ = AppScaffold.useMockPurchases()
+    applog.info("asd")
     
     return Sandbox()
 }
