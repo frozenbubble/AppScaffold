@@ -25,4 +25,4 @@ public struct AppService<Service> {
 }
 
 @available(*, deprecated, message: "Use AppService instead.")
-typealias SafeInjected<T> = AppService<T>
+public typealias SafeInjected<T> = AppService<T>
