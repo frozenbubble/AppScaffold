@@ -4,7 +4,9 @@ import SwiftUI
 // MARK: - Date Extension
 public extension Date {
     
-    // MARK: - Components
+    static var today: Date { Date().startOfDay }
+    static var tomorrow: Date { today.addDays(1) }
+    static var yesterday: Date { today.addDays(-1) }
     
     /// The year component of the date.
     var year: Int {

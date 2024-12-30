@@ -65,7 +65,7 @@ public struct SettingsViewScaffold<CustomContent: View, PaywallContent: View>: V
                         displayPaywall = true
                     } label: {
                         HStack {
-                            Label("Premium", systemImage: "crown").labelStyle(ColoredLabelStyle(iconColor: AppScaffold.accent))
+                            Label("Premium", systemImage: "crown").labelStyle(ColoredLabelStyle(iconColor: .yellow))
                             Spacer()
                         }
                     }

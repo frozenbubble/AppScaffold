@@ -11,6 +11,13 @@ enum SandboxError: Error {
 struct Sandbox: View {
     @AppService var purchaseVM: PurchaseService
     
+    @State var value1 = 0
+    @State var value2 = 0
+    
+    func dateSg(date: Date) {
+        
+    }
+    
     var body: some View {
 //        ListedFeatures.SkewedRoundedRectangle()
         ZStack {
@@ -19,6 +26,17 @@ struct Sandbox: View {
             Circle()
                 .fill(Color.red)
                 .frame(width: 50, height: 50)
+        }
+        .onChange(of: [value1, value2]) {
+            applog.debug("Value1: \(value1), Value2: \(value2)")
+        }
+        .task {
+            try? await Task.sleep(for: .seconds(1))
+            value1 = 1
+            try? await Task.sleep(for: .seconds(1))
+            value2 = 2
+            
+            dateSg(date: .today)
         }
     }
 }

@@ -34,7 +34,7 @@ public class BackgroundTaskManager {
     }
     
     // debug: e -l objc -- (void)[[BGTaskScheduler sharedScheduler] _simulateLaunchForTaskWithIdentifier:@"REMINDER_REFRESH"]
-    func scheduleBackgroundTask() {
+    public func scheduleBackgroundTask() {
         let request = BGProcessingTaskRequest(identifier: taskId)
         request.earliestBeginDate = .now.addHours(3)
         // Optional
