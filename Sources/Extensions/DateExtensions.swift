@@ -71,6 +71,12 @@ public extension Date {
         Calendar.current.date(byAdding: .minute, value: minutes, to: self) ?? self
     }
     
+    /// Returns a new date by adding a specified amount of seconds
+    /// - Parameter seconds: The number of seconds to add
+    func addSeconds(_ seconds: Int) -> Date {
+        Calendar.current.date(byAdding: .second, value: seconds, to: self) ?? self
+    }
+    
     /// Returns a new date by adding a specified number of months.
     /// - Parameter months: The number of months to add.
     func addMonths(_ months: Int) -> Date {
