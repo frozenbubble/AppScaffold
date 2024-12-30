@@ -1,6 +1,6 @@
 import Foundation
 
-extension DateComponents {
+public extension DateComponents {
     func with(year: Int? = nil, month: Int? = nil, day: Int? = nil,
               hour: Int? = nil, minute: Int? = nil, second: Int? = nil, weekday: Int? = nil) -> DateComponents {
         var copy = self
