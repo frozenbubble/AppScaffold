@@ -17,7 +17,7 @@ public extension AppScaffold {
         
 //        console.levelColor.verbose = "🔎 "
 //        console.levelColor.debug = "🪲 "
-//        console.levelColor.info = "ℹ️ "
+//        console.levelColor.info = "🔵 "
 //        console.levelColor.warning = "🎃 "
 //        console.levelColor.error = "🚨 "
 //        console.levelColor.critical = "💥 "

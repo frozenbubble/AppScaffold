@@ -30,12 +30,14 @@ public class PurchaseViewModel: PurchaseService {
     @ObservationIgnored private var defaultOfferingName: String?
     @ObservationIgnored private var promoOfferingName: String?
     @ObservationIgnored private var promoPredicate: () -> Bool
+    @ObservationIgnored private var entitlementName: String
     
     //TODO revise
-    init(defaultOfferingName: String? = nil, promoOfferingName: String? = nil, promoPredicate: @escaping () -> Bool = { false }) {
+    init(defaultOfferingName: String? = nil, promoOfferingName: String? = nil, entitlement: String = "premium", promoPredicate: @escaping () -> Bool = { false }) {
         self.defaultOfferingName = defaultOfferingName
         self.promoOfferingName = promoOfferingName
         self.promoPredicate = promoPredicate
+        self.entitlementName = entitlement
     }
     
 //    @MainActor
@@ -69,7 +71,12 @@ public class PurchaseViewModel: PurchaseService {
     public func isUserSubscribed() async -> Bool {
         do {
             let customerInfo = try await Purchases.shared.customerInfo()
-            return customerInfo.entitlements["premium"]?.isActive ?? false
+            if let premiumEntitlement = customerInfo.entitlements[entitlementName] {
+                return premiumEntitlement.isActive
+            }
+            
+            applog.error("Entitlement \"\(entitlementName)\" not found. Purchases might be misconfigured")
+            return false
         } catch {
             return false
         }
@@ -99,10 +106,10 @@ public class PurchaseViewModel: PurchaseService {
 
 public extension AppScaffold {
     @available(iOS 17.0, *)
-    static func usePurchases(revenueCatKey: String) {
+    static func usePurchases(revenueCatKey: String, premiumEntitlement: String = "premium") {
         Purchases.logLevel = .info
         Purchases.configure(withAPIKey: revenueCatKey)
-        Resolver.register { PurchaseViewModel() as PurchaseService }.scope(.shared)
+        Resolver.register { PurchaseViewModel(entitlement: premiumEntitlement) as PurchaseService }.scope(.shared)
     }
 }
 
