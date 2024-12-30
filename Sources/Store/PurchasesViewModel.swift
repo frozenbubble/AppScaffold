@@ -75,7 +75,12 @@ public class PurchaseViewModel: PurchaseService {
                 return premiumEntitlement.isActive
             }
             
-            applog.error("Entitlement \"\(entitlementName)\" not found. Purchases might be misconfigured")
+            let entitlementNames = customerInfo.entitlements.all.keys
+            if !entitlementNames.isEmpty {
+                let entitlementNamesStr = entitlementNames.map { "\"\($0)\"" }.joined(separator: ", ")
+                applog.warning("Entitlement \"\(entitlementName)\" not found but found \(entitlementNamesStr). Purchases might be misconfigured")
+            }
+            
             return false
         } catch {
             return false
