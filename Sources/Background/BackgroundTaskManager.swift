@@ -8,7 +8,7 @@ public class BackgroundTaskManager {
     let action: () throws -> Void
     let repeatParameters: DateComponents
     
-    public init(taskId: String, repeatParameters: DateComponents = DateComponents(), action: @escaping () throws -> Void) {
+    public init(taskId: String, repeatParameters: DateComponents, action: @escaping () throws -> Void) {
         self.taskId = taskId
         self.action = action
         self.repeatParameters = repeatParameters

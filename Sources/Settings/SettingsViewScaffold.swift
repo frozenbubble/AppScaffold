@@ -114,6 +114,7 @@ public struct SettingsViewScaffold<CustomContent: View, PaywallContent: View>: V
                 .buttonStyle(BorderlessButtonStyle())
             }
         }
+        .tint(AppScaffold.accent)
 //        .scrollContentBackground(.hidden)
 //        .background(.editorBackground2)
 //        .navigationBarBackButtonHidden()
