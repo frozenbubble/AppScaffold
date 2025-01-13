@@ -1,6 +1,6 @@
 import Foundation
 
-extension String {
+public extension String {
     func splitCamelCase() -> [String] {
         do {
             let regex = try NSRegularExpression(pattern: "([a-z])([A-Z])", options: [])

@@ -1,6 +1,6 @@
 import SwiftUI
 
-enum OnboardingConfig {
+public enum OnboardingConfig {
     static let backgroundColor = Color.systemGroupedBackground
     static let overlayColor = Color.secondarySystemGroupedBackground
     
@@ -10,21 +10,21 @@ enum OnboardingConfig {
 }
 
 @available(iOS 16.0, *)
-struct OnboardingButton: View {
+public struct OnboardingButton: View {
     let text: String
     let action: () -> Void
     
-    init(_ text: String, action: @escaping () -> Void) {
+    public init(_ text: String, action: @escaping () -> Void) {
         self.text = text
         self.action = action
     }
     
-    init(action: @escaping () -> Void) {
+    public init(action: @escaping () -> Void) {
         self.text = "Continue"
         self.action = action
     }
     
-    var body: some View {
+    public var body: some View {
         Button {
             withAnimation(OnboardingConfig.transitionAnimation) {
                 action()

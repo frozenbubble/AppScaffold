@@ -1,14 +1,14 @@
 import SwiftUI
 
 @available(iOS 16.0, *)
-struct OnboardingScreen<Content: View>: View {
+public struct OnboardingScreen<Content: View>: View {
     var title: String
     var subTitle: String
     var buttonText: String
     var content: Content
     var onFinish: (() -> Void)? = nil
     
-    init(title: String, subTitle: String, buttonText: String = "Continue", @ViewBuilder content: () -> Content, onFinish: (() -> Void)? = nil) {
+    public init(title: String, subTitle: String, buttonText: String = "Continue", @ViewBuilder content: () -> Content, onFinish: (() -> Void)? = nil) {
         self.title = title
         self.subTitle = subTitle
         self.buttonText = buttonText
@@ -16,7 +16,7 @@ struct OnboardingScreen<Content: View>: View {
         self.content = content()
     }
     
-    var body: some View {
+    public var body: some View {
         VStack {
             ZStack {
                 Rectangle().fill(.clear)
@@ -47,9 +47,16 @@ struct OnboardingScreen<Content: View>: View {
             .background(OnboardingConfig.overlayColor)
             .clipShape(RoundedRectangle(cornerRadius: 20))
             .ignoresSafeArea(edges: .bottom)
-            .offset(CGSize(width: 0.0, height: 50.0))
+            .offset(CGSize(width: 0.0, height: 30.0))
             .compositingGroup()
             .shadow(color: .black.opacity(0.15), radius: 4)
         }
+    }
+}
+
+@available(iOS 16.0, *)
+#Preview {
+    OnboardingScreen(title: "Title", subTitle: "SubTitle") {
+        Text("Hello World")
     }
 }

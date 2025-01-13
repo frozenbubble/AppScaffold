@@ -22,18 +22,21 @@ public struct ColoredLabelStyle: LabelStyle {
 }
 
 //TODO: what's new page
+//TODO: extract SettingsButton
 @available(iOS 17.0, *)
 public struct SettingsViewScaffold<CustomContent: View, PaywallContent: View>: View {
     let appId: String
     let customContent: CustomContent
     let paywallContent: PaywallContent
     
+    let emailService = EmailService(feedbackEmail: AppScaffold.supportEmail, appName: AppScaffold.appName)
+    
     @Environment(\.dismiss) var dismiss
     
     @State var displayNotificationsAlert = false
     @State var displayPaywall = false
     @State var displayDeleteAlert = false
-    @State var displayLoginView = false
+    @State var displayContactButton = false
     
     @State var displayFeedback = false
     
@@ -97,7 +100,6 @@ public struct SettingsViewScaffold<CustomContent: View, PaywallContent: View>: V
                 
                 HStack {
                     Button {
-//                        sendEmailViaMailApp()
                         displayFeedback = true
                     } label: {
                         HStack {
@@ -109,6 +111,18 @@ public struct SettingsViewScaffold<CustomContent: View, PaywallContent: View>: V
                         FeedbackView()
                             .padding(.top)
                             .presentationDetents([.fraction(0.42)])
+                    }
+                }
+                .buttonStyle(BorderlessButtonStyle())
+                
+                HStack {
+                    Button {
+                        emailService.sendEmailViaMailApp()
+                    } label: {
+                        HStack {
+                            Label("Contact us", systemImage: "envelope").labelStyle(ColoredLabelStyle(iconColor: .green))
+                            Spacer()
+                        }
                     }
                 }
                 .buttonStyle(BorderlessButtonStyle())
@@ -137,7 +151,9 @@ public struct SettingsViewScaffold<CustomContent: View, PaywallContent: View>: V
 
 @available(iOS 17.0, *)
 #Preview {
-    NavigationStack {
+    AppScaffold.useEventTracking()
+    
+    return NavigationStack {
         SettingsViewScaffold(appId: "") {
             Image(systemName: "person")
             

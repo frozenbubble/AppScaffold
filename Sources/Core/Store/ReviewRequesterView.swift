@@ -89,6 +89,7 @@ public struct FeedbackView: View {
                     .buttonStyle(FeedbackButtonStyle())
                 }
             }
+            .foregroundStyle(.white)
             .frame(maxHeight: .infinity, alignment: .top)
         }
     }
@@ -123,7 +124,7 @@ public struct FeedbackView: View {
                         .padding()
                         .frame(maxWidth: .infinity)
                         .background(AppScaffold.colors.accent)
-                        .foregroundStyle(.black)
+                        .foregroundStyle(.white)
                         .clipShape(RoundedRectangle(cornerRadius: 12))
                     }
                 }
@@ -273,6 +274,8 @@ fileprivate struct ReviewRequesterPreview: View {
 #Preview {
 //    Resolver.register { EventTrackingService(thresholds: [10, 100]) }.scope(.shared)
     AppScaffold.configure(appName: "AppScaffold", colors: .init(accent: Color.systemYellow))
+    
+    AppScaffold.useEventTracking()
     
     return ReviewRequesterPreview()
 }

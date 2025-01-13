@@ -1,4 +1,4 @@
-import Resolver
+@_exported import Resolver
 import Mixpanel
 import RevenueCat
 import SwiftUI
@@ -38,14 +38,26 @@ public enum AppScaffold {
     @MainActor private static var _appName: String = ""
     @MainActor public static var appName: String { _appName }
     
+    @MainActor private static var _supportEmail: String = ""
+    @MainActor public static var supportEmail: String { _supportEmail }
+    
     @MainActor private static var _colors: AppColorScheme = AppColorScheme()
     @MainActor public static var colors: AppColorScheme { _colors }
     
     @MainActor public static var accent: Color { colors.accent }
     
     @MainActor
-    public static func configure(appName: String, colors: AppColorScheme? = nil) {
+    public static func configure(
+        appName: String,
+        supportEmail: String = "pszappdev@gmail.com",
+        colors: AppColorScheme? = nil
+    ) {
         Self._appName = appName
         _colors = colors ?? AppColorScheme()
+        
+        // use logger by default for debug builds
+        #if DEBUG
+        useLogger()
+        #endif
     }
 }
