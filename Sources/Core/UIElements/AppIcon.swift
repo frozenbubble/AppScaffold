@@ -2,7 +2,11 @@ import SwiftUI
 
 @available(iOS 15.0, *)
 public struct AppIcon: View {
-    public var imageName = "AppIcon_1"
+    let imageName: String
+    
+    public init(imageName: String = "AppIcon_1") {
+        self.imageName = imageName
+    }
     
     public var body: some View {
         ZStack {
