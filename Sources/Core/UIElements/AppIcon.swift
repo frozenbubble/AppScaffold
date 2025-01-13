@@ -1,9 +1,12 @@
 import SwiftUI
 
-struct AppIcon: View {
-    var body: some View {
+@available(iOS 15.0, *)
+public struct AppIcon: View {
+    public var imageName = "AppIcon_1"
+    
+    public var body: some View {
         ZStack {
-            if let uIImage = UIImage(named: "AppIcon_1") {
+            if let uIImage = UIImage(named: imageName) {
                 Image(uiImage: uIImage)
                     .resizable()
                     .scaledToFit()
