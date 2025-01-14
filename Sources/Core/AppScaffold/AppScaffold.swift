@@ -63,6 +63,7 @@ public enum AppScaffold {
     ) {
         Self._appName = appName
         _colors = colors ?? AppColorScheme()
+        Self._supportEmail = supportEmail
         
         // use logger by default for debug builds
         #if DEBUG
