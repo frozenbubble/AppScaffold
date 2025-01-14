@@ -32,6 +32,7 @@ public struct SettingsViewScaffold<CustomContent: View, PaywallContent: View>: V
     let emailService = EmailService(feedbackEmail: AppScaffold.supportEmail, appName: AppScaffold.appName)
     
     @Environment(\.dismiss) var dismiss
+    @EnvironmentObject var themeManager: ThemeManager
     
     @State var displayNotificationsAlert = false
     @State var displayPaywall = false
@@ -44,11 +45,23 @@ public struct SettingsViewScaffold<CustomContent: View, PaywallContent: View>: V
         self.appId = appId
         self.customContent = content()
         self.paywallContent = paywallContent()
+        
+        if appId.isEmpty {
+            applog.warning("App Id not set, sharing and rating will not work.")
+        }
     }
     
     public var body: some View {
         List {
             customContent
+            
+            Section {
+                Picker("Theme", selection: $themeManager.theme) {
+                    Text("System").tag(Theme.system)
+                    Text("Light").tag(Theme.light)
+                    Text("Dark").tag(Theme.dark)
+                }
+            }
             
             Section {
                 NavigationLink {
@@ -153,6 +166,7 @@ public struct SettingsViewScaffold<CustomContent: View, PaywallContent: View>: V
 #Preview {
     AppScaffold.useEventTracking()
     
+    
     return NavigationStack {
         SettingsViewScaffold(appId: "") {
             Image(systemName: "person")
@@ -164,5 +178,6 @@ public struct SettingsViewScaffold<CustomContent: View, PaywallContent: View>: V
             EmptyView()
         }
     }
+    .themeManager()
 }
 

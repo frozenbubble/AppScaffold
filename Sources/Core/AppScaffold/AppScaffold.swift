@@ -59,5 +59,8 @@ public enum AppScaffold {
         #if DEBUG
         useLogger()
         #endif
+        
+        
+        Resolver.register { ThemeManager() }.scope(.shared)
     }
 }
