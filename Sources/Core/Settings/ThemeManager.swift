@@ -36,7 +36,7 @@ public struct ThemeModifier: ViewModifier {
     public func body(content: Content) -> some View {
         content
             .environmentObject(themeManager)
-            .preferredColorScheme(themeManager.theme.colorScheme)
+            .preferredColorScheme(themeManager.theme.colorScheme ?? .light)
     }
 }
 
