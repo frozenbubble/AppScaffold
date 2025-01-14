@@ -3,6 +3,7 @@ import Mixpanel
 import RevenueCat
 import SwiftUI
 import OSLog
+//import SwiftUIX
 
 fileprivate let logger = Logger(subsystem: "ButterBiscuit.AppScaffold", category: "Main")
 
@@ -15,13 +16,18 @@ public struct AppColorScheme {
     public let secondaryAccent2: Color
     public let secondaryAccent3: Color
     
+    public let onboardingBackgroundColor: Color
+    public let onboardingOverlayColor: Color
+    
     public init(
         accent: Color = .blue,
         accent2: Color = .cyan,
         accent3: Color = .blue,
         secondaryAccent: Color = .green,
         secondaryAccent2: Color = .green,
-        secondaryAccent3: Color = .green
+        secondaryAccent3: Color = .green,
+        onboardingBackgroundColor: Color? = nil,
+        onboardingOverlayColor: Color? = nil
     ) {
         self.accent = accent
         self.accent2 = accent2
@@ -29,6 +35,9 @@ public struct AppColorScheme {
         self.secondaryAccent = secondaryAccent
         self.secondaryAccent2 = secondaryAccent2
         self.secondaryAccent3 = secondaryAccent3
+        
+        self.onboardingBackgroundColor = onboardingBackgroundColor ?? Color.systemBackground
+        self.onboardingOverlayColor = onboardingOverlayColor ?? Color.systemGray6
     }
 }
 

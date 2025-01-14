@@ -31,7 +31,6 @@ public struct OnboardingScreen<Content: View>: View {
                     .padding(.top, 10)
                     .padding(.bottom, 14)
                 Text(subTitle)
-//                    .font(.title3)
                     .multilineTextAlignment(.center)
                     .frame(maxHeight: .infinity, alignment: .top)
                 if let onFinish {
@@ -42,15 +41,17 @@ public struct OnboardingScreen<Content: View>: View {
             }
             .padding()
             .frame(maxWidth: .infinity)
-            .frame(height: 380)
+            .frame(height: 410)
 //            .foregroundStyle(.black)
-            .background(OnboardingConfig.overlayColor)
+            .background(AppScaffold.colors.onboardingOverlayColor)
             .clipShape(RoundedRectangle(cornerRadius: 20))
             .ignoresSafeArea(edges: .bottom)
-            .offset(CGSize(width: 0.0, height: 30.0))
+            .offset(y: 50)
             .compositingGroup()
             .shadow(color: .black.opacity(0.15), radius: 4)
         }
+        .background(AppScaffold.colors.onboardingBackgroundColor)
+//        .background(.red)
     }
 }
 
