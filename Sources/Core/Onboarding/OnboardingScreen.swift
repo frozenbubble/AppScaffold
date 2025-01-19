@@ -16,8 +16,10 @@ public struct OnboardingScreen<Content: View>: View {
         self.content = content()
     }
     
+    public static var bottomSheetHeight: CGFloat { 410 }
+    
     public var body: some View {
-        VStack {
+        ZStack(alignment: .bottom) {
             ZStack {
                 Rectangle().fill(.clear)
                 content
@@ -35,29 +37,43 @@ public struct OnboardingScreen<Content: View>: View {
                     .frame(maxHeight: .infinity, alignment: .top)
                 if let onFinish {
                     OnboardingButton(buttonText, action: onFinish)
-                        .padding(.bottom, 50)
+                        .padding(.bottom, 30)
                         .shadow(color: .black.opacity(0.14), radius: 4)
                 }
             }
             .padding()
             .frame(maxWidth: .infinity)
-            .frame(height: 410)
-//            .foregroundStyle(.black)
+            .frame(height: Self.bottomSheetHeight)
             .background(AppScaffold.colors.onboardingOverlayColor)
             .clipShape(RoundedRectangle(cornerRadius: 20))
             .ignoresSafeArea(edges: .bottom)
-            .offset(y: 50)
             .compositingGroup()
             .shadow(color: .black.opacity(0.15), radius: 4)
         }
+        .ignoresSafeArea()
         .background(AppScaffold.colors.onboardingBackgroundColor)
-//        .background(.red)
+    }
+}
+
+@available(iOS 16.0, *)
+public extension OnboardingScreen where Content == AnyView {
+    static var bottomSheetPlaceholder: some View {
+        Rectangle()
+            .fill(.clear)
+            .frame(height: bottomSheetHeight)
     }
 }
 
 @available(iOS 16.0, *)
 #Preview {
     OnboardingScreen(title: "Title", subTitle: "SubTitle") {
-        Text("Hello World")
+        ScrollView {
+            Circle()
+            Circle()
+            Circle()
+            OnboardingScreen.bottomSheetPlaceholder
+        }
+    } onFinish: {
+        
     }
 }

@@ -59,6 +59,7 @@ struct LoginView: View {
                 .frame(width: 300, height: 50)
             }
             
+            //TODO: warn that info plist keys / googleinfoplist missing
             if supportedLogins.contains(.google) {
                 //            GoogleSignInButton {
                 //                guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,

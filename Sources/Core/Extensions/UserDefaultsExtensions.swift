@@ -1,9 +1,18 @@
 import Foundation
 
 public extension UserDefaults {
-    static func reset(for keys: [String]) {
+    static func unset(_ keys: [String]) {
         let defaults = UserDefaults.standard
         keys.forEach { defaults.removeObject(forKey: $0) }
-        defaults.synchronize()
+    }
+    
+    static func unset(_ key: String) {
+        standard.removeObject(forKey: key)
+    }
+    
+    static func reset() {
+        if let bundleId = Bundle.main.bundleIdentifier {
+            standard.removePersistentDomain(forName: bundleId)
+        }
     }
 }
