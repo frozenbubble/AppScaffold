@@ -50,7 +50,7 @@ public struct OnboardingScreen<Content: View>: View {
             .compositingGroup()
             .shadow(color: .black.opacity(0.15), radius: 4)
         }
-        .ignoresSafeArea()
+        .ignoresSafeArea(edges: .bottom)
         .background(AppScaffold.colors.onboardingBackgroundColor)
     }
 }
@@ -76,4 +76,5 @@ public extension OnboardingScreen where Content == AnyView {
     } onFinish: {
         
     }
+//    .padding(.top)
 }
