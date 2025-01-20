@@ -16,7 +16,7 @@ public struct OnboardingScreen<Content: View>: View {
         self.content = content()
     }
     
-    public static var bottomSheetHeight: CGFloat { 410 }
+    public static var bottomSheetHeight: CGFloat { 330 }
     
     public var body: some View {
         ZStack(alignment: .bottom) {
@@ -25,7 +25,7 @@ public struct OnboardingScreen<Content: View>: View {
                 content
             }
             
-            VStack(spacing: 24) {
+            VStack(spacing: 8) {
                 Text(title)
                     .multilineTextAlignment(.center)
                     .font(.title2)
