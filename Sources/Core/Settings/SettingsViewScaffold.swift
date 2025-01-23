@@ -56,10 +56,14 @@ public struct SettingsViewScaffold<CustomContent: View, PaywallContent: View>: V
             customContent
             
             Section {
-                Picker("Theme", selection: $themeManager.theme) {
-                    Text("System").tag(Theme.system)
-                    Text("Light").tag(Theme.light)
-                    Text("Dark").tag(Theme.dark)
+                HStack {
+                    Label("Theme", systemImage: "circle.lefthalf.filled").labelStyle(ColoredLabelStyle(iconColor: .primary))
+                    Picker("", selection: $themeManager.theme) {
+                        Text("System").tag(Theme.system)
+                        Text("Light").tag(Theme.light)
+                        Text("Dark").tag(Theme.dark)
+                    }
+                    .tint(.secondary)
                 }
             }
             

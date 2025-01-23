@@ -254,6 +254,20 @@ public extension View {
 //                    .background(.editorBackground2.darken(by: 0.08))
             }
     }
+    
+    func autoReviewRequester() -> some View {
+        modifier(AutoReviewRequesterModifier())
+    }
+}
+
+@available(iOS 17.0, *)
+struct AutoReviewRequesterModifier: ViewModifier {
+    @AppStorage(AppScaffoldStorageKeys.displayReviewRequest, store: .scaffold) private var displayReviewRequest: Bool = false
+    
+    public func body(content: Content) -> some View {
+        content
+            .reviewRequester(isPresented: $displayReviewRequest)
+    }
 }
 
 @available(iOS 17.0, *)

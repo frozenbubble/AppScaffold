@@ -60,7 +60,7 @@ fileprivate struct ShakePreview: View {
                 .background(Color.systemGray5)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
                 .compositingGroup()
-                .shadow(radius: 10)
+                .shadow(color: .black.opacity(0.15), radius: 10)
                 .padding()
             
             Button("Test") {

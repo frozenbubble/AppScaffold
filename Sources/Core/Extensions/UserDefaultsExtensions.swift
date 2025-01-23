@@ -15,4 +15,8 @@ public extension UserDefaults {
             standard.removePersistentDomain(forName: bundleId)
         }
     }
+    
+    static var scaffold: UserDefaults? {
+        UserDefaults(suiteName: "ButterBiscuit.AppScaffold")
+    }
 }
