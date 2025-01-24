@@ -8,6 +8,8 @@ enum FunctionCallError: Error {
 }
 
 public class FirebaseCaller<Parameter: Codable, ResultDTO: Codable> {
+    public init() {}
+    
     public func callFunction(_ function: String, with parameters: Parameter) async throws -> ResultDTO {
         let functions = Functions.functions()
         
