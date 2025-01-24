@@ -19,11 +19,14 @@ func createPreviewContainer(for types: any PersistentModel.Type...) -> ModelCont
 @available(iOS 17, *)
 @MainActor
 public extension View {
-    func withPreviewContainer(for types: any PersistentModel.Type...) -> some View {
+    func withPreviewContainer(for types: any PersistentModel.Type..., autoSave: Bool = true) -> some View {
         let config = ModelConfiguration(isStoredInMemoryOnly: true)
+//        config.allo
 
         do {
             let container = try ModelContainer(for: Schema(types), configurations: config)
+            let context = container.mainContext
+            context.autosaveEnabled = autoSave
             return modelContainer(container)
         } catch {
             applog.error("Could not create preview container: \(error)")
