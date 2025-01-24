@@ -49,7 +49,7 @@ let package = Package(
         .target(
             name: "AppScaffoldFirebase",
             dependencies: [
-                "AppScaffoldCore",
+//                "AppScaffoldCore",
                 .product(name: "FirebaseCore", package: "firebase-ios-sdk"),
                 .product(name: "FirebaseFunctions", package: "firebase-ios-sdk"),
                 .product(name: "FirebaseAuth", package: "firebase-ios-sdk"),
