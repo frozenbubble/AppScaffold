@@ -1,15 +1,33 @@
 import Foundation
 import SwiftData
+import SwiftUI
 
-//@available(iOS 17, *)
-//@MainActor
-//func createPreviewContainer(for types: PersistentModel.Type...) -> ModelContainer {
-//    let config = ModelConfiguration(isStoredInMemoryOnly: true)
-//    
-//    do {
-//        let container = try ModelContainer(for: types, configurations: config) // Pass the array directly
-//        return container
-//    } catch {
-//        fatalError("Failed to create model container for preview: \(error)")
-//    }
-//}
+@available(iOS 17, *)
+@MainActor
+func createPreviewContainer(for types: any PersistentModel.Type...) -> ModelContainer {
+    let config = ModelConfiguration(isStoredInMemoryOnly: true)
+
+    do {
+        let container = try ModelContainer(for: Schema(types), configurations: config)
+        return container
+    } catch {
+        applog.error("Could not create preview container: \(error)")
+        fatalError("Failed to create model container for preview: \(error)")
+    }
+}
+
+@available(iOS 17, *)
+@MainActor
+public extension View {
+    func withPreviewContainer(for types: any PersistentModel.Type...) -> some View {
+        let config = ModelConfiguration(isStoredInMemoryOnly: true)
+
+        do {
+            let container = try ModelContainer(for: Schema(types), configurations: config)
+            return modelContainer(container)
+        } catch {
+            applog.error("Could not create preview container: \(error)")
+            fatalError("Failed to create model container for preview: \(error)")
+        }
+    }
+}

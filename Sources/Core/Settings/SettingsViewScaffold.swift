@@ -4,7 +4,7 @@ import SwiftUIX
 @available(iOS 17.0, *)
 public struct ColoredLabelStyle: LabelStyle {
     var iconColor = AppScaffold.colors.accent
-    let textColor = Color.primary
+    var textColor = Color.primary
     
     public func makeBody(configuration: Configuration) -> some View {
         HStack {
@@ -18,6 +18,13 @@ public struct ColoredLabelStyle: LabelStyle {
             configuration.title
                 .foregroundColor(textColor)
         }
+    }
+}
+
+@available(iOS 17.0, *)
+public extension LabelStyle where Self == ColoredLabelStyle {
+    static func colored(iconColor: Color = AppScaffold.colors.accent, textColor: Color = .primary) -> Self {
+        ColoredLabelStyle(iconColor: iconColor, textColor: textColor)
     }
 }
 
