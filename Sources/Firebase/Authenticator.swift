@@ -2,7 +2,7 @@ import Foundation
 import FirebaseFunctions
 import FirebaseAuth
 import AuthenticationServices
-import AppScaffoldCore
+//import AppScaffoldCore
 
 //public class FirebaseAuthenticator: LoginService {
 //    var currentNonce: String? = nil
