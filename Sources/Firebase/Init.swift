@@ -10,7 +10,7 @@ public struct EmulatorConfig {
 }
 
 public enum AppScaffoldFirebase {
-    public func useFirebase(emulatorConfig: EmulatorConfig? = nil) {
+    public static func useFirebase(emulatorConfig: EmulatorConfig? = nil) {
         FirebaseApp.configure()
         
 //        Resolver.register { FirebaseAuthenticator() as LoginService }
