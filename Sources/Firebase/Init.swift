@@ -7,6 +7,13 @@ public struct EmulatorConfig {
     let authPort: Int?
     let functionsPort: Int?
     let firestorePort: Int?
+    
+    public init(address: String, authPort: Int?, functionsPort: Int?, firestorePort: Int?) {
+        self.address = address
+        self.authPort = authPort
+        self.functionsPort = functionsPort
+        self.firestorePort = firestorePort
+    }
 }
 
 public enum AppScaffoldFirebase {

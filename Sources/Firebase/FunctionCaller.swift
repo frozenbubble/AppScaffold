@@ -1,7 +1,7 @@
 import Foundation
 import FirebaseFunctions
 
-enum FunctionCallError: Error {
+public enum FunctionCallError: Error {
     case invalidResponse
     case limitReached
     case unknown
