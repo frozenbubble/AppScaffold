@@ -33,7 +33,7 @@ public class PurchaseViewModel: PurchaseService {
     @ObservationIgnored private var entitlementName: String
     
     //TODO revise
-    init(defaultOfferingName: String? = nil, promoOfferingName: String? = nil, entitlement: String = "premium", promoPredicate: @escaping () -> Bool = { false }) {
+    public init(defaultOfferingName: String? = nil, promoOfferingName: String? = nil, entitlement: String = "premium", promoPredicate: @escaping () -> Bool = { false }) {
         self.defaultOfferingName = defaultOfferingName
         self.promoOfferingName = promoOfferingName
         self.promoPredicate = promoPredicate
