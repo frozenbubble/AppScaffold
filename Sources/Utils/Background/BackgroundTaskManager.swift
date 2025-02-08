@@ -2,6 +2,8 @@ import Foundation
 import BackgroundTasks
 import SwiftData
 
+import AppScaffoldCore
+
 @available(iOS 17, *)
 public class BackgroundTaskManager {
     let taskId: String

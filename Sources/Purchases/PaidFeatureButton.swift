@@ -1,5 +1,7 @@
 import SwiftUI
 
+import AppScaffoldCore
+
 @available(iOS 17.0, *)
 public struct PaidFeatureButton<Label: View>: View {
     @Binding var displayPaywall: Bool

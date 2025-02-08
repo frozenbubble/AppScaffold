@@ -1,5 +1,8 @@
 import SwiftUI
 
+import AppScaffoldCore
+import AppScaffoldUI
+
 @available(iOS 17.0, *)
 public enum PlanComparisonValue {
     case present

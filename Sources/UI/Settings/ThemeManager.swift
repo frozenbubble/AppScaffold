@@ -1,5 +1,7 @@
 import SwiftUI
 
+import AppScaffoldCore
+
 public enum Theme: String, CaseIterable {
     case system = "System"
     case light = "Light"
@@ -18,7 +20,7 @@ public enum Theme: String, CaseIterable {
 }
 
 public class ThemeManager: ObservableObject {
-    @AppStorage(AppScaffoldStorageKeys.appTheme) var themeRawValue = Theme.system.rawValue {
+    @AppStorage(AppScaffoldStorageKeys.appTheme, store: .scaffold) var themeRawValue = Theme.system.rawValue {
         didSet {
             objectWillChange.send()
         }
@@ -43,5 +45,11 @@ public struct ThemeModifier: ViewModifier {
 public extension View {
     func themeManager() -> some View {
         modifier(ThemeModifier())
+    }
+}
+
+public extension AppScaffold {
+    func useThemeManager() {
+        Resolver.register { ThemeManager() }.scope(.shared)
     }
 }

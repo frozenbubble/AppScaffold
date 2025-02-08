@@ -3,6 +3,9 @@ import Resolver
 import StoreKit
 import Mixpanel
 
+import AppScaffoldCore
+import AppScaffoldAnalytics
+
 @available(iOS 17.0, *)
 enum IssueType: String, Identifiable, CaseIterable {
     case userExperience = "User Experience"

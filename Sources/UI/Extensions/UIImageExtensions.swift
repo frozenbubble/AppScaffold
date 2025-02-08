@@ -1,6 +1,7 @@
 import SwiftUI
 import AVFoundation
 import CryptoKit
+import AppScaffoldCore
 
 public extension UIImage {
     func applyFilter(_ filter: CIFilter?, context: CIContext) -> UIImage {

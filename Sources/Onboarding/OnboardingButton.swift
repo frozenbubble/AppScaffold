@@ -1,5 +1,7 @@
 import SwiftUI
 
+import AppScaffoldCore
+
 //public enum OnboardingConfig {
 //    static let backgroundColor = Color.systemGroupedBackground
 //    static let overlayColor = Color.secondarySystemGroupedBackground

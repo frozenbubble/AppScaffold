@@ -1,6 +1,6 @@
 import SwiftUI
 
-enum CoordinateSpaces {
+public enum CoordinateSpaces {
     case scrollView
 }
 

@@ -1,6 +1,7 @@
 import Foundation
 import SwiftData
-import OSLog
+
+import AppScaffoldCore
 
 @available(iOS 17, *)
 public actor ModelRefresherActor <T: PersistentModel>: ModelActor {

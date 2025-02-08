@@ -1,22 +1,25 @@
 import Foundation
 
 public extension UserDefaults {
-    static func unset(_ keys: [String]) {
-        let defaults = UserDefaults.standard
-        keys.forEach { defaults.removeObject(forKey: $0) }
+    func unset(_ keys: [String]) {
+        keys.forEach { removeObject(forKey: $0) }
     }
     
-    static func unset(_ key: String) {
-        standard.removeObject(forKey: key)
+    func unset(_ key: String) {
+        removeObject(forKey: key)
     }
     
-    static func reset() {
+    func reset() {
         if let bundleId = Bundle.main.bundleIdentifier {
-            standard.removePersistentDomain(forName: bundleId)
+            removePersistentDomain(forName: bundleId)
         }
     }
     
-    static var scaffold: UserDefaults? {
-        UserDefaults(suiteName: "ButterBiscuit.AppScaffold")
+    static var scaffold: UserDefaults {
+        if !AppScaffold.appGroupName.isEmpty {
+            UserDefaults(suiteName: AppScaffold.appGroupName)!
+        } else {
+            UserDefaults.standard
+        }
     }
 }

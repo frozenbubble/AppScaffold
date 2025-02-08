@@ -36,41 +36,43 @@ public struct AppColorScheme {
         self.secondaryAccent2 = secondaryAccent2
         self.secondaryAccent3 = secondaryAccent3
         
-        self.onboardingBackgroundColor = onboardingBackgroundColor ?? Color.systemBackground
-        self.onboardingOverlayColor = onboardingOverlayColor ?? Color.systemGray6
+        self.onboardingBackgroundColor = onboardingBackgroundColor ?? Color(.systemBackground)
+        self.onboardingOverlayColor = onboardingOverlayColor ?? Color(.systemGray6)
     }
 }
 
 public enum AppScaffold {
     @MainActor static var initialised: Bool = false
     
-    @MainActor private static var _appName: String = ""
-    @MainActor public static var appName: String { _appName }
+    nonisolated(unsafe) public private(set) static var appName: String = ""
+    nonisolated(unsafe) public private(set) static var supportEmail: String = ""
+    nonisolated(unsafe) public private(set) static var colors: AppColorScheme = AppColorScheme()
     
-    @MainActor private static var _supportEmail: String = ""
-    @MainActor public static var supportEmail: String { _supportEmail }
+    nonisolated(unsafe) public static var accent: Color { colors.accent }
     
-    @MainActor private static var _colors: AppColorScheme = AppColorScheme()
-    @MainActor public static var colors: AppColorScheme { _colors }
-    
-    @MainActor public static var accent: Color { colors.accent }
+    nonisolated(unsafe) public private(set) static var defaultsPrefix: String = ""
+    nonisolated(unsafe) public private(set) static var appGroupName: String = ""
     
     @MainActor
     public static func configure(
         appName: String,
+        defaultsPrefix: String = "",
+        appGroupName: String = "",
         supportEmail: String = "pszappdev@gmail.com",
         colors: AppColorScheme? = nil
     ) {
-        Self._appName = appName
-        _colors = colors ?? AppColorScheme()
-        Self._supportEmail = supportEmail
+        Self.appName = appName
+        Self.colors = colors ?? AppColorScheme()
+        Self.supportEmail = supportEmail
+        Self.defaultsPrefix = defaultsPrefix
+        Self.appGroupName = appGroupName
         
         // use logger by default for debug builds
-        #if DEBUG
+//        #if DEBUG
         useLogger()
-        #endif
+//        #endif
         
         
-        Resolver.register { ThemeManager() }.scope(.shared)
+//        Resolver.register { ThemeManager() }.scope(.shared)
     }
 }

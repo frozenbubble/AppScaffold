@@ -1,5 +1,7 @@
 import SwiftUI
 
+import AppScaffoldCore
+
 @available(iOS 16.0, *)
 public struct OnboardingScreen<Content: View>: View {
     var title: String

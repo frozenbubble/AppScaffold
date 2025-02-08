@@ -2,6 +2,8 @@ import Foundation
 import Mixpanel
 import Resolver
 
+import AppScaffoldCore
+
 public struct EventTrackingService {
     let thresholds: [Int]
     
@@ -18,7 +20,7 @@ public struct EventTrackingService {
     }
 
     public func trackAction() {
-        let defaults = UserDefaults.standard
+        let defaults = UserDefaults.scaffold
         let actionsKey = AppScaffoldStorageKeys.actions
         let reviewRequestsKey = AppScaffoldStorageKeys.reviewRequests
         let displayReviewRequestKey = AppScaffoldStorageKeys.displayReviewRequest

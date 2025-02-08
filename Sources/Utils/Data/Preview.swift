@@ -2,6 +2,8 @@ import Foundation
 import SwiftData
 import SwiftUI
 
+import AppScaffoldCore
+
 @available(iOS 17, *)
 @MainActor
 func createPreviewContainer(for types: any PersistentModel.Type...) -> ModelContainer {

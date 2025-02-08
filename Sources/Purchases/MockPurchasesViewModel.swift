@@ -2,6 +2,8 @@ import SwiftUI
 import RevenueCat
 import Resolver
 
+import AppScaffoldCore
+
 @available(iOS 17.0, *)
 @Observable
 public class MockPurchaseViewModel: PurchaseService {

@@ -1,6 +1,8 @@
 import SwiftUI
 import MarkdownUI
 
+import AppScaffoldCore
+
 @available(iOS 17.0, *)
 struct PrivacyPolicyView: View {
     @State var privacy = ""

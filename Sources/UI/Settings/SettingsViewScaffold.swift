@@ -1,6 +1,8 @@
 import SwiftUI
 import SwiftUIX
 
+import AppScaffoldCore
+
 @available(iOS 17.0, *)
 public struct ColoredLabelStyle: LabelStyle {
     var iconColor = AppScaffold.colors.accent
@@ -176,7 +178,6 @@ public struct SettingsViewScaffold<CustomContent: View, PaywallContent: View>: V
 @available(iOS 17.0, *)
 #Preview {
     AppScaffold.useEventTracking()
-    
     
     return NavigationStack {
         SettingsViewScaffold(appId: "") {

@@ -2,6 +2,8 @@ import Foundation
 import RevenueCat
 import Resolver
 
+import AppScaffoldCore
+
 @available(iOS 17.0, *)
 public protocol PurchaseService {
     var inProgress: Bool { get set }
@@ -111,9 +113,21 @@ public class PurchaseViewModel: PurchaseService {
 
 public extension AppScaffold {
     @available(iOS 17.0, *)
+    @MainActor
     static func usePurchases(revenueCatKey: String, premiumEntitlement: String = "premium") {
         Purchases.logLevel = .info
-        Purchases.configure(withAPIKey: revenueCatKey)
+        let configBuilder = Configuration.Builder(withAPIKey: revenueCatKey)
+        
+        if !AppScaffold.appGroupName.isEmpty {
+            let config = configBuilder
+                .with(userDefaults: .init(suiteName: AppScaffold.appGroupName)!)
+                .build()
+            Purchases.configure(with: config)
+        } else {
+            Purchases.configure(with: configBuilder.build())
+        }
+        
+//        Purchases.configure(withAPIKey: revenueCatKey)
         Resolver.register { PurchaseViewModel(entitlement: premiumEntitlement) as PurchaseService }.scope(.shared)
     }
 }

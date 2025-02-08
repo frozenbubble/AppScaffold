@@ -3,6 +3,10 @@ import Resolver
 import RevenueCatUI
 import RevenueCat
 
+import AppScaffoldCore
+import AppScaffoldPurchases
+import AppScaffoldAnalytics
+
 @available(iOS 17.0, *)
 public struct PaywallScaffold<Content: View>: View {
     var offeringName: String?
@@ -18,7 +22,8 @@ public struct PaywallScaffold<Content: View>: View {
     @Environment(\.dismiss) var dismiss
     @AppService var vm: PurchaseService
     @AppService var eventTracking: EventTrackingService
-    @AppStorage(AppScaffoldStorageKeys.actions) var actions = 0
+    @AppStorage(AppScaffoldStorageKeys.actions, store: .scaffold)
+    var actions = 0
     
     @State var eligibleForTrial = true
     @State var displayAlert = false

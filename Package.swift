@@ -14,9 +14,33 @@ let package = Package(
             targets: ["AppScaffoldCore"]
         ),
         .library(
+            name: "AppScaffoldAnalytics",
+            targets: ["AppScaffoldAnalytics"]
+        ),
+        .library(
             name: "AppScaffoldFirebase",
             targets: ["AppScaffoldFirebase"]
-        )
+        ),
+        .library(
+            name: "AppScaffoldOnboarding",
+            targets: ["AppScaffoldOnboarding"]
+        ),
+        .library(
+            name: "AppScaffoldPurchases",
+            targets: ["AppScaffoldPurchases"]
+        ),
+        .library(
+            name: "AppScaffoldStore",
+            targets: ["AppScaffoldStore"]
+        ),
+        .library(
+            name: "AppScaffoldUI",
+            targets: ["AppScaffoldUI"]
+        ),
+        .library(
+            name: "AppScaffoldUtils",
+            targets: ["AppScaffoldUtils"]
+        ),
     ],
     dependencies: [
         .package(url: "https://github.com/mixpanel/mixpanel-swift", .upToNextMajor(from: "4.3.0")),
@@ -34,29 +58,88 @@ let package = Package(
         .target(
             name: "AppScaffoldCore",
             dependencies: [
-                .product(name: "Mixpanel", package: "mixpanel-swift"),
+//                .product(name: "Mixpanel", package: "mixpanel-swift"),
                 .product(name: "Resolver", package: "Resolver"),
-                .product(name: "RevenueCat", package: "purchases-ios-spm"),
-                .product(name: "RevenueCatUI", package: "purchases-ios-spm"),
-                .product(name: "SwiftUIX", package: "SwiftUIX"),
-                .product(name: "MarkdownUI", package: "swift-markdown-ui"),
+//                .product(name: "RevenueCat", package: "purchases-ios-spm"),
+//                .product(name: "RevenueCatUI", package: "purchases-ios-spm"),
+//                .product(name: "SwiftUIX", package: "SwiftUIX"),
+//                .product(name: "MarkdownUI", package: "swift-markdown-ui"),
                 .product(name: "SwiftyBeaver", package: "SwiftyBeaver"),
-                .product(name: "GoogleSignIn", package: "GoogleSignIn-iOS"),
-                .product(name: "GoogleSignInSwift", package: "GoogleSignIn-iOS"),
+//                .product(name: "GoogleSignIn", package: "GoogleSignIn-iOS"),
+//                .product(name: "GoogleSignInSwift", package: "GoogleSignIn-iOS"),
             ],
             path: "Sources/Core"
         ),
+        
         .target(
             name: "AppScaffoldFirebase",
             dependencies: [
-//                "AppScaffoldCore",
+                "AppScaffoldCore",
                 .product(name: "FirebaseCore", package: "firebase-ios-sdk"),
                 .product(name: "FirebaseFunctions", package: "firebase-ios-sdk"),
                 .product(name: "FirebaseAuth", package: "firebase-ios-sdk"),
-//                .product(name: "Resolver", package: "Resolver"),
             ],
             path: "Sources/Firebase"
         ),
+        
+        .target(
+            name: "AppScaffoldAnalytics",
+            dependencies: [
+                "AppScaffoldCore",
+                .product(name: "Mixpanel", package: "mixpanel-swift")
+            ],
+            path: "Sources/Analytics"
+        ),
+
+        .target(
+            name: "AppScaffoldOnboarding",
+            dependencies: [
+                "AppScaffoldCore",
+                "AppScaffoldUI"
+            ],
+            path: "Sources/Onboarding"
+        ),
+
+        .target(
+            name: "AppScaffoldPurchases",
+            dependencies: [
+                "AppScaffoldCore",
+                .product(name: "RevenueCat", package: "purchases-ios-spm"),
+//                .product(name: "RevenueCatUI", package: "purchases-ios-spm")
+            ],
+            path: "Sources/Purchases"
+        ),
+
+        .target(
+            name: "AppScaffoldStore",
+            dependencies: [
+                "AppScaffoldCore",
+                "AppScaffoldUI",
+                "AppScaffoldPurchases",
+                .product(name: "RevenueCatUI", package: "purchases-ios-spm")
+            ],
+            path: "Sources/Store"
+        ),
+
+        .target(
+            name: "AppScaffoldUI",
+            dependencies: [
+                "AppScaffoldCore",
+                .product(name: "SwiftUIX", package: "SwiftUIX"),
+                .product(name: "MarkdownUI", package: "swift-markdown-ui")
+            ],
+            path: "Sources/UI"
+        ),
+
+        .target(
+            name: "AppScaffoldUtils",
+            dependencies: [
+                "AppScaffoldCore",
+//                .product(name: "SwiftyBeaver", package: "SwiftyBeaver")
+            ],
+            path: "Sources/Utils"
+        ),
+        
         .testTarget(
             name: "AppScaffoldTests",
             dependencies: ["AppScaffoldCore"]
