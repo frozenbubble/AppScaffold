@@ -125,6 +125,7 @@ let package = Package(
             name: "AppScaffoldUI",
             dependencies: [
                 "AppScaffoldCore",
+                "AppScaffoldAnalytics",
                 .product(name: "SwiftUIX", package: "SwiftUIX"),
                 .product(name: "MarkdownUI", package: "swift-markdown-ui")
             ],
