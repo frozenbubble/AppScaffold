@@ -38,9 +38,10 @@ public extension LabelStyle where Self == ColoredLabelStyle {
 //TODO: what's new page
 //TODO: extract SettingsButton
 @available(iOS 17.0, *)
-public struct SettingsViewScaffold<CustomContent: View, PaywallContent: View>: View {
+public struct SettingsViewScaffold<TopContent: View, BotttomContent: View, PaywallContent: View>: View {
     let appId: String
-    let customContent: CustomContent
+    let topContent: TopContent
+    let bottomContent: BotttomContent
     let paywallContent: PaywallContent
     
     let emailService = EmailService(feedbackEmail: AppScaffold.supportEmail, appName: AppScaffold.appName)
@@ -55,10 +56,16 @@ public struct SettingsViewScaffold<CustomContent: View, PaywallContent: View>: V
     
     @State var displayFeedback = false
     
-    public init(appId: String, @ViewBuilder content: () -> CustomContent, paywallContent: () -> PaywallContent) {
+    public init(
+        appId: String,
+        @ViewBuilder topContent: () -> TopContent = { EmptyView() },
+        @ViewBuilder bottomContent: () -> BotttomContent = { EmptyView() },
+        paywallContent: () -> PaywallContent
+    ) {
         self.appId = appId
-        self.customContent = content()
+        self.topContent = topContent()
         self.paywallContent = paywallContent()
+        self.bottomContent = bottomContent()
         
         if appId.isEmpty {
             applog.warning("App Id not set, sharing and rating will not work.")
@@ -67,7 +74,7 @@ public struct SettingsViewScaffold<CustomContent: View, PaywallContent: View>: V
     
     public var body: some View {
         List {
-            customContent
+            topContent
             
             Section {
                 HStack {
@@ -158,6 +165,8 @@ public struct SettingsViewScaffold<CustomContent: View, PaywallContent: View>: V
                 }
                 .buttonStyle(BorderlessButtonStyle())
             }
+            
+            bottomContent
         }
         .tint(AppScaffold.accent)
 //        .scrollContentBackground(.hidden)
@@ -188,6 +197,10 @@ public struct SettingsViewScaffold<CustomContent: View, PaywallContent: View>: V
         SettingsViewScaffold(appId: "") {
             Image(systemName: "person")
             
+            Section {
+                Text("Custom content")
+            }
+        } bottomContent: {
             Section {
                 Text("Custom content")
             }

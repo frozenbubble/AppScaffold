@@ -18,6 +18,10 @@ public struct EmulatorConfig {
 
 public enum AppScaffoldFirebase {
     public static func useFirebase(emulatorConfig: EmulatorConfig? = nil) {
+        if FirebaseApp.isDefaultAppConfigured() {
+            return
+        }
+        
         FirebaseApp.configure()
         
 //        Resolver.register { FirebaseAuthenticator() as LoginService }

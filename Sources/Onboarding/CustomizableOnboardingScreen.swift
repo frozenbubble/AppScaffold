@@ -9,7 +9,7 @@ public struct CustomizableOnboardingScreen<TopContent: View, BottomContent: View
     var bottomContent: BottomContent
     var onFinish: (() -> Void)? = nil
     
-    public init(title: String, @ViewBuilder topContent: () -> TopContent, @ViewBuilder bottomContent: () -> BottomContent, onFinish: (() -> Void)? = nil) {
+    public init(title: String = "", @ViewBuilder topContent: () -> TopContent, @ViewBuilder bottomContent: () -> BottomContent, onFinish: (() -> Void)? = nil) {
         self.title = title
         self.onFinish = onFinish
         self.content = topContent()
@@ -26,12 +26,15 @@ public struct CustomizableOnboardingScreen<TopContent: View, BottomContent: View
             }
             
             VStack(spacing: 8) {
-                Text(title)
-                    .multilineTextAlignment(.center)
-                    .font(.title2)
-                    .fontWeight(.semibold)
-                    .padding(.top, 10)
-                    .padding(.bottom, 14)
+                if !title.isEmpty {
+                    Text(title)
+                        .multilineTextAlignment(.center)
+                        .font(.title2)
+                        .fontWeight(.semibold)
+                        .padding(.top, 10)
+                        .padding(.bottom, 14)
+                }
+                
                 bottomContent
                     .frame(maxHeight: .infinity)
 //                if let onFinish {
@@ -73,7 +76,11 @@ public extension CustomizableOnboardingScreen where TopContent == AnyView {
             OnboardingScreen.bottomSheetPlaceholder
         }
     } bottomContent: {
-        Text("asd")
+        VStack {
+            Capsule().frame(width: 320, height: 50)
+            Capsule().frame(width: 320, height: 50)
+        }
+//        Capsule().frame(width: 320, height: 50)
     } onFinish: {
         
     }
