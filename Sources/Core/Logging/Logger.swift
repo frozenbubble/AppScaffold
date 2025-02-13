@@ -3,8 +3,14 @@ import SwiftyBeaver
 public let applog = SwiftyBeaver.self
 
 public extension AppScaffold {
-    static func useLogger() {
+    static func useConsoleLogger(
+        minLevel: SwiftyBeaver.Level = .verbose,
+        logPrintWay: ConsoleDestination.LogPrintWay
+    ) {
         let console = ConsoleDestination()
+        console.minLevel = minLevel
+        console.logPrintWay = logPrintWay
+        
         applog.addDestination(console)
         
         console.levelColor.verbose = "🟣 "
@@ -17,7 +23,7 @@ public extension AppScaffold {
         
 //        console.levelColor.verbose = "🔎 "
 //        console.levelColor.debug = "🪲 "
-//        console.levelColor.info = "🔵 "
+//        console.levelColor.info = "ℹ️ "
 //        console.levelColor.warning = "🎃 "
 //        console.levelColor.error = "🚨 "
 //        console.levelColor.critical = "💥 "

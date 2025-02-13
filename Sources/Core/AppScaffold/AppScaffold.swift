@@ -69,7 +69,7 @@ public enum AppScaffold {
         
         // use logger by default for debug builds
 //        #if DEBUG
-        useLogger()
+//        useLogger()
 //        #endif
         
         

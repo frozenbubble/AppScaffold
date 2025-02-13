@@ -8,6 +8,11 @@ public struct ColoredLabelStyle: LabelStyle {
     var iconColor = AppScaffold.colors.accent
     var textColor = Color.primary
     
+    public init(iconColor: Color = AppScaffold.colors.accent, textColor: SwiftUICore.Color = Color.primary) {
+        self.iconColor = iconColor
+        self.textColor = textColor
+    }
+    
     public func makeBody(configuration: Configuration) -> some View {
         HStack {
             VStack {
