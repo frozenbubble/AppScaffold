@@ -1,11 +1,6 @@
 @_exported import Resolver
-import Mixpanel
-import RevenueCat
 import SwiftUI
-import OSLog
 //import SwiftUIX
-
-fileprivate let logger = Logger(subsystem: "ButterBiscuit.AppScaffold", category: "Main")
 
 public struct AppColorScheme {
     public let accent: Color
