@@ -49,8 +49,8 @@ public struct ThemeModifier: ViewModifier {
 }
 
 public extension View {
-    func themeManager() -> some View {
-        modifier(ThemeModifier())
+    func themeManager(defaultColorScheme: ColorScheme = .light) -> some View {
+        modifier(ThemeModifier(defaultColorScheme: defaultColorScheme))
     }
 }
 
