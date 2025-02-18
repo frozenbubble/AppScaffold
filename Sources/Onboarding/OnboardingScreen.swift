@@ -1,6 +1,12 @@
 import SwiftUI
 
 import AppScaffoldCore
+import SwiftUIX
+
+enum backgroundType {
+    case solid
+    case blurred
+}
 
 @available(iOS 16.0, *)
 public struct OnboardingScreen<Content: View>: View {
@@ -66,7 +72,10 @@ public struct OnboardingScreen<Content: View>: View {
             .padding()
             .frame(maxWidth: .infinity)
             .frame(height: Self.bottomSheetHeight)
-            .background(AppScaffold.colors.onboardingOverlayColor)
+            .background {
+                AppScaffold.colors.onboardingOverlayColor
+//                VisualEffectBlurView(blurStyle: .systemThickMaterial)
+            }
             .clipShape(RoundedRectangle(cornerRadius: 20))
             .ignoresSafeArea(edges: .bottom)
             .compositingGroup()

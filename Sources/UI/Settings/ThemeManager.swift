@@ -33,12 +33,18 @@ public class ThemeManager: ObservableObject {
 }
 
 public struct ThemeModifier: ViewModifier {
+    let defaultColorScheme: ColorScheme
+    
     @StateObject var themeManager = ThemeManager()
+    
+    public init(defaultColorScheme: ColorScheme = .light) {
+        self.defaultColorScheme = defaultColorScheme
+    }
     
     public func body(content: Content) -> some View {
         content
             .environmentObject(themeManager)
-            .preferredColorScheme(themeManager.theme.colorScheme ?? .light)
+            .preferredColorScheme(themeManager.theme.colorScheme ?? defaultColorScheme)
     }
 }
 

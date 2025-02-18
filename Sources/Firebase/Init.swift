@@ -18,8 +18,8 @@ public struct EmulatorConfig {
     }
 }
 
-public enum AppScaffoldFirebase {
-    public static func useFirebase(emulatorConfig: EmulatorConfig? = nil) {
+public extension AppScaffold {
+    static func useFirebase(emulatorConfig: EmulatorConfig? = nil) {
         if FirebaseApp.isDefaultAppConfigured() {
             applog.warning("Firebase app already configured! Skipping...")
             return
