@@ -6,19 +6,28 @@ import AppScaffoldCore
 public struct OnboardingScreen<Content: View>: View {
     var title: String
     var subTitle: String
+    var textAlignment: TextAlignment
     var buttonText: String
     var content: Content
     var onFinish: (() -> Void)? = nil
     
-    public init(title: String, subTitle: String, buttonText: String = "Continue", @ViewBuilder content: () -> Content, onFinish: (() -> Void)? = nil) {
+    public init(
+        title: String,
+        subTitle: String,
+        textAlignment: TextAlignment = .center,
+        buttonText: String = "Continue",
+        @ViewBuilder content: () -> Content,
+        onFinish: (() -> Void)? = nil
+    ) {
         self.title = title
         self.subTitle = subTitle
+        self.textAlignment = textAlignment
         self.buttonText = buttonText
         self.onFinish = onFinish
         self.content = content()
     }
     
-    public static var bottomSheetHeight: CGFloat { 330 }
+    public static var bottomSheetHeight: CGFloat { 360 }
     
     public var body: some View {
         ZStack(alignment: .bottom) {
@@ -30,13 +39,24 @@ public struct OnboardingScreen<Content: View>: View {
             VStack(spacing: 8) {
                 Text(title)
                     .multilineTextAlignment(.center)
-                    .font(.title2)
-                    .fontWeight(.semibold)
+                    .font(.title3)
+                    .fontWeight(.medium)
                     .padding(.top, 10)
                     .padding(.bottom, 14)
-                Text(subTitle)
-                    .multilineTextAlignment(.center)
-                    .frame(maxHeight: .infinity, alignment: .top)
+                if textAlignment == .center {
+                    Text(subTitle)
+                        .multilineTextAlignment(.leading)
+                        .frame(maxHeight: .infinity, alignment: .top)
+                } else if textAlignment == .leading {
+                    Text(subTitle)
+                        .multilineTextAlignment(.leading)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                } else if textAlignment == .trailing {
+                    Text(subTitle)
+                        .multilineTextAlignment(.trailing)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
+                }
+                
                 if let onFinish {
                     OnboardingButton(buttonText, action: onFinish)
                         .padding(.bottom, 30)
@@ -68,7 +88,7 @@ public extension OnboardingScreen where Content == AnyView {
 
 @available(iOS 16.0, *)
 #Preview {
-    OnboardingScreen(title: "Title", subTitle: "SubTitle") {
+    OnboardingScreen(title: "Title", subTitle: "SubTitle", textAlignment: .leading) {
         ScrollView {
             Circle()
             Circle()

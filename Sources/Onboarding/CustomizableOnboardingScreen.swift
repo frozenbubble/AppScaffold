@@ -16,7 +16,7 @@ public struct CustomizableOnboardingScreen<TopContent: View, BottomContent: View
         self.bottomContent = bottomContent()
     }
     
-    public static var bottomSheetHeight: CGFloat { 330 }
+    public static var bottomSheetHeight: CGFloat { 360 }
     
     public var body: some View {
         ZStack(alignment: .bottom) {
@@ -29,8 +29,8 @@ public struct CustomizableOnboardingScreen<TopContent: View, BottomContent: View
                 if !title.isEmpty {
                     Text(title)
                         .multilineTextAlignment(.center)
-                        .font(.title2)
-                        .fontWeight(.semibold)
+                        .font(.title3)
+                        .fontWeight(.medium)
                         .padding(.top, 10)
                         .padding(.bottom, 14)
                 }
@@ -68,7 +68,7 @@ public extension CustomizableOnboardingScreen where TopContent == AnyView {
 
 @available(iOS 16.0, *)
 #Preview {
-    CustomizableOnboardingScreen(title: "Title") {
+    CustomizableOnboardingScreen(title: "Let's sign you in") {
         ScrollView {
             Circle()
             Circle()
@@ -77,9 +77,13 @@ public extension CustomizableOnboardingScreen where TopContent == AnyView {
         }
     } bottomContent: {
         VStack {
+            Text("You need to sign in with your apple account to continue.")
+            
             Capsule().frame(width: 320, height: 50)
-            Capsule().frame(width: 320, height: 50)
+                .frame(maxHeight: .infinity, alignment: .bottom)
         }
+        
+        .padding(.bottom, 30)
 //        Capsule().frame(width: 320, height: 50)
     } onFinish: {
         
