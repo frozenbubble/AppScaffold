@@ -1,17 +1,25 @@
 import SwiftyBeaver
 
 public let applog = SwiftyBeaver.self
+nonisolated(unsafe) public fileprivate(set) var loggerInitialized: Bool = false
 
 public extension AppScaffold {
+    
     static func useConsoleLogger(
         minLevel: SwiftyBeaver.Level = .verbose,
         logPrintWay: ConsoleDestination.LogPrintWay
     ) {
+        if loggerInitialized {
+            return
+        }
+        
         let console = ConsoleDestination()
         console.minLevel = minLevel
         console.logPrintWay = logPrintWay
         
         applog.addDestination(console)
+        
+        loggerInitialized = true
         
         console.levelColor.verbose = "🟣 "
         console.levelColor.debug = "🟢 "

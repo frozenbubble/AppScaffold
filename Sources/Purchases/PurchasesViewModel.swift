@@ -28,11 +28,16 @@ public class PurchaseViewModel: PurchaseService {
     public var offerings = [String: Offering]()
     public var isUserSubscribedCached = true
     
-    @ObservationIgnored var statusUpdateTime: Date?
-    @ObservationIgnored private var defaultOfferingName: String?
-    @ObservationIgnored private var promoOfferingName: String?
-    @ObservationIgnored private var promoPredicate: () -> Bool
-    @ObservationIgnored private var entitlementName: String
+    @ObservationIgnored
+    var statusUpdateTime: Date?
+    @ObservationIgnored
+    private var defaultOfferingName: String?
+    @ObservationIgnored
+    private var promoOfferingName: String?
+    @ObservationIgnored
+    private var promoPredicate: () -> Bool
+    @ObservationIgnored
+    private var entitlementName: String
     
     //TODO revise
     public init(defaultOfferingName: String? = nil, promoOfferingName: String? = nil, entitlement: String = "premium", promoPredicate: @escaping () -> Bool = { false }) {
