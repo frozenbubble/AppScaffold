@@ -1,6 +1,7 @@
 import SwiftUI
 
 import AppScaffoldCore
+import AppScaffoldUI
 
 @available(iOS 16.0, *)
 public struct CustomizableOnboardingScreen<TopContent: View, BottomContent: View>: View {
@@ -46,14 +47,14 @@ public struct CustomizableOnboardingScreen<TopContent: View, BottomContent: View
             .padding()
             .frame(maxWidth: .infinity)
             .frame(height: Self.bottomSheetHeight)
-            .background(AppScaffold.colors.onboardingOverlayColor)
+            .background(AppScaffoldUI.colors.onboardingOverlayColor)
             .clipShape(RoundedRectangle(cornerRadius: 20))
             .ignoresSafeArea(edges: .bottom)
             .compositingGroup()
             .shadow(color: .black.opacity(0.15), radius: 4)
         }
         .ignoresSafeArea(edges: .bottom)
-        .background(AppScaffold.colors.onboardingBackgroundColor)
+        .background(AppScaffoldUI.colors.onboardingBackgroundColor)
     }
 }
 

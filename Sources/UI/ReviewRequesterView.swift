@@ -126,7 +126,7 @@ public struct FeedbackView: View {
                         .fontWeight(.semibold)
                         .padding()
                         .frame(maxWidth: .infinity)
-                        .background(AppScaffold.colors.accent)
+                        .background(AppScaffoldUI.accent)
                         .foregroundStyle(.white)
                         .clipShape(RoundedRectangle(cornerRadius: 12))
                     }
@@ -160,7 +160,7 @@ public struct ReviewRequesterView: View {
                 feedbackSelector
             }
         }
-        .tint(AppScaffold.colors.accent)
+        .tint(AppScaffoldUI.accent)
         .frame(maxWidth: .infinity)
     }
     
@@ -230,7 +230,7 @@ public struct FeedbackButtonStyle: ButtonStyle {
             .frame(maxWidth: .infinity)
             .background(
                 RoundedRectangle(cornerRadius: cornerRadius)
-                    .fill(AppScaffold.accent)
+                    .fill(AppScaffoldUI.accent)
 //                    .fill(.secondary)
 //                    .stroke(
 //                        AppScaffold.colors.accent,
@@ -290,7 +290,8 @@ fileprivate struct ReviewRequesterPreview: View {
 @available(iOS 17.0, *)
 #Preview {
 //    Resolver.register { EventTrackingService(thresholds: [10, 100]) }.scope(.shared)
-    AppScaffold.configure(appName: "AppScaffold", colors: .init(accent: Color.systemYellow))
+    AppScaffold.configure(appName: "AppScaffold")
+    AppScaffold.configureUI(colors: .init(accent: Color.yellow), defaultTheme: .system)
     
     AppScaffold.useEventTracking()
     

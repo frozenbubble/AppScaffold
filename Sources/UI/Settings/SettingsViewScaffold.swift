@@ -5,10 +5,10 @@ import AppScaffoldCore
 
 @available(iOS 17.0, *)
 public struct ColoredLabelStyle: LabelStyle {
-    var iconColor = AppScaffold.colors.accent
+    var iconColor = AppScaffoldUI.colors.accent
     var textColor = Color.primary
     
-    public init(iconColor: Color = AppScaffold.colors.accent, textColor: SwiftUICore.Color = Color.primary) {
+    public init(iconColor: Color = AppScaffoldUI.colors.accent, textColor: SwiftUICore.Color = Color.primary) {
         self.iconColor = iconColor
         self.textColor = textColor
     }
@@ -30,7 +30,7 @@ public struct ColoredLabelStyle: LabelStyle {
 
 @available(iOS 17.0, *)
 public extension LabelStyle where Self == ColoredLabelStyle {
-    static func colored(iconColor: Color = AppScaffold.colors.accent, textColor: Color = .primary) -> Self {
+    static func colored(iconColor: Color = AppScaffoldUI.colors.accent, textColor: Color = .primary) -> Self {
         ColoredLabelStyle(iconColor: iconColor, textColor: textColor)
     }
 }
@@ -141,7 +141,7 @@ public struct SettingsViewScaffold<TopContent: View, BotttomContent: View, Paywa
                         displayFeedback = true
                     } label: {
                         HStack {
-                            Label("Feedback", systemImage: "text.bubble").labelStyle(ColoredLabelStyle(iconColor: AppScaffold.colors.accent))
+                            Label("Feedback", systemImage: "text.bubble").labelStyle(ColoredLabelStyle(iconColor: AppScaffoldUI.colors.accent))
                             Spacer()
                         }
                     }
@@ -168,7 +168,7 @@ public struct SettingsViewScaffold<TopContent: View, BotttomContent: View, Paywa
             
             bottomContent
         }
-        .tint(AppScaffold.accent)
+        .tint(AppScaffoldUI.accent)
 //        .scrollContentBackground(.hidden)
 //        .background(.editorBackground2)
 //        .navigationBarBackButtonHidden()
@@ -191,7 +191,9 @@ public struct SettingsViewScaffold<TopContent: View, BotttomContent: View, Paywa
 
 @available(iOS 17.0, *)
 #Preview {
+    UserDefaults.standard.reset()
     AppScaffold.useEventTracking()
+    AppScaffold.configureUI(colors: .init(), defaultTheme: .dark)
     
     return NavigationStack {
         SettingsViewScaffold(appId: "") {
@@ -208,6 +210,6 @@ public struct SettingsViewScaffold<TopContent: View, BotttomContent: View, Paywa
             EmptyView()
         }
     }
-    .themeManager()
+    .themeAware()
 }
 

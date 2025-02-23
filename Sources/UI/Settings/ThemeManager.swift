@@ -2,25 +2,8 @@ import SwiftUI
 
 import AppScaffoldCore
 
-public enum Theme: String, CaseIterable {
-    case system = "System"
-    case light = "Light"
-    case dark = "Dark"
-
-    var colorScheme: ColorScheme? {
-        switch self {
-        case .light:
-            return .light
-        case .dark:
-            return .dark
-        case .system:
-            return nil
-        }
-    }
-}
-
 public class ThemeManager: ObservableObject {
-    @AppStorage(AppScaffoldStorageKeys.appTheme, store: .scaffold) var themeRawValue = Theme.system.rawValue {
+    @AppStorage(AppScaffoldStorageKeys.appTheme, store: .scaffold) var themeRawValue = AppScaffoldUI.defaultTheme.rawValue {
         didSet {
             objectWillChange.send()
         }
@@ -33,29 +16,17 @@ public class ThemeManager: ObservableObject {
 }
 
 public struct ThemeModifier: ViewModifier {
-    let defaultColorScheme: ColorScheme
-    
     @StateObject var themeManager = ThemeManager()
-    
-    public init(defaultColorScheme: ColorScheme = .light) {
-        self.defaultColorScheme = defaultColorScheme
-    }
     
     public func body(content: Content) -> some View {
         content
             .environmentObject(themeManager)
-            .preferredColorScheme(themeManager.theme.colorScheme ?? defaultColorScheme)
+            .preferredColorScheme(themeManager.theme.colorScheme ?? AppScaffoldUI.defaultTheme.colorScheme)
     }
 }
 
 public extension View {
-    func themeManager(defaultColorScheme: ColorScheme = .light) -> some View {
-        modifier(ThemeModifier(defaultColorScheme: defaultColorScheme))
-    }
-}
-
-public extension AppScaffold {
-    func useThemeManager() {
-        Resolver.register { ThemeManager() }.scope(.shared)
+    func themeAware() -> some View {
+        modifier(ThemeModifier())
     }
 }

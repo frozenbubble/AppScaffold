@@ -1,7 +1,9 @@
 import SwiftUI
 
-import AppScaffoldCore
 import SwiftUIX
+
+import AppScaffoldCore
+import AppScaffoldUI
 
 enum backgroundType {
     case solid
@@ -73,7 +75,7 @@ public struct OnboardingScreen<Content: View>: View {
             .frame(maxWidth: .infinity)
             .frame(height: Self.bottomSheetHeight)
             .background {
-                AppScaffold.colors.onboardingOverlayColor
+                AppScaffoldUI.colors.onboardingOverlayColor
 //                VisualEffectBlurView(blurStyle: .systemThickMaterial)
             }
             .clipShape(RoundedRectangle(cornerRadius: 20))
@@ -82,7 +84,7 @@ public struct OnboardingScreen<Content: View>: View {
             .shadow(color: .black.opacity(0.15), radius: 4)
         }
         .ignoresSafeArea(edges: .bottom)
-        .background(AppScaffold.colors.onboardingBackgroundColor)
+        .background(AppScaffoldUI.colors.onboardingBackgroundColor)
     }
 }
 

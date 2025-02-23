@@ -1,6 +1,7 @@
 import SwiftUI
 
 import AppScaffoldCore
+import AppScaffoldUI
 
 //public enum OnboardingConfig {
 //    static let backgroundColor = Color.systemGroupedBackground
@@ -23,8 +24,8 @@ public struct OnboardingButton: View {
         self.text = text
         self.animation = animation
         self.action = action
-        self.color1 = color1 ?? AppScaffold.accent
-        self.color2 = color2 ?? AppScaffold.accent
+        self.color1 = color1 ?? AppScaffoldUI.accent
+        self.color2 = color2 ?? AppScaffoldUI.accent
     }
     
     public var body: some View {
