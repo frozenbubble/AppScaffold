@@ -47,7 +47,10 @@ public struct SettingsViewScaffold<TopContent: View, BotttomContent: View, Paywa
     let emailService = EmailService(feedbackEmail: AppScaffold.supportEmail, appName: AppScaffold.appName)
     
     @Environment(\.dismiss) var dismiss
-    @EnvironmentObject var themeManager: ThemeManager
+//    @EnvironmentObject var themeManager: ThemeManager
+    
+    @AppStorage(AppScaffoldStorageKeys.appTheme, store: .scaffold)
+    var theme = AppScaffoldUI.defaultTheme
     
     @State var displayNotificationsAlert = false
     @State var displayPaywall = false
@@ -79,7 +82,7 @@ public struct SettingsViewScaffold<TopContent: View, BotttomContent: View, Paywa
             Section {
                 HStack {
                     Label("Theme", systemImage: "circle.lefthalf.filled").labelStyle(ColoredLabelStyle(iconColor: .primary))
-                    Picker("", selection: $themeManager.theme) {
+                    Picker("", selection: $theme) {
                         Text("System").tag(Theme.system)
                         Text("Light").tag(Theme.light)
                         Text("Dark").tag(Theme.dark)
