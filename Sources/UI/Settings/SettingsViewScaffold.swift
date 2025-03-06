@@ -92,18 +92,6 @@ public struct SettingsViewScaffold<TopContent: View, BotttomContent: View, Paywa
             }
             
             Section {
-                NavigationLink {
-                    WebView(url: URL(string: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/"))
-                } label: {
-                    Label("Terms of Use", systemImage: "doc.plaintext").labelStyle(ColoredLabelStyle(iconColor: .cyan))
-                }
-                
-                NavigationLink {
-                    PrivacyPolicyView()
-                } label: {
-                    Label("Privacy Policy", systemImage: "doc.text.magnifyingglass").labelStyle(ColoredLabelStyle(iconColor: .orange))
-                }
-                
                 HStack {
                     Button {
                         displayPaywall = true
@@ -118,13 +106,8 @@ public struct SettingsViewScaffold<TopContent: View, BotttomContent: View, Paywa
                 .fullScreenCover(isPresented: $displayPaywall) {
                     paywallContent
                 }
-            }
-            
-            Section {
+                
                 if let appUrl = URL(string: "https://apps.apple.com/hu/app/id\(appId)") {
-                    ShareLink(item: appUrl) {
-                        Label("Share App", systemImage: "square.and.arrow.up").labelStyle(ColoredLabelStyle(iconColor: .cyan))
-                    }
                     
                     HStack {
                         Button {
@@ -137,8 +120,14 @@ public struct SettingsViewScaffold<TopContent: View, BotttomContent: View, Paywa
                         }
                     }
                     .buttonStyle(BorderlessButtonStyle())
+                    
+                    ShareLink(item: appUrl) {
+                        Label("Share App", systemImage: "square.and.arrow.up").labelStyle(ColoredLabelStyle(iconColor: .cyan))
+                    }
                 }
-                
+            }
+            
+            Section {
                 HStack {
                     Button {
                         displayFeedback = true
@@ -167,6 +156,20 @@ public struct SettingsViewScaffold<TopContent: View, BotttomContent: View, Paywa
                     }
                 }
                 .buttonStyle(BorderlessButtonStyle())
+            }
+            
+            Section {
+                NavigationLink {
+                    WebView(url: URL(string: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/"))
+                } label: {
+                    Label("Terms of Use", systemImage: "doc.plaintext").labelStyle(ColoredLabelStyle(iconColor: .cyan))
+                }
+                
+                NavigationLink {
+                    PrivacyPolicyView()
+                } label: {
+                    Label("Privacy Policy", systemImage: "doc.text.magnifyingglass").labelStyle(ColoredLabelStyle(iconColor: .orange))
+                }
             }
             
             bottomContent
