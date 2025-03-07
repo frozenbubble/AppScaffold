@@ -47,7 +47,6 @@ public class PurchaseViewModel: PurchaseService {
         self.entitlementName = entitlement
     }
     
-//    @MainActor
     public var subscriptionPlanForToday: String {
         return "" //AppScaffold.defaultOffering
     }
