@@ -1,6 +1,6 @@
 import UIKit
 
-public class NetworkDownloader {
+public final class NetworkDownloader: Sendable {
     public func downloadImage(from urlString: String) async -> UIImage? {
         guard let url = URL(string: urlString) else {
             print("Invalid URL")

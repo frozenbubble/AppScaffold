@@ -3,12 +3,12 @@ import Resolver
 
 import AppScaffoldCore
 
-public struct PixabayResultSet: Codable {
+public struct PixabayResultSet: Sendable, Codable {
     public let total, totalHits: Int
     public let hits: [PixabayImageResult]
 }
 
-public struct PixabayImageResult: Codable, Identifiable {
+public struct PixabayImageResult: Sendable, Codable, Identifiable {
     public let id: Int
     public let pageURL: String
     public let type: PixabayTypeEnum
@@ -31,12 +31,13 @@ public struct PixabayImageResult: Codable, Identifiable {
     }
 }
 
-public enum PixabayTypeEnum: String, Codable {
+public enum PixabayTypeEnum: String, Sendable, Codable {
     case photo = "photo"
     case illustration = "illustration"
 }
 
 @available(iOS 17.0, *)
+@MainActor
 @Observable
 public class PixabayViewModel {
     @Injected @ObservationIgnored var networkImageService: NetworkDownloader
@@ -72,7 +73,8 @@ public class PixabayViewModel {
 
 public extension AppScaffold {
     @available(iOS 17.0, *)
-    func usePixabay() {
+    @MainActor
+    static func usePixabay() {
         Resolver.register { NetworkDownloader() }.scope(.shared)
         Resolver.register { PixabayViewModel() }.scope(.shared)
     }
