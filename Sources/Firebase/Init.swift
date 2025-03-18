@@ -1,6 +1,7 @@
 @_exported import FirebaseCore
 @_exported import FirebaseAuth
 @_exported import FirebaseFunctions
+@_exported import FirebaseStorage
 
 import AppScaffoldCore
 
