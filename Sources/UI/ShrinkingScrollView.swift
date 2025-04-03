@@ -6,7 +6,7 @@ public struct ShrinkingScrollView<Content: View>: View {
     let spacing: Double
     let content: Content
     
-    init(_ axes: Axis.Set = .vertical, spacing: Double = 10, @ViewBuilder content: () -> Content) {
+    public init(_ axes: Axis.Set = .vertical, spacing: Double = 10, @ViewBuilder content: () -> Content) {
         self.axes = axes
         self.spacing = spacing
         self.content = content()

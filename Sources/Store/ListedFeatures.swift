@@ -150,13 +150,71 @@ public struct ListedFeatures<HeaderContent: View, HeadlineContent: View, TrialCo
 }
 
 @available(iOS 17.0, *)
-#Preview {
-    ListedFeatures {
-        
-    } headerContent: {
-        Image(systemName: "heart")
+public struct TableComparisonFeatures<HeaderContent: View, HeadlineContent: View, TrialContent: View>: View {
+    
+    let primaryBackgroundColor: Color
+    let secondaryBackgroundColor: Color
+    let features: [FeatureEntry]
+    let headerContent: HeaderContent
+    let headlineContent: HeadlineContent
+    let trialContent: TrialContent
+    
+    public init(
+        primaryBackgroundColor: Color = Color(UIColor.systemBackground),
+        secondaryBackgroundColor: Color = Color(UIColor.systemFill),
+        @FeatureEntryBuilder features: () -> [FeatureEntry],
+        @ViewBuilder headerContent: () -> HeaderContent,
+        @ViewBuilder headlineContent: () -> HeadlineContent = { EmptyView() },
+        @ViewBuilder trialContent: () -> TrialContent = { EmptyView() }
+    ) {
+        self.primaryBackgroundColor = primaryBackgroundColor
+        self.secondaryBackgroundColor = secondaryBackgroundColor
+        self.features = features()
+        self.headerContent = headerContent()
+        self.headlineContent = headlineContent()
+        self.trialContent = trialContent()
+    }
+    
+    public var body: some View {
+        ScrollView {
+            header
+            headlineContent
+            
+            HStack {
+                //Feature column
+                
+                //Free column
+                
+                //Premium column
+            }
+        }
+        .ignoresSafeArea()
+    }
+    
+    var header: some View {
+        Image(.headermaskIphone)
             .resizable()
             .scaledToFit()
+            .opacity(0.3)
+            .overlay {
+                headerContent
+                    .mask{
+                        Image(.headermaskIphone)
+                            .resizable()
+                            .scaledToFit()
+                    }
+            }
+    }
+}
+
+@available(iOS 17.0, *)
+#Preview {
+    TableComparisonFeatures {
+        
+    } headerContent: {
+        Rectangle()
+    } headlineContent: {
+        Text("Headline")
     }
     .accentColor(Color.yellow)
 }
