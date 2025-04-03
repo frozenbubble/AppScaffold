@@ -47,9 +47,17 @@ public struct ShrinkingScrollView<Content: View>: View {
             subviews: Subviews,
             cache: inout ()
         ) -> CGSize {
+            var maxWidth: CGFloat = 0
+            for view in subviews {
+                let viewSize = view.sizeThatFits(.zero)
+                if maxWidth < viewSize.width {
+                    maxWidth = viewSize.width
+                }
+            }
+            
             let result: CGSize
             if let firstSubview = subviews.first {
-                let containerWidth = proposal.width ?? .infinity
+                let containerWidth = maxWidth//proposal.width ?? .infinity
                 let containerHeight = proposal.height ?? .infinity
                 let size = firstSubview.sizeThatFits(.init(width: containerWidth, height: nil))
                 result = CGSize(width: containerWidth, height: min(size.height, containerHeight))
@@ -80,10 +88,19 @@ public struct ShrinkingScrollView<Content: View>: View {
             subviews: Subviews,
             cache: inout ()
         ) -> CGSize {
+            
+            var maxHeight: CGFloat = 0
+            for view in subviews {
+                let viewSize = view.sizeThatFits(.zero)
+                if maxHeight < viewSize.height {
+                    maxHeight = viewSize.height
+                }
+            }
+            
             let result: CGSize
             if let firstSubview = subviews.first {
                 let containerWidth = proposal.width ?? .infinity
-                let containerHeight = proposal.height ?? .infinity
+                let containerHeight = maxHeight//proposal.height ?? .infinity
                 let size = firstSubview.sizeThatFits(.init(width: nil, height: containerHeight))
                 result = CGSize(width: min(size.width, containerWidth), height: containerHeight)
             } else {
@@ -127,6 +144,5 @@ public struct ShrinkingScrollView<Content: View>: View {
             .fill(.red)
             .frame(width: 100, height: 100)
     }
-    .frame(height: 100)
     .background(.blue)
 }
