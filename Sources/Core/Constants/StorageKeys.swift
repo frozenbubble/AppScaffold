@@ -19,4 +19,6 @@ public enum AppScaffoldStorageKeys {
             "\(AppScaffold.defaultsPrefix).\(key)"
         }
     }
+    
+    public static var needsOnboarding: String { Self.prefixedKey("needsOnboarding") }
 }
