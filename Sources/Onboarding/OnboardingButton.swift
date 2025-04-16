@@ -7,9 +7,6 @@ import Shimmer
 @available(iOS 16.0, *)
 public struct OnboardingButton: View {
     let text: String
-    let color1: Color
-    let color2: Color
-    let shimmer: Bool
     let animation: Animation?
     let action: () -> Void
 
@@ -17,9 +14,9 @@ public struct OnboardingButton: View {
         self.text = text
         self.animation = animation
         self.action = action
-        self.color1 = color1 ?? AppScaffoldUI.accent
-        self.color2 = color2 ?? AppScaffoldUI.accent
-        self.shimmer = shimmer
+//        self.color1 = color1 ?? AppScaffoldUI.accent
+//        self.color2 = color2 ?? AppScaffoldUI.accent
+//        self.shimmer = shimmer
     }
 
     public var body: some View {
@@ -35,7 +32,7 @@ public struct OnboardingButton: View {
                 .font(.title3)
                 .fontWeight(.bold)
                 .shimmering(
-                    active: shimmer,
+                    active: AppScaffoldUI.colors.onboardingButtonShimmer,
                     animation: .easeInOut(duration: 2.0).repeatForever(autoreverses: false),
                     gradient: Gradient(colors: [.white.opacity(0.8), .white, .white.opacity(0.8)]),
                     bandSize: 0.3,
@@ -46,7 +43,10 @@ public struct OnboardingButton: View {
 //                .background(AppScaffold.accent)
                 .background {
                     LinearGradient(
-                        colors: [color1, color2],
+                        colors: [
+                            AppScaffoldUI.colors.onboardingButtonColor1,
+                            AppScaffoldUI.colors.onboardingButtonColor2,
+                        ],
                         startPoint: .top,
                         endPoint: .bottom
                     )
@@ -58,8 +58,17 @@ public struct OnboardingButton: View {
 
 @available(iOS 16.0, *)
 #Preview {
-    ZStack {
-        OnboardingButton(color1: .cyan, color2: .blue, shimmer: true) { }
+    AppScaffold.configureUI(
+        colors: .init(
+            onboardingButtonColor1: .cyan,
+            onboardingButtonColor2: .blue,
+            onboardingButtonShimmer: true
+        ),
+        defaultTheme: .light
+    )
+    
+    return ZStack {
+        OnboardingButton() { }
             .padding()
             .shadow(color: .black.opacity(0.15), radius: 4)
     }

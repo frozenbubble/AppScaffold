@@ -39,7 +39,7 @@ public struct AppColorScheme {
         self.onboardingBackgroundColor = onboardingBackgroundColor ?? Color(.systemBackground)
         self.onboardingOverlayColor = onboardingOverlayColor ?? Color(.systemGray6)
         self.onboardingButtonColor1 = onboardingButtonColor1 ?? accent
-        self.onboardingButtonColor2 = onboardingButtonColor1 ?? accent
+        self.onboardingButtonColor2 = onboardingButtonColor2 ?? accent
         self.onboardingButtonShimmer = onboardingButtonShimmer
     }
 }

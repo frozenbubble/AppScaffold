@@ -99,7 +99,16 @@ public extension OnboardingScreen where Content == AnyView {
 
 @available(iOS 16.0, *)
 #Preview {
-    OnboardingScreen(title: "Title", subTitle: "SubTitle", textAlignment: .leading) {
+    AppScaffold.configureUI(
+        colors: .init(
+            onboardingButtonColor1: .cyan,
+            onboardingButtonColor2: .blue,
+            onboardingButtonShimmer: true
+        ),
+        defaultTheme: .light
+    )
+    
+    return OnboardingScreen(title: "Title", subTitle: "SubTitle", textAlignment: .leading) {
         ScrollView {
             Circle()
             Circle()
