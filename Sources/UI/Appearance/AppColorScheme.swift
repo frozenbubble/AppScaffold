@@ -12,6 +12,10 @@ public struct AppColorScheme {
     public let onboardingBackgroundColor: Color
     public let onboardingOverlayColor: Color
     
+    public let onboardingButtonColor1: Color
+    public let onboardingButtonColor2: Color
+    public let onboardingButtonShimmer: Bool
+    
     public init(
         accent: Color = .blue,
         accent2: Color = .cyan,
@@ -20,7 +24,10 @@ public struct AppColorScheme {
         secondaryAccent2: Color = .green,
         secondaryAccent3: Color = .green,
         onboardingBackgroundColor: Color? = nil,
-        onboardingOverlayColor: Color? = nil
+        onboardingOverlayColor: Color? = nil,
+        onboardingButtonColor1: Color? = nil,
+        onboardingButtonColor2: Color? = nil,
+        onboardingButtonShimmer: Bool = false
     ) {
         self.accent = accent
         self.accent2 = accent2
@@ -31,5 +38,8 @@ public struct AppColorScheme {
         
         self.onboardingBackgroundColor = onboardingBackgroundColor ?? Color(.systemBackground)
         self.onboardingOverlayColor = onboardingOverlayColor ?? Color(.systemGray6)
+        self.onboardingButtonColor1 = onboardingButtonColor1 ?? accent
+        self.onboardingButtonColor2 = onboardingButtonColor1 ?? accent
+        self.onboardingButtonShimmer = onboardingButtonShimmer
     }
 }

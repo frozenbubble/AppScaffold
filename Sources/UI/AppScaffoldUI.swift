@@ -1,5 +1,8 @@
 import SwiftUI
 
+@_exported import SwiftfulLoadingIndicators
+@_exported import Shimmer
+
 import AppScaffoldCore
 
 public enum AppScaffoldUI {

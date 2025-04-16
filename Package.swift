@@ -52,6 +52,7 @@ let package = Package(
         .package(url: "https://github.com/firebase/firebase-ios-sdk", .upToNextMajor(from: "11.6.0")),
         .package(url: "https://github.com/google/GoogleSignIn-iOS.git", .upToNextMajor(from: "8.0.0")),
         .package(url: "https://github.com/SwiftfulThinking/SwiftfulLoadingIndicators.git", .upToNextMajor(from: "0.0.4")),
+        .package(url: "https://github.com/markiv/SwiftUI-Shimmer.git", .upToNextMajor(from: "1.5.1")),
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -64,7 +65,7 @@ let package = Package(
             ],
             path: "Sources/Core"
         ),
-        
+
         .target(
             name: "AppScaffoldFirebase",
             dependencies: [
@@ -76,7 +77,7 @@ let package = Package(
             ],
             path: "Sources/Firebase"
         ),
-        
+
         .target(
             name: "AppScaffoldAnalytics",
             dependencies: [
@@ -122,7 +123,8 @@ let package = Package(
                 "AppScaffoldAnalytics",
                 .product(name: "SwiftUIX", package: "SwiftUIX"),
                 .product(name: "MarkdownUI", package: "swift-markdown-ui"),
-                .product(name: "SwiftfulLoadingIndicators", package: "SwiftfulLoadingIndicators")
+                .product(name: "SwiftfulLoadingIndicators", package: "SwiftfulLoadingIndicators"),
+                .product(name: "Shimmer", package: "SwiftUI-Shimmer")
             ],
             path: "Sources/UI"
         ),
@@ -135,7 +137,7 @@ let package = Package(
             ],
             path: "Sources/Utils"
         ),
-        
+
         .testTarget(
             name: "AppScaffoldTests",
             dependencies: ["AppScaffoldCore"]

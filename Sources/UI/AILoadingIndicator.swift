@@ -1,5 +1,4 @@
 import SwiftUI
-@_exported import SwiftfulLoadingIndicators
 
 public struct AILoadingView: View {
     var color: Color = .primary
