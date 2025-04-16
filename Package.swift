@@ -51,6 +51,7 @@ let package = Package(
         .package(url: "https://github.com/SwiftyBeaver/SwiftyBeaver.git", .upToNextMajor(from: "2.0.0")),
         .package(url: "https://github.com/firebase/firebase-ios-sdk", .upToNextMajor(from: "11.6.0")),
         .package(url: "https://github.com/google/GoogleSignIn-iOS.git", .upToNextMajor(from: "8.0.0")),
+        .package(url: "https://github.com/SwiftfulThinking/SwiftfulLoadingIndicators.git", .upToNextMajor(from: "0.0.4")),
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -58,15 +59,8 @@ let package = Package(
         .target(
             name: "AppScaffoldCore",
             dependencies: [
-//                .product(name: "Mixpanel", package: "mixpanel-swift"),
                 .product(name: "Resolver", package: "Resolver"),
-//                .product(name: "RevenueCat", package: "purchases-ios-spm"),
-//                .product(name: "RevenueCatUI", package: "purchases-ios-spm"),
-//                .product(name: "SwiftUIX", package: "SwiftUIX"),
-//                .product(name: "MarkdownUI", package: "swift-markdown-ui"),
                 .product(name: "SwiftyBeaver", package: "SwiftyBeaver"),
-//                .product(name: "GoogleSignIn", package: "GoogleSignIn-iOS"),
-//                .product(name: "GoogleSignInSwift", package: "GoogleSignIn-iOS"),
             ],
             path: "Sources/Core"
         ),
@@ -106,7 +100,6 @@ let package = Package(
             dependencies: [
                 "AppScaffoldCore",
                 .product(name: "RevenueCat", package: "purchases-ios-spm"),
-//                .product(name: "RevenueCatUI", package: "purchases-ios-spm")
             ],
             path: "Sources/Purchases"
         ),
@@ -128,7 +121,8 @@ let package = Package(
                 "AppScaffoldCore",
                 "AppScaffoldAnalytics",
                 .product(name: "SwiftUIX", package: "SwiftUIX"),
-                .product(name: "MarkdownUI", package: "swift-markdown-ui")
+                .product(name: "MarkdownUI", package: "swift-markdown-ui"),
+                .product(name: "SwiftfulLoadingIndicators", package: "SwiftfulLoadingIndicators")
             ],
             path: "Sources/UI"
         ),
