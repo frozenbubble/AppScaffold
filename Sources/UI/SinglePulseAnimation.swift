@@ -2,7 +2,7 @@ import SwiftUI
 import Foundation
 
 @available(iOS 16.0, *)
-struct SinglePulseEffect: ViewModifier {
+public struct SinglePulseEffect: ViewModifier {
     let delay: TimeInterval
     let duration: TimeInterval
     let scaleFactor: CGFloat
@@ -11,7 +11,15 @@ struct SinglePulseEffect: ViewModifier {
     
     @State private var isPulsing = false
     
-    func body(content: Content) -> some View {
+    public init(delay: TimeInterval, duration: TimeInterval, scaleFactor: CGFloat, repeating: Bool, gap: TimeInterval) {
+        self.delay = delay
+        self.duration = duration
+        self.scaleFactor = scaleFactor
+        self.repeating = repeating
+        self.gap = gap
+    }
+    
+    public func body(content: Content) -> some View {
         content
             .scaleEffect(isPulsing ? scaleFactor : 1.0)
             .animation(.linear(duration: duration), value: isPulsing)
@@ -44,7 +52,7 @@ struct SinglePulseEffect: ViewModifier {
 }
 
 @available(iOS 16.0, *)
-extension View {
+public extension View {
     func singlePulseEffect(
         delay: TimeInterval = 0,
         duration: TimeInterval = 0.2,
