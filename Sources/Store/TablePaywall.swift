@@ -4,7 +4,7 @@ import AppScaffoldCore
 import AppScaffoldPurchases
 
 @available(iOS 17.0, *)
-public struct ListPaywall<HeaderContent: View, HeadlineContent: View>: View {
+public struct TablePaywall<HeaderContent: View, HeadlineContent: View>: View {
     let features: [FeatureEntry]
     let headerContent: HeaderContent
     let headlineContent: HeadlineContent
@@ -20,7 +20,7 @@ public struct ListPaywall<HeaderContent: View, HeadlineContent: View>: View {
     }
     
     public var body: some View {
-        ListedFeatures(
+        TableComparisonFeatures(
             primaryBackgroundColor: .secondarySystemGroupedBackground,
             secondaryBackgroundColor: .secondarySystemGroupedBackground,
             features: features,
@@ -35,7 +35,7 @@ public struct ListPaywall<HeaderContent: View, HeadlineContent: View>: View {
 #Preview {
     _ = AppScaffold.useMockPurchases()
     
-    return ListPaywall(features: [
+    return TablePaywall(features: [
         FeatureEntry(icon: "trash", name: "Dummy", description: "Dummy description", basic: .missing, pro: .unlimited),
     ]) {
         Rectangle().fill(.yellow)

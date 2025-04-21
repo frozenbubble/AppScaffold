@@ -1,4 +1,5 @@
 import SwiftUI
+//import UIKit
 
 import AppScaffoldCore
 import AppScaffoldUI
@@ -95,6 +96,22 @@ public struct ListedFeatures<HeaderContent: View, HeadlineContent: View, TrialCo
         self.trialContent = trialContent()
     }
     
+    public init(
+        primaryBackgroundColor: Color = Color(UIColor.systemBackground),
+        secondaryBackgroundColor: Color = Color(UIColor.systemFill),
+        features: [FeatureEntry],
+        @ViewBuilder headerContent: () -> HeaderContent,
+        @ViewBuilder headlineContent: () -> HeadlineContent = { EmptyView() },
+        @ViewBuilder trialContent: () -> TrialContent = { EmptyView() }
+    ) {
+        self.primaryBackgroundColor = primaryBackgroundColor
+        self.secondaryBackgroundColor = secondaryBackgroundColor
+        self.features = features
+        self.headerContent = headerContent()
+        self.headlineContent = headlineContent()
+        self.trialContent = trialContent()
+    }
+    
     public var body: some View {
         ScrollView {
             ParalaxHeader(
@@ -133,14 +150,18 @@ public struct ListedFeatures<HeaderContent: View, HeadlineContent: View, TrialCo
                 
                 // Trial
                 trialContent
+                
+                Spacer()
 
                 Rectangle()
                     .frame(height: 150)
                     .foregroundStyle(.clear)
             }
             .frame(width: screenWidth)
+            .frame(minHeight: UIScreen.height - 300)
             .background(primaryBackgroundColor)
             .clipShape(RoundedRectangle(cornerRadius: 20))
+            .shadow(color: .black.opacity(0.15), radius: 4)
             .offset(y: -50)
         }
         .coordinateSpace(name: CoordinateSpaces.scrollView)
@@ -170,6 +191,22 @@ public struct TableComparisonFeatures<HeaderContent: View, HeadlineContent: View
         self.primaryBackgroundColor = primaryBackgroundColor
         self.secondaryBackgroundColor = secondaryBackgroundColor
         self.features = features()
+        self.headerContent = headerContent()
+        self.headlineContent = headlineContent()
+        self.trialContent = trialContent()
+    }
+    
+    public init(
+        primaryBackgroundColor: Color = Color(UIColor.systemBackground),
+        secondaryBackgroundColor: Color = Color(UIColor.systemFill),
+        features: [FeatureEntry],
+        @ViewBuilder headerContent: () -> HeaderContent,
+        @ViewBuilder headlineContent: () -> HeadlineContent = { EmptyView() },
+        @ViewBuilder trialContent: () -> TrialContent = { EmptyView() }
+    ) {
+        self.primaryBackgroundColor = primaryBackgroundColor
+        self.secondaryBackgroundColor = secondaryBackgroundColor
+        self.features = features
         self.headerContent = headerContent()
         self.headlineContent = headlineContent()
         self.trialContent = trialContent()
@@ -209,7 +246,7 @@ public struct TableComparisonFeatures<HeaderContent: View, HeadlineContent: View
 
 @available(iOS 17.0, *)
 #Preview {
-    TableComparisonFeatures {
+    ListedFeatures {
         
     } headerContent: {
         Rectangle()

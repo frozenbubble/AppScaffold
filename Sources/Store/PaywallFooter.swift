@@ -50,12 +50,6 @@ public struct PaywallFooter: View {
     let actions: PaywallActions
     let links: PaywallLinks
 
-    public init(messages: PaywallMessages, actions: PaywallActions, links: PaywallLinks = .init()) {
-        self.messages = messages
-        self.actions = actions
-        self.links = links
-    }
-
     @AppService var purchases: PurchaseService
 
     @State var products: [StoreProduct] = []
@@ -63,22 +57,34 @@ public struct PaywallFooter: View {
     @State var highestPriceProduct: StoreProduct?
     @State var bestValueProduct: StoreProduct?
     @State var isEligibleForTrial: Bool = false
-    @State var displayAllPlans: Bool = true
+    @State var displayAllPlans: Bool = false
     @State var displayPrivacyPolicy: Bool = false
     @State var displayUrl: URL?
+
+    public init(messages: PaywallMessages, actions: PaywallActions, links: PaywallLinks = .init()) {
+        self.messages = messages
+        self.actions = actions
+        self.links = links
+    }
 
     public var body: some View {
         VStack {
             if displayAllPlans {
-                VStack(spacing: 10) {
+                VStack(spacing: 14) {
                     ForEach(products, id: \.productIdentifier) { productSelector($0) }
                 }
                 .padding(.bottom, 20)
+            } else if !purchases.inProgress {
+                priceInfo
             }
 
-            priceInfo
             purchaseButton
-            reassurance.padding(.top, 4)
+            
+            if let offerPeriod = selectedProduct?.offerPeriod
+            {
+                reassurance.padding(.top, 4)
+            }
+            
             bottomLinks.padding(.top)
         }
         .padding()
@@ -158,13 +164,34 @@ public struct PaywallFooter: View {
                         .shimmering()
                 } else {
                     Text("Continue")
-                        .shimmering()
+                        .shimmering(
+                            animation: .easeInOut(duration:2)
+                                .delay(2.5)
+                                .repeatForever(autoreverses: false),
+                            gradient: Gradient(colors: [.white.opacity(0.7), .white, .white.opacity(0.7)]),
+                        )
                 }
             }
+            .fontWeight(.medium)
             .foregroundStyle(.white)
             .padding(12)
             .frame(maxWidth: .infinity)
-            .background(purchases.inProgress ? Color.secondary : AppScaffoldUI.colors.accent)
+            .background {
+                ZStack {
+                    if purchases.inProgress {
+                        Color.secondary
+                    } else {
+                        LinearGradient(
+                            colors: [
+                                AppScaffoldUI.colors.accent.darken(by: 0.2),
+                                AppScaffoldUI.colors.accent//.darken(by: -0.2)
+                            ],
+                            startPoint: .bottom,
+                            endPoint: .top
+                        )
+                    }
+                }
+            }
             .clipShape(RoundedRectangle(cornerRadius: 12))
             .shimmering(active: purchases.inProgress)
 
