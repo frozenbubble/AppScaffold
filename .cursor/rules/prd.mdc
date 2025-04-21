@@ -124,7 +124,14 @@ Each folder you find inside Sources is a target that can be added to a project.
 - SwiftData
 
 # Libraries and targets
-You can find the list of libraries and targets that use them in [Package.swift](mdc:Package.swift)
+You can find the list of libraries and targets that use them in [Package.swift](mdc:Package.swift). But here are a couple ones specifically:
+- for payments we use RevenueCat
+- for backend we use Firebase
+- for events and analytics we use mixpanel.
+
+Some of these like Firebase is exposed directly through exported import, others like revenuecat are exposed through services like [PurchasesViewModel.swift](mdc:Sources/Purchases/PurchasesViewModel.swift)
+
+# Configuration
 
 
 # App building rules

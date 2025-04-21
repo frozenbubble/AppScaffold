@@ -160,7 +160,7 @@ public struct SettingsViewScaffold<TopContent: View, BotttomContent: View, Paywa
             
             Section {
                 NavigationLink {
-                    WebView(url: URL(string: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/"))
+                    LoadingWebView(url: URL(string: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/"))
                 } label: {
                     Label("Terms of Use", systemImage: "doc.plaintext").labelStyle(ColoredLabelStyle(iconColor: .cyan))
                 }

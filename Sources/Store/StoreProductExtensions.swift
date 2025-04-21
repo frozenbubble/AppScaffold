@@ -28,6 +28,11 @@ public extension StoreProduct {
         return normalizedPrice
     }
 
+    /// Returns the price formatted with 2 decimal places
+    var formattedPrice: String {
+        return price.formatted(.number.precision(.fractionLength(2)))
+    }
+
     /// Returns information about the subscription offer period
     /// For non-subscription products, returns nil
     var offerPeriod: (unit: SubscriptionPeriod.Unit, value: Int)? {
@@ -38,7 +43,7 @@ public extension StoreProduct {
         let subscriptionPeriod = introPrice.subscriptionPeriod
         return (unit: subscriptionPeriod.unit, value: subscriptionPeriod.value)
     }
-    
+
     /**
      Returns the introductory offer period details for a given product.
      - Returns: A tuple containing the period, unit (day, week, month, year), and value,

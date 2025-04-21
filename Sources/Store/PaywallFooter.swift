@@ -2,6 +2,7 @@ import SwiftUI
 
 import RevenueCat
 import SwiftUIX
+import SwiftfulLoadingIndicators
 
 import AppScaffoldCore
 import AppScaffoldPurchases
@@ -13,25 +14,46 @@ public enum PaywallVariable: String {
     case offerPeriod = "{{offer_period}}"
 }
 
+public struct PaywallLinks {
+    let privacyPolicy: URL?
+    let termsOfService: URL?
+
+    public init(privacyPolicy: URL? = nil, termsOfService: URL? = nil) {
+        self.privacyPolicy = privacyPolicy
+        self.termsOfService = termsOfService
+    }
+}
+
 public struct PaywallMessages {
-    let callToActionNormal: String = "Continue"
-    let callToActionTrial: String = "Start your free trial"
-//    let
+    let callToActionNormal: String
+    let callToActionTrial: String
+
+    public init(callToActionNormal: String = "Continue", callToActionTrial: String = "Start your free trial") {
+        self.callToActionNormal = callToActionNormal
+        self.callToActionTrial = callToActionTrial
+    }
 }
 
 public struct PaywallActions {
-    let purchaseSuccess: () -> Void = { }
-    let restoreSuccess: () -> Void = { }
+    let purchaseSuccess: () -> Void
+    let restoreSuccess: () -> Void
+
+    public init(purchaseSuccess: @escaping () -> Void = {}, restoreSuccess: @escaping () -> Void = {}) {
+        self.purchaseSuccess = purchaseSuccess
+        self.restoreSuccess = restoreSuccess
+    }
 }
 
 @available(iOS 17.0, *)
 public struct PaywallFooter: View {
     let messages: PaywallMessages
     let actions: PaywallActions
+    let links: PaywallLinks
 
-    public init(messages: PaywallMessages, actions: PaywallActions) {
+    public init(messages: PaywallMessages, actions: PaywallActions, links: PaywallLinks = .init()) {
         self.messages = messages
         self.actions = actions
+        self.links = links
     }
 
     @AppService var purchases: PurchaseService
@@ -42,11 +64,13 @@ public struct PaywallFooter: View {
     @State var bestValueProduct: StoreProduct?
     @State var isEligibleForTrial: Bool = false
     @State var displayAllPlans: Bool = true
+    @State var displayPrivacyPolicy: Bool = false
+    @State var displayUrl: URL?
 
     public var body: some View {
         VStack {
             if displayAllPlans {
-                VStack {
+                VStack(spacing: 10) {
                     ForEach(products, id: \.productIdentifier) { productSelector($0) }
                 }
                 .padding(.bottom, 20)
@@ -58,11 +82,7 @@ public struct PaywallFooter: View {
             bottomLinks.padding(.top)
         }
         .padding()
-        .background {
-            VisualEffectBlurView(blurStyle: .systemMaterial)
-                .ignoresSafeArea()
-        }
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .disabled(purchases.inProgress)
         .task {
             products = await purchases.fetchCurrentOfferingProducts() ?? []
             print("Fetched products: \(products)")
@@ -87,12 +107,9 @@ public struct PaywallFooter: View {
             selectedProduct = product
         } label: {
             VStack(alignment: .leading) {
-                let currency = product.currencyCode ?? "N/A"
-//                let c = product.pri
-                let period = product.subscriptionPeriod?.unit ?? .none
-
                 Text(product.localizedTitle)
-                Text("\(currency) \(product.price)/\(String(describing: period))")
+                    .fontWeight(.medium)
+                Text("Full access for just \(product.localizedPriceString)/\(product.subscriptionPeriod?.unit.abbreviatedCode ?? "?")")
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding()
@@ -102,15 +119,41 @@ public struct PaywallFooter: View {
                 RoundedRectangle(cornerRadius: 12)
                     .stroke(frameColor, lineWidth: 2)
             }
+            .overlay {
+                if let highestPriceProduct {
+                    let discount = product.discount(comparedTo: highestPriceProduct)
+                    if discount > 0 {
+                        Text("Save \(discount, format: .percent.precision(.fractionLength(0)))%")
+                            .font(.caption)
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 4)
+                            .background(selectedProduct == product ? AppScaffoldUI.colors.accent : .secondary)
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
+                            .padding(4)
+                    }
+                }
+            }
         }
         .foregroundStyle(.primary)
         .contentShape(Rectangle())
     }
 
     var purchaseButton: some View {
-        Button {} label: {
+        Button {
+            Task {
+                guard let product = selectedProduct else {
+                    return
+                }
+
+                _ = await purchases.purchase(product: product)
+            }
+        } label: {
             ZStack {
-                if let (period, _, value) = selectedProduct?.offerPeriodDetails {
+                if purchases.inProgress {
+                    LoadingIndicator(animation: .circleRunner, size: .small)
+                } else if let (period, _, value) = selectedProduct?.offerPeriodDetails {
                     Text("Start your free \(value) \(period)")
                         .shimmering()
                 } else {
@@ -121,8 +164,9 @@ public struct PaywallFooter: View {
             .foregroundStyle(.white)
             .padding(12)
             .frame(maxWidth: .infinity)
-            .background(AppScaffoldUI.colors.accent)
+            .background(purchases.inProgress ? Color.secondary : AppScaffoldUI.colors.accent)
             .clipShape(RoundedRectangle(cornerRadius: 12))
+            .shimmering(active: purchases.inProgress)
 
         }
         .font(.title3)
@@ -131,10 +175,10 @@ public struct PaywallFooter: View {
 
     var priceInfo: some View {
         Group {
-            if let (period, _, value) = selectedProduct?.offerPeriodDetails {
-                Text("First \(value) \(period) free, then just <TODO>/<TODO>")
-            } else {
-                Text("Full access for just <TODO>/<TODO>")
+            if let (period, _, value) = selectedProduct?.offerPeriodDetails, let product = selectedProduct {
+                Text("First \(value) \(period) free, then just \(product.currencyCode ?? "") \(product.formattedPrice)/\(String(describing: product.subscriptionPeriod?.unit ?? .none))")
+            } else if let product = selectedProduct {
+                Text("Full access for just \(product.localizedPriceString)/\(product.subscriptionPeriod?.unit.abbreviatedCode ?? "?")")
             }
         }
         .font(.title3)
@@ -152,21 +196,55 @@ public struct PaywallFooter: View {
     var bottomLinks: some View {
         HStack(spacing: 12) {
             Button {
-                withAnimation { displayAllPlans.toggle() }
+                withAnimation(.spring(duration: 0.3, bounce: 0.3)) { displayAllPlans.toggle() }
             } label: {
                 Text("All plans")
                     .underline()
             }
             Text("·")
-            Text("Restore").underline()
+
+            Button {
+                Task { await purchases.restorePurchases() }
+            } label: {
+                Text("Restore").underline()
+            }
+
             Text("·")
-            Text("Terms").underline()
+
+            Button {
+                displayUrl = links.termsOfService ??  URL(string: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/")
+            } label: {
+                Text("Terms").underline()
+            }
+
             Text("·")
-            Text("Privacy").underline()
+
+            Button {
+                if let privacyURL = links.privacyPolicy {
+                    displayUrl = privacyURL
+                } else {
+                    withAnimation { displayPrivacyPolicy.toggle() }
+                }
+            } label: {
+                Text("Privacy").underline()
+            }
         }
         .font(.subheadline)
         .foregroundStyle(.primary)
+        .sheet(item: $displayUrl) { url in
+            LoadingWebView(url: url)
+                .ignoresSafeArea(edges: .bottom)
+                .presentationDragIndicator(.visible)
+        }
+        .sheet(isPresented: $displayPrivacyPolicy) {
+            PrivacyPolicyView()
+                .presentationDragIndicator(.visible)
+        }
     }
+}
+
+extension URL: @retroactive Identifiable {
+    public var id: String { absoluteString }
 }
 
 @available(iOS 17.0, *)
@@ -175,6 +253,6 @@ public struct PaywallFooter: View {
 
     return VStack {
         Spacer()
-        PaywallFooter(messages: PaywallMessages(), actions: PaywallActions())
     }
+    .paywallFooter(messages: PaywallMessages(), actions: PaywallActions())
 }

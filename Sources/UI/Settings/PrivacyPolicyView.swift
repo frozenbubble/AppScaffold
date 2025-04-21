@@ -4,10 +4,12 @@ import MarkdownUI
 import AppScaffoldCore
 
 @available(iOS 17.0, *)
-struct PrivacyPolicyView: View {
+public struct PrivacyPolicyView: View {
     @State var privacy = ""
     
-    var body: some View {
+    public init() { }
+    
+    public var body: some View {
         ScrollView {
             if !privacy.isEmpty {
                 Markdown(privacy)
