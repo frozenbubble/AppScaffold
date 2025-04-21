@@ -2,6 +2,7 @@ import SwiftUI
 
 @_exported import SwiftfulLoadingIndicators
 @_exported import Shimmer
+@_exported import SwiftUIX
 
 import AppScaffoldCore
 

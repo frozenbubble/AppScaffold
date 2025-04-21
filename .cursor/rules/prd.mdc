@@ -1,0 +1,151 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+You are builing a scaffolding library for iOS apps using Swift, SwiftUI, SwiftData and various libraries, packaged as a swift package. The purpose of this package is to provide basic building blocks for UI used by all apps (e.g. review requester view, settings view, etc) as well as providing various utilities and services (e.g. logging, UIImage extensions, etc).
+
+Every time you choose to apply a rule(s), explicitly state the rules in the output. You can abbreviate the rule description to a single word or phrase
+
+# Important rules you HAVE TO FOLLOW
+- Always add comments in the code for easier readability
+
+# Project Structure
+.
+├── Package.resolved
+├── Package.swift
+├── Sources
+│   ├── Analytics
+│   │   └── EventTracking.swift
+│   ├── Core
+│   │   ├── AppScaffold
+│   │   │   ├── AppScaffold.swift
+│   │   │   ├── AppScaffoldDefaults.swift
+│   │   │   ├── AppService.swift
+│   │   │   └── Sandbox.swift
+│   │   ├── Constants
+│   │   │   └── StorageKeys.swift
+│   │   ├── Extensions
+│   │   │   ├── ArrayExtensions.swift
+│   │   │   ├── CalendarExtensions.swift
+│   │   │   ├── ComparableExtensions.swift
+│   │   │   ├── DateComponentsExtensions.swift
+│   │   │   ├── DateExtensions.swift
+│   │   │   ├── StringExtensions.swift
+│   │   │   └── UserDefaultsExtensions.swift
+│   │   ├── Logging
+│   │   │   └── Logger.swift
+│   │   └── Utils
+│   │       └── Environment.swift
+│   ├── Firebase
+│   │   ├── Authenticator.swift
+│   │   ├── FunctionCaller.swift
+│   │   └── Init.swift
+│   ├── Onboarding
+│   │   ├── CustomizableOnboardingScreen.swift
+│   │   ├── OnbardingBuilder.swift
+│   │   ├── OnboardingButton.swift
+│   │   ├── OnboardingModifier.swift
+│   │   └── OnboardingScreen.swift
+│   ├── Purchases
+│   │   ├── MockPurchasesViewModel.swift
+│   │   ├── PaidFeatureButton.swift
+│   │   ├── PurchasesViewModel.swift
+│   │   └── StorekitService.swift
+│   ├── Store
+│   │   ├── FullScreenPaywall.swift
+│   │   ├── ListedFeatures.swift
+│   │   ├── ListPaywall.swift
+│   │   ├── PaidUserFooter.swift
+│   │   ├── PaywallFooter.swift
+│   │   ├── PaywallScaffold.swift
+│   │   ├── PaywallWithFooter.swift
+│   │   ├── StoreAssets.xcassets
+│   │   │   ├── Contents.json
+│   │   │   ├── headermask_ipad.imageset
+│   │   │   │   ├── Contents.json
+│   │   │   │   └── headermask_ipad.png
+│   │   │   └── headermask_iphone.imageset
+│   │   │       ├── Contents.json
+│   │   │       └── headermask_iphone.png
+│   │   └── StoreProductExtensions.swift
+│   ├── UI
+│   │   ├── AILoadingIndicator.swift
+│   │   ├── AnimatedGradient.swift
+│   │   ├── Appearance
+│   │   │   ├── AppColorScheme.swift
+│   │   │   └── Theme.swift
+│   │   ├── AppIcon.swift
+│   │   ├── AppScaffoldUI.swift
+│   │   ├── BumpAnimation.swift
+│   │   ├── DividedVStack.swift
+│   │   ├── Extensions
+│   │   │   ├── CIFilterExtensions.swift
+│   │   │   ├── ColorExtensions.swift
+│   │   │   ├── ImageExtensions.swift
+│   │   │   └── UIImageExtensions.swift
+│   │   ├── ParalaxHeader.swift
+│   │   ├── ProfilePicture.swift
+│   │   ├── Progressbar.swift
+│   │   ├── PulseAnimation.swift
+│   │   ├── ReviewRequesterView.swift
+│   │   ├── Settings
+│   │   │   ├── EmailSending.swift
+│   │   │   ├── PrivacyPolicyView.swift
+│   │   │   ├── SettingsViewScaffold.swift
+│   │   │   └── ThemeManager.swift
+│   │   ├── ShakeEffect.swift
+│   │   ├── ShrinkingScrollView.swift
+│   │   ├── SinglePulseAnimation.swift
+│   │   ├── SkewedRoundedRectangle.swift
+│   │   └── WebView.swift
+│   └── Utils
+│       ├── Background
+│       │   └── BackgroundTaskManager.swift
+│       ├── Crypto
+│       │   └── CryptoUtils.swift
+│       ├── Data
+│       │   ├── ModelContextExtensions.swift
+│       │   ├── ModelRefresherActor.swift
+│       │   └── Preview.swift
+│       ├── ImageProviders
+│       │   └── PixabayViewModel.swift
+│       └── Networking
+│           └── NetworkDownloader.swift
+└── Tests
+    └── AppScaffoldTests
+        └── AppScaffoldTests.swift
+
+Each folder you find inside Sources is a target that can be added to a project.
+
+# Tech Stack
+- Swift
+- SwiftUI
+- SwiftData
+
+# Libraries and targets
+You can find the list of libraries and targets that use them in [Package.swift](mdc:Package.swift)
+
+
+# App building rules
+- For communicating with servers, services create clinets
+- For reusable UI, create UI components in the UI Components folder
+
+## 1. State management
+- Use SwiftData for local data storage
+- Use appropriate property wrappers and-macros:
+- Annotate view models with @Observable, e.g. `@Observable-final class MyModel`
+- Do not use @State in the SwiftUI View for view-model observation. Instead, use `let model: MyModel`
+- For reference type state shared with a child view, pass the dependency to the constructor of the child view.
+- For value type state shared with a child view, use SwiftUI bindings if and only if the child needs write access to the - state.
+- For value type state shared with a child view, pass the value if the child view only needs read access to the state.
+- Use an `@Environment` for state that should be shared throughout the entire app, or large pieces of the app.
+- Use `@State` only for local state that is managed by the view itself.
+
+## 2. Performance Optimization
+- Implement lazy loading for large lists or grids using `LazyVStack`, `LazyHStack`, `LazyVGrid`,...
+- Optimize ForEach loops by using stable identifiers.
+- Use `@ViewBuilder` for complex views that require multiple views or conditions.
+
+## 3. Lifecycle management
+- Use `@main` and `App` protocol for app initialization and entry point.

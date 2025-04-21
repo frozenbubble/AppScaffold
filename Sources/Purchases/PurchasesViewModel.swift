@@ -4,6 +4,8 @@ import Resolver
 
 import AppScaffoldCore
 
+//TODO: make sure purchase and restore implementations are not dependent on single entitlement name
+
 @available(iOS 17.0, *)
 public protocol PurchaseService {
     var inProgress: Bool { get set }
@@ -11,12 +13,16 @@ public protocol PurchaseService {
     var errorMessage: String { get set }
     var offerings: [String: Offering] { get set }
     var isUserSubscribedCached: Bool { get set }
+    var currentOffering: Offering? { get set }
     var subscriptionPlanForToday: String { get }
-    
+
     @MainActor func fetchOfferings() async
     @MainActor func updateIsUserSubscribedCached(force: Bool) async
     func isUserSubscribed() async -> Bool
     func isUserEligibleForTrial() async -> Bool
+    @MainActor func fetchCurrentOfferingProducts() async -> [StoreProduct]?
+    @MainActor func purchase(product: StoreProduct) async -> Bool
+    @MainActor func restorePurchases() async -> Bool
 }
 
 @available(iOS 17.0, *)
@@ -27,7 +33,8 @@ public class PurchaseViewModel: PurchaseService {
     public var errorMessage = ""
     public var offerings = [String: Offering]()
     public var isUserSubscribedCached = true
-    
+    public var currentOffering: Offering?
+
     @ObservationIgnored
     var statusUpdateTime: Date?
     @ObservationIgnored
@@ -38,7 +45,7 @@ public class PurchaseViewModel: PurchaseService {
     private var promoPredicate: () -> Bool
     @ObservationIgnored
     private var entitlementName: String
-    
+
     //TODO revise
     public init(defaultOfferingName: String? = nil, promoOfferingName: String? = nil, entitlement: String = "premium", promoPredicate: @escaping () -> Bool = { false }) {
         self.defaultOfferingName = defaultOfferingName
@@ -46,24 +53,26 @@ public class PurchaseViewModel: PurchaseService {
         self.promoPredicate = promoPredicate
         self.entitlementName = entitlement
     }
-    
+
     public var subscriptionPlanForToday: String {
         return "" //AppScaffold.defaultOffering
     }
-    
+
     @MainActor
     public func fetchOfferings() async {
-        defer {
-            inProgress = false
-        }
+        defer { inProgress = false }
         inProgress = true
+
         do {
-            offerings = try await Purchases.shared.offerings().all
+            let offeringsResult = try await Purchases.shared.offerings()
+            offerings = offeringsResult.all
+            currentOffering = offeringsResult.current
         } catch {
-            // Handle errors
+            displayError = true
+            errorMessage = error.localizedDescription
         }
     }
-    
+
     @MainActor
     public func updateIsUserSubscribedCached(force: Bool = false) async {
         if let statusUpdateTime, statusUpdateTime.timeIntervalSinceNow < 60, !force {
@@ -72,7 +81,7 @@ public class PurchaseViewModel: PurchaseService {
         isUserSubscribedCached = await isUserSubscribed()
         statusUpdateTime = Date()
     }
-    
+
     @MainActor
     public func isUserSubscribed() async -> Bool {
         do {
@@ -80,19 +89,19 @@ public class PurchaseViewModel: PurchaseService {
             if let premiumEntitlement = customerInfo.entitlements[entitlementName] {
                 return premiumEntitlement.isActive
             }
-            
+
             let entitlementNames = customerInfo.entitlements.all.keys
             if !entitlementNames.isEmpty {
                 let entitlementNamesStr = entitlementNames.map { "\"\($0)\"" }.joined(separator: ", ")
                 applog.warning("Entitlement \"\(entitlementName)\" not found but found \(entitlementNamesStr). Purchases might be misconfigured")
             }
-            
+
             return false
         } catch {
             return false
         }
     }
-    
+
     public func isUserEligibleForTrial() async -> Bool {
         do {
             let offerings = try await Purchases.shared.offerings()
@@ -111,6 +120,78 @@ public class PurchaseViewModel: PurchaseService {
         }
         return false
     }
+
+    @MainActor
+    public func fetchCurrentOfferingProducts() async -> [StoreProduct]? {
+        defer { inProgress = false }
+        inProgress = true
+
+        guard let offering = currentOffering else {
+            if offerings.isEmpty {
+                await fetchOfferings()
+            }
+
+            if currentOffering == nil {
+                displayError = true
+                errorMessage = "No current offering available"
+                return nil
+            }
+            return nil
+        }
+
+        return offering.availablePackages.map { $0.storeProduct }
+    }
+
+    @MainActor
+    public func purchase(product: StoreProduct) async -> Bool {
+        defer { inProgress = false }
+        inProgress = true
+
+        do {
+            let result = try await Purchases.shared.purchase(product: product)
+            let customerInfo = result.customerInfo
+
+            if let premiumEntitlement = customerInfo.entitlements[entitlementName], premiumEntitlement.isActive {
+                await updateIsUserSubscribedCached(force: true)
+                return true
+            } else {
+                displayError = true
+                errorMessage = "Purchase completed but entitlement not found"
+                applog.error(errorMessage)
+                return false
+            }
+        } catch {
+            displayError = true
+            errorMessage = error.localizedDescription
+            applog.error(errorMessage)
+            return false
+        }
+    }
+
+    @MainActor
+    public func restorePurchases() async -> Bool {
+        defer { inProgress = false }
+        inProgress = true
+
+        do {
+            let customerInfo = try await Purchases.shared.restorePurchases()
+
+            if let premiumEntitlement = customerInfo.entitlements[entitlementName], premiumEntitlement.isActive {
+                await updateIsUserSubscribedCached(force: true)
+                return true
+            } else {
+                displayError = true
+                errorMessage = "No purchases found to restore"
+                applog.error(errorMessage)
+                return false
+            }
+        } catch {
+            displayError = true
+            errorMessage = error.localizedDescription
+            applog.error(errorMessage)
+            return false
+        }
+    }
 }
 
 
@@ -121,7 +202,7 @@ public extension AppScaffold {
     static func usePurchases(revenueCatKey: String, premiumEntitlement: String = "premium") {
         Purchases.logLevel = .info
         let configBuilder = Configuration.Builder(withAPIKey: revenueCatKey)
-        
+
         if !AppScaffold.appGroupName.isEmpty {
             let config = configBuilder
                 .with(userDefaults: .init(suiteName: AppScaffold.appGroupName)!)
@@ -130,7 +211,7 @@ public extension AppScaffold {
         } else {
             Purchases.configure(with: configBuilder.build())
         }
-        
+
 //        Purchases.configure(withAPIKey: revenueCatKey)
         Resolver.register { PurchaseViewModel(entitlement: premiumEntitlement) as PurchaseService }.scope(.shared)
     }
