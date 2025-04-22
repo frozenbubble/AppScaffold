@@ -10,7 +10,7 @@ public extension String {
             
             return result.split(separator: " ").map { String($0) }
         } catch {
-            print("Regex error: \(error)")
+            applog.error("Regex error: \(error)")
             return [self]
         }
     }

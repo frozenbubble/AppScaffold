@@ -1,6 +1,8 @@
 import SwiftUI
 import WebKit
 
+import AppScaffoldCore
+
 @available(iOS 15.0, *)
 public struct WebView: UIViewRepresentable {
     let url: URL?
@@ -29,11 +31,11 @@ public struct WebView: UIViewRepresentable {
         // Optional: Handle load failures if necessary
         public func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
             // The onLoadFinished callback is *not* called on failure
-            print("WebView failed navigation: \(error.localizedDescription)")
+            applog.error("WebView failed navigation: \(error.localizedDescription)")
         }
          public func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
              // Also not called on provisional navigation failure
-             print("WebView failed provisional navigation: \(error.localizedDescription)")
+             applog.error("WebView failed provisional navigation: \(error.localizedDescription)")
         }
     }
 

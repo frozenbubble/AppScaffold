@@ -1,9 +1,11 @@
 import UIKit
 
+import AppScaffoldCore
+
 public final class NetworkDownloader: Sendable {
     public func downloadImage(from urlString: String) async -> UIImage? {
         guard let url = URL(string: urlString) else {
-            print("Invalid URL")
+            applog.error("Invalid URL")
             return nil
         }
         
@@ -11,26 +13,26 @@ public final class NetworkDownloader: Sendable {
             let (data, response) = try await URLSession.shared.data(from: url)
             
             guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-                print("Failed to load image: HTTP response not OK")
+                applog.error("Failed to load image: HTTP response not OK")
                 return nil
             }
             
             guard let image = UIImage(data: data) else {
-                print("Failed to create UIImage from data")
+                applog.error("Failed to create UIImage from data")
                 return nil
             }
             
             return image
             
         } catch {
-            print("Error downloading image: \(error)")
+            applog.error("Error downloading image: \(error)")
             return nil
         }
     }
     
     public func fetchData<T: Decodable>(from urlStr: String) async -> T? {
         guard let url = URL(string: urlStr) else {
-            print("Invalid URL")
+            applog.error("Invalid URL")
             return nil
         }
         
@@ -41,7 +43,7 @@ public final class NetworkDownloader: Sendable {
         do {
             let (data, response) = try await URLSession.shared.data(from: url)
             guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-                print("Request failed")
+                applog.error("Request failed")
                 return nil
             }
             
@@ -50,7 +52,7 @@ public final class NetworkDownloader: Sendable {
             return decodedResponse
             
         } catch {
-            print("Failed to fetch or decode data: \(error)")
+            applog.error("Failed to fetch or decode data: \(error)")
             return nil
         }
     }

@@ -91,7 +91,7 @@ public struct PaywallFooter: View {
         .disabled(purchases.inProgress)
         .task {
             products = await purchases.fetchCurrentOfferingProducts() ?? []
-            print("Fetched products: \(products)")
+            applog.debug("Fetched products: \(products)")
             selectedProduct = products.first
             highestPriceProduct = products.max(by: { $0.price > $1.price })
             bestValueProduct = getBestValueProduct(from: products)
