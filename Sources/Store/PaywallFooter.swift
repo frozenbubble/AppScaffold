@@ -176,7 +176,7 @@ public struct PaywallFooter: View {
                     LoadingIndicator(animation: .circleRunner, size: .small)
                 } else {
                     let details = selectedProduct?.offerPeriodDetails
-                    let buttonText = details.map { "Start your free trial \($0.value) \($0.period)" } ?? "Continue"
+                    let buttonText = details.map { "Start your free \($0.value) \($0.period)" } ?? "Continue"
 
                     let animationDuration = Double(buttonText.count) / 4.0
 
