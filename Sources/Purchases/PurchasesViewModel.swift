@@ -34,6 +34,7 @@ public class PurchaseViewModel: PurchaseService {
     public var offerings = [String: Offering]()
     public var isUserSubscribedCached = true
     public var currentOffering: Offering?
+    public var currentOfferingProducts: [StoreProduct] = []
 
     @ObservationIgnored
     var statusUpdateTime: Date?
@@ -147,18 +148,14 @@ public class PurchaseViewModel: PurchaseService {
         defer { inProgress = false }
         inProgress = true
 
+        if currentOffering == nil {
+            applog.debug("No current offering available, fetching offerings")
+            await fetchOfferings()
+        }
+        
         guard let offering = currentOffering else {
-            if offerings.isEmpty {
-                applog.debug("No offerings available, attempting to fetch offerings")
-                await fetchOfferings()
-            }
-
-            if currentOffering == nil {
-                displayError = true
-                errorMessage = "No current offering available"
-                applog.error("Failed to fetch products: No current offering available")
-                return nil
-            }
+            applog.error("No current offering available")
+            errorMessage = "Could not fetch products."
             return nil
         }
 

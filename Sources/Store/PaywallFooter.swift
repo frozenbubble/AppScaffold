@@ -183,7 +183,7 @@ public struct PaywallFooter: View {
                                 .delay(2.5)
                                 .repeatForever(autoreverses: false),
                             gradient: Gradient(colors: [
-                                .white.opacity(0.85), .white, .white.opacity(0.85)])
+                                .white.opacity(0.8), .white, .white.opacity(0.8)])
                         )
                 }
             }
