@@ -96,7 +96,10 @@ public struct PaywallFooter: View {
 
             bottomLinks.padding(.top)
         }
-        .redactedEffect(active: Binding(get: {purchases.inProgress}, set: {_ in}))
+        .redactedEffect(active: Binding(
+            get: { purchases.inProgress && purchases.currentOfferingProducts.isEmpty },
+            set: {_ in}
+        ))
         .padding()
         .disabled(purchases.inProgress)
         .alert("Error", isPresented: $displayFetchAlert) {
@@ -328,6 +331,7 @@ public struct PaywallFooter: View {
         }
         .sheet(isPresented: $displayPrivacyPolicy) {
             PrivacyPolicyView()
+                .padding(.top)
                 .presentationDragIndicator(.visible)
         }
     }
