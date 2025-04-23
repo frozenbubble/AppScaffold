@@ -16,6 +16,8 @@ public struct AppColorScheme {
     public let onboardingButtonColor2: Color
     public let onboardingButtonShimmer: Bool
     
+    public let paywallButtonTextColor: Color
+    
     public init(
         accent: Color = .blue,
         accent2: Color = .cyan,
@@ -27,7 +29,8 @@ public struct AppColorScheme {
         onboardingOverlayColor: Color? = nil,
         onboardingButtonColor1: Color? = nil,
         onboardingButtonColor2: Color? = nil,
-        onboardingButtonShimmer: Bool = false
+        onboardingButtonShimmer: Bool = false,
+        paywallButtonTextColor: Color? = nil
     ) {
         self.accent = accent
         self.accent2 = accent2
@@ -41,5 +44,6 @@ public struct AppColorScheme {
         self.onboardingButtonColor1 = onboardingButtonColor1 ?? accent
         self.onboardingButtonColor2 = onboardingButtonColor2 ?? accent
         self.onboardingButtonShimmer = onboardingButtonShimmer
+        self.paywallButtonTextColor = paywallButtonTextColor ?? .white
     }
 }

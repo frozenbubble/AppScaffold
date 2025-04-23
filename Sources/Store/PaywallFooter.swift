@@ -112,16 +112,28 @@ public struct PaywallFooter: View {
         Button {
             selectedProduct = product
         } label: {
-            VStack(alignment: .leading) {
-                Text(product.localizedTitle)
-                    .fontWeight(.medium)
-                Text("Full access for just \(product.localizedPriceString)/\(product.subscriptionPeriod?.unit.abbreviatedCode ?? "?")")
+            HStack(spacing: 12) {
+                if product == selectedProduct {
+                    Image(systemName: "checkmark.circle.fill")
+                        .imageScale(.large)
+                        .foregroundStyle(AppScaffoldUI.accent)
+                } else {
+                    Image(systemName: "circle")
+                        .imageScale(.large)
+                        .foregroundStyle(.secondary)
+                }
+                
+                VStack(alignment: .leading) {
+                    Text(product.localizedTitle)
+                        .fontWeight(.medium)
+                    Text("Full access for just \(product.localizedPriceString)/\(product.subscriptionPeriod?.unit.abbreviatedCode ?? "?")")
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
             .padding()
             .overlay{
                 let frameColor = selectedProduct == product ? AppScaffoldUI.colors.accent : Color.secondary
-
+                
                 RoundedRectangle(cornerRadius: 12)
                     .stroke(frameColor, lineWidth: 2)
             }
@@ -163,12 +175,15 @@ public struct PaywallFooter: View {
                     Text("Start your free \(value) \(period)")
                         .shimmering()
                 } else {
+                    let textColor = AppScaffoldUI.colors.paywallButtonTextColor
+                    
                     Text("Continue")
                         .shimmering(
                             animation: .easeInOut(duration:2)
                                 .delay(2.5)
                                 .repeatForever(autoreverses: false),
-                            gradient: Gradient(colors: [.white.opacity(0.7), .white, .white.opacity(0.7)]),
+                            gradient: Gradient(colors: [
+                                .white.opacity(0.85), .white, .white.opacity(0.85)])
                         )
                 }
             }
@@ -183,8 +198,8 @@ public struct PaywallFooter: View {
                     } else {
                         LinearGradient(
                             colors: [
-                                AppScaffoldUI.colors.accent.darken(by: 0.2),
-                                AppScaffoldUI.colors.accent//.darken(by: -0.2)
+                                AppScaffoldUI.colors.accent.darken(by: 0.08),
+                                AppScaffoldUI.colors.accent
                             ],
                             startPoint: .bottom,
                             endPoint: .top

@@ -12,7 +12,7 @@ public struct TablePaywall<HeaderContent: View, HeadlineContent: View>: View {
     public init(
         features: [FeatureEntry] = [],
         @ViewBuilder headerContent: () -> HeaderContent,
-        @ViewBuilder headlineContent: () -> HeadlineContent = { EmptyView() },
+        @ViewBuilder headlineContent: () -> HeadlineContent = { EmptyView() }
     ) {
         self.features = features
         self.headerContent = headerContent()
