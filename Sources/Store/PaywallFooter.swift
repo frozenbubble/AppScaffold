@@ -74,17 +74,18 @@ public struct PaywallFooter: View {
                     ForEach(products, id: \.productIdentifier) { productSelector($0) }
                 }
                 .padding(.bottom, 20)
+                .transition(.blurReplace)
             } else if !purchases.inProgress {
-                priceInfo
+                priceInfo.transition(.blurReplace)
             }
 
             purchaseButton
-            
-            if let offerPeriod = selectedProduct?.offerPeriod
+
+            if (selectedProduct?.offerPeriod) != nil
             {
                 reassurance.padding(.top, 4)
             }
-            
+
             bottomLinks.padding(.top)
         }
         .padding()
@@ -92,9 +93,9 @@ public struct PaywallFooter: View {
         .task {
             products = await purchases.fetchCurrentOfferingProducts() ?? []
             applog.debug("Fetched products: \(products)")
-            selectedProduct = products.first
             highestPriceProduct = products.max(by: { $0.price > $1.price })
             bestValueProduct = getBestValueProduct(from: products)
+            selectedProduct = bestValueProduct
         }
     }
 
@@ -110,7 +111,9 @@ public struct PaywallFooter: View {
 
     func productSelector(_ product: StoreProduct) -> some View {
         Button {
-            selectedProduct = product
+            withAnimation {
+                selectedProduct = product
+            }
         } label: {
             HStack(spacing: 12) {
                 if product == selectedProduct {
@@ -122,7 +125,7 @@ public struct PaywallFooter: View {
                         .imageScale(.large)
                         .foregroundStyle(.secondary)
                 }
-                
+
                 VStack(alignment: .leading) {
                     Text(product.localizedTitle)
                         .fontWeight(.medium)
@@ -133,7 +136,7 @@ public struct PaywallFooter: View {
             .padding()
             .overlay{
                 let frameColor = selectedProduct == product ? AppScaffoldUI.colors.accent : Color.secondary
-                
+
                 RoundedRectangle(cornerRadius: 12)
                     .stroke(frameColor, lineWidth: 2)
             }
@@ -171,15 +174,15 @@ public struct PaywallFooter: View {
             ZStack {
                 if purchases.inProgress {
                     LoadingIndicator(animation: .circleRunner, size: .small)
-                } else if let (period, _, value) = selectedProduct?.offerPeriodDetails {
-                    Text("Start your free \(value) \(period)")
-                        .shimmering()
                 } else {
-                    let textColor = AppScaffoldUI.colors.paywallButtonTextColor
-                    
-                    Text("Continue")
+                    let details = selectedProduct?.offerPeriodDetails
+                    let buttonText = details.map { "Start your free trial \($0.value) \($0.period)" } ?? "Continue"
+
+                    let animationDuration = Double(buttonText.count) / 4.0
+
+                    Text(buttonText)
                         .shimmering(
-                            animation: .easeInOut(duration:2)
+                            animation: .easeInOut(duration: animationDuration)
                                 .delay(2.5)
                                 .repeatForever(autoreverses: false),
                             gradient: Gradient(colors: [
@@ -218,9 +221,9 @@ public struct PaywallFooter: View {
     var priceInfo: some View {
         Group {
             if let (period, _, value) = selectedProduct?.offerPeriodDetails, let product = selectedProduct {
-                Text("First \(value) \(period) free, then just \(product.currencyCode ?? "") \(product.formattedPrice)/\(String(describing: product.subscriptionPeriod?.unit ?? .none))")
+                Text("First \(value) \(period) free, then just \(product.pricePerPeriodString)")
             } else if let product = selectedProduct {
-                Text("Full access for just \(product.localizedPriceString)/\(product.subscriptionPeriod?.unit.abbreviatedCode ?? "?")")
+                Text("Full access for just \(product.pricePerPeriodString)")
             }
         }
         .font(.title3)
@@ -233,6 +236,7 @@ public struct PaywallFooter: View {
             Text("No payment now.")
         }
         .font(.subheadline)
+        .transition(.blurReplace)
     }
 
     var bottomLinks: some View {

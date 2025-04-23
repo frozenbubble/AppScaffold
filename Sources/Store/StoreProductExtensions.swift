@@ -92,4 +92,8 @@ public extension StoreProduct {
 
         return (normalizedOtherPrice - normalizedPrice) / normalizedOtherPrice
     }
+    
+    var pricePerPeriodString: String {
+        "\(localizedPriceString)/\(subscriptionPeriod?.unit.abbreviatedCode ?? "?")"
+    }
 }
