@@ -4,33 +4,38 @@ import Resolver
 
 import AppScaffoldCore
 
-//TODO: make sure purchase and restore implementations are not dependent on single entitlement name
+public enum PurchaseError: Error {
+    case purchaseFailed
+    case noEntitlement
+    case noPurcaseToRestore
+    case restoreFailed
+    case noOfferings
+    case noCurrentOffering
+}
 
+//TODO: make sure purchase and restore implementations are not dependent on single entitlement name
 @available(iOS 17.0, *)
 public protocol PurchaseService {
     var inProgress: Bool { get set }
-    var displayError: Bool { get set }
-    var errorMessage: String { get set }
     var offerings: [String: Offering] { get set }
     var isUserSubscribedCached: Bool { get set }
     var currentOffering: Offering? { get set }
     var subscriptionPlanForToday: String { get }
+    var currentOfferingProducts: [StoreProduct] { get }
 
-    @MainActor func fetchOfferings() async
+    @MainActor func fetchOfferings() async throws
     @MainActor func updateIsUserSubscribedCached(force: Bool) async
     func isUserSubscribed() async -> Bool
     func isUserEligibleForTrial() async -> Bool
-    @MainActor func fetchCurrentOfferingProducts() async -> [StoreProduct]?
-    @MainActor func purchase(product: StoreProduct) async -> Bool
-    @MainActor func restorePurchases() async -> Bool
+    @MainActor func fetchCurrentOfferingProducts() async throws
+    @MainActor func purchase(product: StoreProduct) async throws(PurchaseError) -> CustomerInfo
+    @MainActor func restorePurchases() async throws(PurchaseError) -> CustomerInfo
 }
 
 @available(iOS 17.0, *)
 @Observable
 public class PurchaseViewModel: PurchaseService {
     public var inProgress = false
-    public var displayError = false
-    public var errorMessage = ""
     public var offerings = [String: Offering]()
     public var isUserSubscribedCached = true
     public var currentOffering: Offering?
@@ -61,7 +66,7 @@ public class PurchaseViewModel: PurchaseService {
     }
 
     @MainActor
-    public func fetchOfferings() async {
+    public func fetchOfferings() async throws {
         applog.debug("Fetching RevenueCat offerings")
         defer { inProgress = false }
         inProgress = true
@@ -72,9 +77,8 @@ public class PurchaseViewModel: PurchaseService {
             currentOffering = offeringsResult.current
             applog.info("Fetched \(offerings.count) offerings. Current offering: \(currentOffering?.identifier ?? "none")")
         } catch {
-            displayError = true
-            errorMessage = error.localizedDescription
             applog.error("Failed to fetch offerings: \(error.localizedDescription)")
+            throw PurchaseError.noOfferings
         }
     }
 
@@ -143,29 +147,28 @@ public class PurchaseViewModel: PurchaseService {
     }
 
     @MainActor
-    public func fetchCurrentOfferingProducts() async -> [StoreProduct]? {
+    public func fetchCurrentOfferingProducts() async throws {
         applog.debug("Fetching products for current offering")
         defer { inProgress = false }
         inProgress = true
 
         if currentOffering == nil {
             applog.debug("No current offering available, fetching offerings")
-            await fetchOfferings()
+            try await fetchOfferings()
         }
         
         guard let offering = currentOffering else {
             applog.error("No current offering available")
-            errorMessage = "Could not fetch products."
-            return nil
+            throw PurchaseError.noCurrentOffering
         }
 
         let products = offering.availablePackages.map { $0.storeProduct }
         applog.info("Fetched \(products.count) products from offering \(offering.identifier)")
-        return products
+        currentOfferingProducts = products
     }
 
     @MainActor
-    public func purchase(product: StoreProduct) async -> Bool {
+    public func purchase(product: StoreProduct) async throws(PurchaseError) -> CustomerInfo {
         applog.info("Attempting to purchase product: \(product.productIdentifier)")
         defer { inProgress = false }
         inProgress = true
@@ -177,23 +180,19 @@ public class PurchaseViewModel: PurchaseService {
             if let premiumEntitlement = customerInfo.entitlements[entitlementName], premiumEntitlement.isActive {
                 applog.info("Purchase successful for product: \(product.productIdentifier)")
                 await updateIsUserSubscribedCached(force: true)
-                return true
+                return customerInfo
             } else {
-                displayError = true
-                errorMessage = "Purchase completed but entitlement not found"
-                applog.error(errorMessage)
-                return false
+                applog.error( "Purchase completed but entitlement not found")
+                throw PurchaseError.noEntitlement
             }
         } catch {
-            displayError = true
-            errorMessage = error.localizedDescription
             applog.error("Purchase failed for product \(product.productIdentifier): \(error.localizedDescription)")
-            return false
+            throw PurchaseError.purchaseFailed
         }
     }
 
     @MainActor
-    public func restorePurchases() async -> Bool {
+    public func restorePurchases() async throws(PurchaseError) -> CustomerInfo {
         applog.info("Attempting to restore purchases")
         defer { inProgress = false }
         inProgress = true
@@ -204,18 +203,14 @@ public class PurchaseViewModel: PurchaseService {
             if let premiumEntitlement = customerInfo.entitlements[entitlementName], premiumEntitlement.isActive {
                 applog.info("Successfully restored purchase for entitlement: \(entitlementName)")
                 await updateIsUserSubscribedCached(force: true)
-                return true
+                return customerInfo
             } else {
-                displayError = true
-                errorMessage = "No purchases found to restore"
-                applog.error(errorMessage)
-                return false
+                applog.error("No purchases found to restore")
+                throw PurchaseError.noPurcaseToRestore
             }
         } catch {
-            displayError = true
-            errorMessage = error.localizedDescription
             applog.error("Failed to restore purchases: \(error.localizedDescription)")
-            return false
+            throw PurchaseError.restoreFailed
         }
     }
 }

@@ -35,12 +35,21 @@ public struct PaywallMessages {
 }
 
 public struct PaywallActions {
-    let purchaseSuccess: () -> Void
-    let restoreSuccess: () -> Void
+    let purchaseSuccess: (CustomerInfo) -> Void
+    let restoreSuccess: (CustomerInfo) -> Void
+    let purchaseFailure: (PurchaseError) -> Void
+    let restoreFailure: (PurchaseError) -> Void
 
-    public init(purchaseSuccess: @escaping () -> Void = {}, restoreSuccess: @escaping () -> Void = {}) {
+    public init(
+        purchaseSuccess: @escaping (CustomerInfo) -> Void = { _ in },
+        purchaseFailure: @escaping (PurchaseError) -> Void = { _ in },
+        restoreSuccess: @escaping (CustomerInfo) -> Void = { _ in },
+        restoreFailure: @escaping (PurchaseError) -> Void = { _ in }
+    ) {
         self.purchaseSuccess = purchaseSuccess
+        self.purchaseFailure = purchaseFailure
         self.restoreSuccess = restoreSuccess
+        self.restoreFailure = restoreFailure
     }
 }
 
@@ -52,7 +61,6 @@ public struct PaywallFooter: View {
 
     @AppService var purchases: PurchaseService
 
-    @State var products: [StoreProduct] = []
     @State var selectedProduct: StoreProduct?
     @State var highestPriceProduct: StoreProduct?
     @State var bestValueProduct: StoreProduct?
@@ -60,6 +68,7 @@ public struct PaywallFooter: View {
     @State var displayAllPlans: Bool = false
     @State var displayPrivacyPolicy: Bool = false
     @State var displayUrl: URL?
+    @State var displayFetchAlert: Bool = false
 
     public init(messages: PaywallMessages, actions: PaywallActions, links: PaywallLinks = .init()) {
         self.messages = messages
@@ -71,31 +80,40 @@ public struct PaywallFooter: View {
         VStack {
             if displayAllPlans {
                 VStack(spacing: 14) {
-                    ForEach(products, id: \.productIdentifier) { productSelector($0) }
+                    ForEach(purchases.currentOfferingProducts, id: \.productIdentifier) {
+                        productSelector($0)
+                    }
                 }
                 .padding(.bottom, 20)
                 .transition(.blurReplace)
-            } else if !purchases.inProgress {
+            } else {
                 priceInfo.transition(.blurReplace)
             }
 
             purchaseButton
 
-            if (selectedProduct?.offerPeriod) != nil
-            {
-                reassurance.padding(.top, 4)
-            }
+            reassurance.padding(.top, 4)
 
             bottomLinks.padding(.top)
         }
+        .redactedEffect(active: Binding(get: {purchases.inProgress}, set: {_ in}))
         .padding()
         .disabled(purchases.inProgress)
+        .alert("Error", isPresented: $displayFetchAlert) {
+            Button("Ok") { displayFetchAlert = false }
+        } message: {
+            Text("Failed to fetch product information. If the issue persists, please reach out to us.")
+        }
         .task {
-            products = await purchases.fetchCurrentOfferingProducts() ?? []
-            applog.debug("Fetched products: \(products)")
-            highestPriceProduct = products.max(by: { $0.price > $1.price })
-            bestValueProduct = getBestValueProduct(from: products)
-            selectedProduct = bestValueProduct
+            do {
+                try await purchases.fetchCurrentOfferingProducts()
+                highestPriceProduct = purchases.currentOfferingProducts.max(by: { $0.price > $1.price })
+                bestValueProduct = getBestValueProduct(from: purchases.currentOfferingProducts)
+                selectedProduct = bestValueProduct
+            } catch {
+                applog.error(error)
+                displayFetchAlert = true
+            }
         }
     }
 
@@ -168,7 +186,14 @@ public struct PaywallFooter: View {
                     return
                 }
 
-                _ = await purchases.purchase(product: product)
+                do throws(PurchaseError) {
+                    let customerInfo = try await purchases.purchase(product: product)
+                    actions.purchaseSuccess(customerInfo)
+                } catch {
+                    applog.error(error)
+                    //TODO: show alert
+                    actions.purchaseFailure(error)
+                }
             }
         } label: {
             ZStack {
@@ -196,7 +221,7 @@ public struct PaywallFooter: View {
             .frame(maxWidth: .infinity)
             .background {
                 ZStack {
-                    if purchases.inProgress {
+                    if purchases.inProgress || purchases.currentOfferingProducts.isEmpty {
                         Color.secondary
                     } else {
                         LinearGradient(
@@ -224,19 +249,29 @@ public struct PaywallFooter: View {
                 Text("First \(value) \(period) free, then just \(product.pricePerPeriodString)")
             } else if let product = selectedProduct {
                 Text("Full access for just \(product.pricePerPeriodString)")
+            } else {
+                Text("Fetching Price info")
             }
         }
         .font(.title3)
     }
 
     var reassurance: some View {
-        HStack(spacing: 4) {
-            Image(systemName: "checkmark.shield")
-                .foregroundStyle(.green)
-            Text("No payment now.")
+        ZStack {
+            if (selectedProduct?.offerPeriod) != nil {
+                HStack(spacing: 4) {
+                    Image(systemName: "checkmark.shield")
+                        .foregroundStyle(.green)
+                    Text("No payment now.")
+                }
+                .font(.subheadline)
+                .transition(.blurReplace)
+            } else if purchases.inProgress {
+                Text("Loading...")
+                    .font(.subheadline)
+                    .transition(.blurReplace)
+            }
         }
-        .font(.subheadline)
-        .transition(.blurReplace)
     }
 
     var bottomLinks: some View {
@@ -250,7 +285,16 @@ public struct PaywallFooter: View {
             Text("·")
 
             Button {
-                Task { await purchases.restorePurchases() }
+                Task {
+                    do throws (PurchaseError) {
+                        let customerInfo = try await purchases.restorePurchases()
+                        actions.restoreSuccess(customerInfo)
+                    } catch {
+                        applog.error(error)
+                        //TODO: show alert
+                        actions.purchaseFailure(error)
+                    }
+                }
             } label: {
                 Text("Restore").underline()
             }
@@ -295,6 +339,7 @@ extension URL: @retroactive Identifiable {
 
 @available(iOS 17.0, *)
 #Preview {
+    AppScaffold.useConsoleLogger(minLevel: .verbose, logPrintWay: .print)
     _ = AppScaffold.useMockPurchases()
 
     return VStack {

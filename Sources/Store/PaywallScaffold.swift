@@ -82,8 +82,13 @@ public struct PaywallScaffold<Content: View>: View {
             }
         }
         .task {
-            await vm.fetchOfferings()
-            await vm.updateIsUserSubscribedCached(force: true)
+            do {
+                try await vm.fetchOfferings()
+                await vm.updateIsUserSubscribedCached(force: true)
+            } catch {
+                applog.error(error)
+                //TODO: show alert
+            }
         }
     }
     

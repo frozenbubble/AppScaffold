@@ -7,26 +7,28 @@ import AppScaffoldCore
 @available(iOS 17.0, *)
 @Observable
 public class MockPurchaseViewModel: PurchaseService {
-    public func purchase(product: RevenueCat.StoreProduct) async -> Bool {
+    public var currentOfferingProducts: [StoreProduct] = []
+    
+    public func purchase(product: RevenueCat.StoreProduct) async throws(PurchaseError) -> CustomerInfo {
         withAnimation { inProgress = true }
         defer { withAnimation { inProgress = false } }
         try? await Task.sleep(for: .seconds(1))
-        return true
+        return try! await Purchases.shared.customerInfo()
     }
     
-    public func restorePurchases() async -> Bool {
+    public func restorePurchases() async throws(PurchaseError) -> CustomerInfo {
         withAnimation { inProgress = true }
         defer { withAnimation { inProgress = false } }
         try? await Task.sleep(for: .seconds(1))
-        return true
+        return try! await Purchases.shared.customerInfo()
     }
     
     public var currentOffering: RevenueCat.Offering? = nil
 
-    public func fetchCurrentOfferingProducts() async -> [RevenueCat.StoreProduct]? {
+    public func fetchCurrentOfferingProducts() async throws {
         withAnimation { inProgress = true }
         defer { withAnimation { inProgress = false } }
-        try? await Task.sleep(for: .seconds(0.5))
+        try? await Task.sleep(for: .seconds(1.5))
         
         let weekly = createTestProduct(
             identifier: "mock_product_1_week",
@@ -46,7 +48,8 @@ public class MockPurchaseViewModel: PurchaseService {
             subscriptionPeriod: SubscriptionPeriod(value: 1, unit: .month)
         )
         
-        return [ weekly, monthly ]
+        currentOfferingProducts = [weekly, monthly]
+//        currentOfferingProducts = []
     }
 
     public var inProgress: Bool
