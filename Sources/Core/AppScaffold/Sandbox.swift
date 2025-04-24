@@ -1,51 +1,64 @@
-//import SwiftUI
-//import OSLog
-//import SwiftyBeaver
-//import Resolver
-//
-//enum SandboxError: Error {
-//    case error
-//}
-//
-//@available(iOS 17.0, *)
-//struct Sandbox: View {
-//    @AppService var purchaseVM: PurchaseService
-//    
-//    @State var value1 = 0
-//    @State var value2 = 0
-//    
-//    func dateSg(date: Date) {
-//        
-//    }
-//    
-//    var body: some View {
-////        ListedFeatures.SkewedRoundedRectangle()
-//        ZStack {
-//            SkewedRoundedRectangle(cornerRadius: 12)
-//                .frame(width: 200, height: 50)
-//            Circle()
-//                .fill(Color.red)
-//                .frame(width: 50, height: 50)
-//        }
-//        .onChange(of: [value1, value2]) {
-//            applog.debug("Value1: \(value1), Value2: \(value2)")
-//        }
-//        .task {
-//            try? await Task.sleep(for: .seconds(1))
-//            value1 = 1
-//            try? await Task.sleep(for: .seconds(1))
-//            value2 = 2
-//            
-//            dateSg(date: .today)
-//        }
-//    }
-//}
-//
-//@available(iOS 17.0, *)
-//#Preview {
-//    AppScaffold.useLogger()
-//    _ = AppScaffold.useMockPurchases()
-//    applog.info("asd")
-//    
-//    return Sandbox()
-//}
+import SwiftUI
+
+//TODO: Move to AppScaffold
+public struct InfoAlertModifier: ViewModifier {
+    let title: String
+    let message: String
+    @Binding var isPresented: Bool
+    let action: () -> Void
+
+    public func body(content: Content) -> some View {
+        content
+            .alert(title, isPresented: $isPresented) {
+                Button("OK") {
+                    isPresented = false
+                    action()
+                }
+            } message: {
+                Text(message)
+            }
+    }
+}
+
+// 2. Create the View extension for easy usage
+public extension View {
+    /// Presents an alert with a title, message, and a single "OK" button.
+    ///
+    /// - Parameters:
+    ///   - title: The title of the alert.
+    ///   - message: The informative message body of the alert.
+    ///   - isPresented: A binding to a Boolean value that determines whether
+    ///     to present the alert. When the user taps the "OK" button, this
+    ///     value is set to `false` and the alert is dismissed.
+    ///   - action: The closure to execute when the "OK" button is tapped.
+    func infoAlert(
+        _ title: String,
+        message: String,
+        isPresented: Binding<Bool>,
+        action: @escaping () -> Void = {} // Default to empty action
+    ) -> some View {
+        self.modifier(
+            InfoAlertModifier(
+                title: title,
+                message: message,
+                isPresented: isPresented,
+                action: action
+            )
+        )
+    }
+}
+
+struct Sandbox: View {
+    @State var displayAlert: Bool = true
+    
+    var body: some View {
+        Text("Hello, World!").font(.headline).fontWeight(.light)
+            .infoAlert("Hi", message: "This is a message", isPresented: $displayAlert) {
+                displayAlert = false
+            }
+    }
+}
+
+#Preview {
+    Sandbox()
+}

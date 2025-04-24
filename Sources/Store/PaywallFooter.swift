@@ -68,7 +68,11 @@ public struct PaywallFooter: View {
     @State var displayAllPlans: Bool = false
     @State var displayPrivacyPolicy: Bool = false
     @State var displayUrl: URL?
-    @State var displayFetchAlert: Bool = false
+
+    @State private var isInfoAlertPresented: Bool = false
+    @State private var infoAlertTitle: String = ""
+    @State private var infoAlertMessage: String = ""
+    @State private var postAlertAction: (() -> Void)? = nil
 
     public init(messages: PaywallMessages, actions: PaywallActions, links: PaywallLinks = .init()) {
         self.messages = messages
@@ -102,10 +106,9 @@ public struct PaywallFooter: View {
         ))
         .padding()
         .disabled(purchases.inProgress)
-        .alert("Error", isPresented: $displayFetchAlert) {
-            Button("Ok") { displayFetchAlert = false }
-        } message: {
-            Text("Failed to fetch product information. If the issue persists, please reach out to us.")
+        .infoAlert(infoAlertTitle, message: infoAlertMessage, isPresented: $isInfoAlertPresented) {
+            postAlertAction?()
+            postAlertAction = nil
         }
         .task {
             do {
@@ -115,7 +118,9 @@ public struct PaywallFooter: View {
                 selectedProduct = bestValueProduct
             } catch {
                 applog.error(error)
-                displayFetchAlert = true
+                isInfoAlertPresented = true
+                infoAlertTitle = "Error"
+                infoAlertMessage = "Failed to fetch product information. If the issue persists, please reach out to us."
             }
         }
     }
@@ -191,11 +196,10 @@ public struct PaywallFooter: View {
 
                 do throws(PurchaseError) {
                     let customerInfo = try await purchases.purchase(product: product)
-                    actions.purchaseSuccess(customerInfo)
+                    purchaseSuccess(customerInfo)
                 } catch {
                     applog.error(error)
-                    //TODO: show alert
-                    actions.purchaseFailure(error)
+                    purchaseFailure(error: error)
                 }
             }
         } label: {
@@ -209,6 +213,7 @@ public struct PaywallFooter: View {
                     let animationDuration = Double(buttonText.count) / 4.0
 
                     Text(buttonText)
+                        .fontWeight(.medium)
                         .shimmering(
                             animation: .easeInOut(duration: animationDuration)
                                 .delay(2.5)
@@ -229,7 +234,7 @@ public struct PaywallFooter: View {
                     } else {
                         LinearGradient(
                             colors: [
-                                AppScaffoldUI.colors.accent.darken(by: 0.08),
+                                AppScaffoldUI.colors.accent.darken(by: 0.05),
                                 AppScaffoldUI.colors.accent
                             ],
                             startPoint: .bottom,
@@ -242,7 +247,7 @@ public struct PaywallFooter: View {
             .shimmering(active: purchases.inProgress)
 
         }
-        .font(.title3)
+//        .font(.headline)
         .foregroundStyle(.primary)
     }
 
@@ -256,7 +261,6 @@ public struct PaywallFooter: View {
                 Text("Fetching Price info")
             }
         }
-        .font(.title3)
     }
 
     var reassurance: some View {
@@ -291,11 +295,10 @@ public struct PaywallFooter: View {
                 Task {
                     do throws (PurchaseError) {
                         let customerInfo = try await purchases.restorePurchases()
-                        actions.restoreSuccess(customerInfo)
+                        restoreSuccess(customerInfo)
                     } catch {
                         applog.error(error)
-                        //TODO: show alert
-                        actions.purchaseFailure(error)
+                        restoreFailure(error: error)
                     }
                 }
             } label: {
@@ -334,6 +337,34 @@ public struct PaywallFooter: View {
                 .padding(.top)
                 .presentationDragIndicator(.visible)
         }
+    }
+
+    func purchaseSuccess(_ customerInfo: CustomerInfo) {
+        isInfoAlertPresented = true
+        infoAlertTitle = "Purchase successful"
+        infoAlertMessage = "You're all set."
+        postAlertAction = { actions.purchaseSuccess(customerInfo) }
+    }
+
+    func purchaseFailure(error: PurchaseError) {
+        isInfoAlertPresented = true
+        infoAlertTitle = "Purchase failed"
+        infoAlertMessage = "You're all set."
+        postAlertAction = { actions.purchaseFailure(error) }
+    }
+
+    func restoreSuccess(_ customerInfo: CustomerInfo) {
+        isInfoAlertPresented = true
+        infoAlertTitle = "Restore successful"
+        infoAlertMessage = "Your purchases have been restored."
+        postAlertAction = { actions.restoreSuccess(customerInfo) }
+    }
+
+    func restoreFailure(error: PurchaseError) {
+        isInfoAlertPresented = true
+        infoAlertTitle = "Restore failed"
+        infoAlertMessage = "There was a problem restoring your purchases."
+        postAlertAction = { actions.restoreFailure(error) }
     }
 }
 
