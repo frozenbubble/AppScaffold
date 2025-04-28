@@ -1,6 +1,6 @@
 import SwiftUI
 
-//TODO: Move to AppScaffold
+//TODO: move to proper place
 public struct InfoAlertModifier: ViewModifier {
     let title: String
     let message: String

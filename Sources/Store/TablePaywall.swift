@@ -41,5 +41,8 @@ public struct TablePaywall<HeaderContent: View, HeadlineContent: View>: View {
         Rectangle().fill(.yellow)
     } headlineContent: {
         Text("This is a headline")
+            .font(.title2)
+            .fontWeight(.medium)
+            .padding()
     }
 }

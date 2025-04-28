@@ -343,6 +343,7 @@ public struct PaywallFooter: View {
         isInfoAlertPresented = true
         infoAlertTitle = "Purchase successful"
         infoAlertMessage = "You're all set."
+        applog.info("Purchase successful")
         postAlertAction = { actions.purchaseSuccess(customerInfo) }
     }
 
@@ -350,6 +351,7 @@ public struct PaywallFooter: View {
         isInfoAlertPresented = true
         infoAlertTitle = "Purchase failed"
         infoAlertMessage = "You're all set."
+        applog.error("Purchase failed: \(error)")
         postAlertAction = { actions.purchaseFailure(error) }
     }
 
@@ -357,6 +359,7 @@ public struct PaywallFooter: View {
         isInfoAlertPresented = true
         infoAlertTitle = "Restore successful"
         infoAlertMessage = "Your purchases have been restored."
+        applog.info("Restore successful")
         postAlertAction = { actions.restoreSuccess(customerInfo) }
     }
 
@@ -364,6 +367,7 @@ public struct PaywallFooter: View {
         isInfoAlertPresented = true
         infoAlertTitle = "Restore failed"
         infoAlertMessage = "There was a problem restoring your purchases."
+        applog.error("Restore failed: \(error)")
         postAlertAction = { actions.restoreFailure(error) }
     }
 }
