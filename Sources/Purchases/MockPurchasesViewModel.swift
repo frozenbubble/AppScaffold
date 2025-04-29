@@ -8,6 +8,7 @@ import AppScaffoldCore
 @Observable
 public class MockPurchaseViewModel: PurchaseService {
     public var currentOfferingProducts: [StoreProduct] = []
+    public var currentOfferingMetadata: [String : Any] = [:]
     
     public func purchase(product: RevenueCat.StoreProduct) async throws(PurchaseError) -> CustomerInfo {
         withAnimation { inProgress = true }

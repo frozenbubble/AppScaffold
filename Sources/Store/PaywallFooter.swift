@@ -155,7 +155,11 @@ public struct PaywallFooter: View {
                 VStack(alignment: .leading) {
                     Text(product.localizedTitle)
                         .fontWeight(.medium)
-                    Text("Full access for just \(product.localizedPriceString)/\(product.subscriptionPeriod?.unit.abbreviatedCode ?? "?")")
+                    if let subscriptionPeriod = product.subscriptionPeriod {
+                        Text("Full access for just \(product.localizedPriceString)/\(subscriptionPeriod.unit.abbreviatedCode)")
+                    } else {
+                        Text("Full access for \(product.localizedPriceString)")
+                    }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
@@ -170,7 +174,7 @@ public struct PaywallFooter: View {
                 if let highestPriceProduct {
                     let discount = product.discount(comparedTo: highestPriceProduct)
                     if discount > 0 {
-                        Text("Save \(discount, format: .percent.precision(.fractionLength(0)))%")
+                        Text("Save \(discount, format: .percent.precision(.fractionLength(0)))")
                             .font(.caption)
                             .foregroundColor(.white)
                             .padding(.horizontal, 6)
@@ -208,7 +212,9 @@ public struct PaywallFooter: View {
                     LoadingIndicator(animation: .circleRunner, size: .small)
                 } else {
                     let details = selectedProduct?.offerPeriodDetails
-                    let buttonText = details.map { "Start your free \($0.value) \($0.period)" } ?? "Continue"
+                    let defaultButtonText: String? = purchases.currentOffering?.getMetadataValue(for: "buttonText")
+                    
+                    let buttonText = defaultButtonText ?? details.map { "Start your free \($0.value) \($0.period)" } ?? "Continue"
 
                     let animationDuration = Double(buttonText.count) / 4.0
 
@@ -283,13 +289,15 @@ public struct PaywallFooter: View {
 
     var bottomLinks: some View {
         HStack(spacing: 12) {
-            Button {
-                withAnimation(.spring(duration: 0.3, bounce: 0.3)) { displayAllPlans.toggle() }
-            } label: {
-                Text("All plans")
-                    .underline()
+            if purchases.currentOfferingProducts.count > 1 {
+                Button {
+                    withAnimation(.spring(duration: 0.3, bounce: 0.3)) { displayAllPlans.toggle() }
+                } label: {
+                    Text("All plans")
+                        .underline()
+                }
+                Text("·")
             }
-            Text("·")
 
             Button {
                 Task {
