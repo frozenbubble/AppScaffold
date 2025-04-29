@@ -35,7 +35,8 @@ public struct ListPaywall<HeaderContent: View, HeadlineContent: View, OtherConte
             secondaryBackgroundColor: .secondarySystemGroupedBackground,
             features: features,
             headerContent: { headerContent },
-            headlineContent: { headlineContent }
+            headlineContent: { headlineContent },
+            otherContent: { otherContent }
         )
         .paywallFooter()
     }
@@ -54,5 +55,7 @@ public struct ListPaywall<HeaderContent: View, HeadlineContent: View, OtherConte
         Rectangle().fill(.yellow)
     } headlineContent: {
         Text("This is a headline")
+    } otherContent: {
+        Image(systemName: "carrot")
     }
 }

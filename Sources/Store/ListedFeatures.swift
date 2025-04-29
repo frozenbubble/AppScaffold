@@ -70,13 +70,13 @@ public struct PlanComparisonItem: View {
 }
 
 @available(iOS 17.0, *)
-public struct ListedFeatures<HeaderContent: View, HeadlineContent: View, TrialContent: View>: View {
+public struct ListedFeatures<HeaderContent: View, HeadlineContent: View, OtherContent: View>: View {
     let primaryBackgroundColor: Color
     let secondaryBackgroundColor: Color
     let features: [FeatureEntry]
     let headerContent: HeaderContent
     let headlineContent: HeadlineContent
-    let otherContent: TrialContent
+    let otherContent: OtherContent
 
     let screenWidth = UIScreen.main.bounds.width
     
@@ -86,14 +86,14 @@ public struct ListedFeatures<HeaderContent: View, HeadlineContent: View, TrialCo
         @FeatureEntryBuilder features: () -> [FeatureEntry],
         @ViewBuilder headerContent: () -> HeaderContent,
         @ViewBuilder headlineContent: () -> HeadlineContent = { EmptyView() },
-        @ViewBuilder trialContent: () -> TrialContent = { EmptyView() }
+        @ViewBuilder otherContent: () -> OtherContent = { EmptyView() }
     ) {
         self.primaryBackgroundColor = primaryBackgroundColor
         self.secondaryBackgroundColor = secondaryBackgroundColor
         self.features = features()
         self.headerContent = headerContent()
         self.headlineContent = headlineContent()
-        self.otherContent = trialContent()
+        self.otherContent = otherContent()
     }
     
     public init(
@@ -102,14 +102,14 @@ public struct ListedFeatures<HeaderContent: View, HeadlineContent: View, TrialCo
         features: [FeatureEntry],
         @ViewBuilder headerContent: () -> HeaderContent,
         @ViewBuilder headlineContent: () -> HeadlineContent = { EmptyView() },
-        @ViewBuilder trialContent: () -> TrialContent = { EmptyView() }
+        @ViewBuilder otherContent: () -> OtherContent = { EmptyView() }
     ) {
         self.primaryBackgroundColor = primaryBackgroundColor
         self.secondaryBackgroundColor = secondaryBackgroundColor
         self.features = features
         self.headerContent = headerContent()
         self.headlineContent = headlineContent()
-        self.otherContent = trialContent()
+        self.otherContent = otherContent()
     }
     
     public var body: some View {
@@ -320,7 +320,7 @@ public struct TableComparisonFeatures<HeaderContent: View, HeadlineContent: View
 
 @available(iOS 17.0, *)
 #Preview {
-    TableComparisonFeatures {
+    ListedFeatures {
         FeatureEntry(icon: "trash", name: "Unlimited Dummy 1", description: "Dummy 1 description", basic: .missing, pro: .present)
         
         FeatureEntry(icon: "drop", name: "Amazing Dummy 2", description: "Dummy 2 description", basic: .missing, pro: .present)
@@ -339,6 +339,8 @@ public struct TableComparisonFeatures<HeaderContent: View, HeadlineContent: View
         }
         .font(.title2)
         .fontWeight(.semibold)
+    } otherContent: {
+        Image(systemName: "carrot")
     }
     .accentColor(Color.yellow)
 }
