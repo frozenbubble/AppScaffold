@@ -22,7 +22,6 @@ public protocol PurchaseService {
     var currentOffering: Offering? { get set }
     var subscriptionPlanForToday: String { get }
     var currentOfferingProducts: [StoreProduct] { get }
-    var currentOfferingMetadata: [String: Any] { get }
 
     @MainActor func fetchOfferings() async throws
     @MainActor func updateIsUserSubscribedCached(force: Bool) async
@@ -41,7 +40,6 @@ public class PurchaseViewModel: PurchaseService {
     public var isUserSubscribedCached = true
     public var currentOffering: Offering?
     public var currentOfferingProducts: [StoreProduct] = []
-    public var currentOfferingMetadata: [String : Any] = [:]
 
     @ObservationIgnored
     var statusUpdateTime: Date?
@@ -77,7 +75,6 @@ public class PurchaseViewModel: PurchaseService {
             let offeringsResult = try await Purchases.shared.offerings()
             offerings = offeringsResult.all
             currentOffering = offeringsResult.current
-            currentOfferingMetadata = currentOffering?.metadata ?? [:]
             applog.info("Fetched \(offerings.count) offerings. Current offering: \(currentOffering?.identifier ?? "none")")
         } catch {
             applog.error("Failed to fetch offerings: \(error.localizedDescription)")

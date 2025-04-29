@@ -161,6 +161,7 @@ public struct PaywallFooter: View {
                         Text("Full access for \(product.localizedPriceString)")
                     }
                 }
+                .multilineTextAlignment(.leading)
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
             .padding()
@@ -212,7 +213,7 @@ public struct PaywallFooter: View {
                     LoadingIndicator(animation: .circleRunner, size: .small)
                 } else {
                     let details = selectedProduct?.offerPeriodDetails
-                    let defaultButtonText: String? = purchases.currentOffering?.getMetadataValue(for: "buttonText")
+                    let defaultButtonText: String? = purchases.currentOffering?.getMetadataValue(for: "buttonText", default: nil)
                     
                     let buttonText = defaultButtonText ?? details.map { "Start your free \($0.value) \($0.period)" } ?? "Continue"
 
