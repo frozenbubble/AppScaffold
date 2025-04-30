@@ -83,6 +83,7 @@ public struct PaywallFooter: View {
     @State var displayPrivacyPolicy: Bool = false
     @State var displayUrl: URL?
     @State var alwaysDisplayReassurance: Bool = false
+    @State var enableButtonTextShimmer: Bool = true
 
     @State private var isInfoAlertPresented: Bool = false
     @State private var infoAlertTitle: String = ""
@@ -168,6 +169,7 @@ public struct PaywallFooter: View {
         if let reassurance { messages.reassurance = reassurance }
 
         alwaysDisplayReassurance = currentOffering.getMetadataValue(for: "alwaysDisplayReassurance", default: false)
+        enableButtonTextShimmer = currentOffering.getMetadataValue(for: "enableButtonTextShimmer", default: true)
     }
 
     func productSelector(_ product: StoreProduct) -> some View {
@@ -256,13 +258,14 @@ public struct PaywallFooter: View {
                     let animationDuration = Double(buttonText.count) / 4.0
 
                     Text(buttonText)
-                        .fontWeight(.medium)
+                        .fontWeight(.semibold)
                         .shimmering(
+                            active: enableButtonTextShimmer,
                             animation: .easeInOut(duration: animationDuration)
                                 .delay(2.5)
                                 .repeatForever(autoreverses: false),
                             gradient: Gradient(colors: [
-                                .white.opacity(0.8), .white, .white.opacity(0.8)])
+                                .white.opacity(0.85), .white, .white.opacity(0.85)])
                         )
                 }
             }
