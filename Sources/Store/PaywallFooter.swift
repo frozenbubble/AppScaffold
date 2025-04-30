@@ -82,6 +82,7 @@ public struct PaywallFooter: View {
     @State var displayAllPlans: Bool = false
     @State var displayPrivacyPolicy: Bool = false
     @State var displayUrl: URL?
+    @State var alwaysDisplayReassurance: Bool = false
 
     @State private var isInfoAlertPresented: Bool = false
     @State private var infoAlertTitle: String = ""
@@ -126,7 +127,7 @@ public struct PaywallFooter: View {
         .task {
             do {
                 try await purchases.fetchCurrentOfferingProducts()
-                updateMessages()
+                useMetadata()
                 highestPriceProduct = purchases.currentOfferingProducts.max(by: { $0.price > $1.price })
                 bestValueProduct = getBestValueProduct(from: purchases.currentOfferingProducts)
                 selectedProduct = bestValueProduct
@@ -149,7 +150,7 @@ public struct PaywallFooter: View {
         }
     }
 
-    func updateMessages() {
+    func useMetadata() {
         guard let currentOffering = purchases.currentOffering  else {
             return
         }
@@ -165,6 +166,8 @@ public struct PaywallFooter: View {
         if let priceInfoNormal { messages.priceInfoNormal = priceInfoNormal }
         if let priceInfoTrial { messages.priceInfoTrial = priceInfoTrial }
         if let reassurance { messages.reassurance = reassurance }
+        
+        alwaysDisplayReassurance = currentOffering.getMetadataValue(for: "alwaysDisplayReassurance", default: false)
     }
 
     func productSelector(_ product: StoreProduct) -> some View {
@@ -304,7 +307,7 @@ public struct PaywallFooter: View {
 
     var reassurance: some View {
         ZStack {
-            if selectedProduct?.offerPeriod != nil {
+            if alwaysDisplayReassurance || selectedProduct?.offerPeriod != nil {
                 HStack(spacing: 4) {
                     Image(systemName: "checkmark.shield")
                         .foregroundStyle(.green)
