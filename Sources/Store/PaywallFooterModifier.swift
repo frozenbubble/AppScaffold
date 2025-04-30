@@ -9,12 +9,9 @@ import AppScaffoldUI
 
 @available(iOS 17.0, *)
 public struct PaywallFooterModifier: ViewModifier {
-    let messages: PaywallMessages
     let actions: PaywallActions
 
-    public init(messages: PaywallMessages = PaywallMessages(),
-                actions: PaywallActions = PaywallActions()) {
-        self.messages = messages
+    public init(actions: PaywallActions = PaywallActions()) {
         self.actions = actions
     }
 
@@ -23,7 +20,7 @@ public struct PaywallFooterModifier: ViewModifier {
             content
                 .frame(maxHeight: .infinity)
 
-            PaywallFooter(messages: messages, actions: actions)
+            PaywallFooter(actions: actions)
                 .background {
                     VisualEffectBlurView(blurStyle: .systemMaterial)
                         .clipShape(RoundedRectangle(cornerRadius: 16))
@@ -41,10 +38,9 @@ public extension View {
     ///   - actions: Actions to perform on purchase or restore
     /// - Returns: View with paywall footer attached
     func paywallFooter(
-        messages: PaywallMessages = PaywallMessages(),
         actions: PaywallActions = PaywallActions()
     ) -> some View {
-        self.modifier(PaywallFooterModifier(messages: messages, actions: actions))
+        self.modifier(PaywallFooterModifier(actions: actions))
     }
 }
 

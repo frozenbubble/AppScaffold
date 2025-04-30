@@ -8,7 +8,7 @@ import AppScaffoldCore
 import AppScaffoldPurchases
 import AppScaffoldUI
 
-public enum PaywallVariable: String {
+public enum PaywallVariable: String, CaseIterable {
     case pricePerPeriod = "{{price_per_period}}"
     case pricePerMonth = "{{price_per_month}}"
     case offerPeriod = "{{offer_period}}"
@@ -24,13 +24,27 @@ public struct PaywallLinks {
     }
 }
 
-public struct PaywallMessages {
-    let callToActionNormal: String
-    let callToActionTrial: String
+@available(iOS 17.0, *)
+@Observable
+class PaywallMessages {
+    var callToActionNormal: String
+    var callToActionTrial: String
+    var reassurance: String
+    var priceInfoNormal: String
+    var priceInfoTrial: String
 
-    public init(callToActionNormal: String = "Continue", callToActionTrial: String = "Start your free trial") {
+    public init(
+        callToActionNormal: String = "Continue",
+        callToActionTrial: String = "Start your free {{offer_period}}",
+        reassurance: String = "No payment now.",
+        priceInfoNormal: String = "Full access for just {{price_per_period}}",
+        priceInfoTrial: String = "First {{offer_period}} free, then just {{price_per_period}}"
+    ) {
         self.callToActionNormal = callToActionNormal
         self.callToActionTrial = callToActionTrial
+        self.reassurance = reassurance
+        self.priceInfoNormal = priceInfoNormal
+        self.priceInfoTrial = priceInfoTrial
     }
 }
 
@@ -55,12 +69,12 @@ public struct PaywallActions {
 
 @available(iOS 17.0, *)
 public struct PaywallFooter: View {
-    let messages: PaywallMessages
     let actions: PaywallActions
     let links: PaywallLinks
 
     @AppService var purchases: PurchaseService
 
+    @State var messages = PaywallMessages()
     @State var selectedProduct: StoreProduct?
     @State var highestPriceProduct: StoreProduct?
     @State var bestValueProduct: StoreProduct?
@@ -74,8 +88,7 @@ public struct PaywallFooter: View {
     @State private var infoAlertMessage: String = ""
     @State private var postAlertAction: (() -> Void)? = nil
 
-    public init(messages: PaywallMessages, actions: PaywallActions, links: PaywallLinks = .init()) {
-        self.messages = messages
+    public init(actions: PaywallActions, links: PaywallLinks = .init()) {
         self.actions = actions
         self.links = links
     }
@@ -113,6 +126,7 @@ public struct PaywallFooter: View {
         .task {
             do {
                 try await purchases.fetchCurrentOfferingProducts()
+                updateMessages()
                 highestPriceProduct = purchases.currentOfferingProducts.max(by: { $0.price > $1.price })
                 bestValueProduct = getBestValueProduct(from: purchases.currentOfferingProducts)
                 selectedProduct = bestValueProduct
@@ -133,6 +147,24 @@ public struct PaywallFooter: View {
         return products.min { (product1, product2) -> Bool in
             return product1.monthlyPrice < product2.monthlyPrice
         }
+    }
+
+    func updateMessages() {
+        guard let currentOffering = purchases.currentOffering  else {
+            return
+        }
+
+        let callToActionNormal: String? = currentOffering.getMetadataValue(for: "callToActionNormal", default: nil)
+        let callToActionTrial: String? = currentOffering.getMetadataValue(for: "callToActionTrial", default: nil)
+        let priceInfoNormal: String? = currentOffering.getMetadataValue(for: "priceInfoNormal", default: nil)
+        let priceInfoTrial: String? = currentOffering.getMetadataValue(for: "priceInfoTrial", default: nil)
+        let reassurance: String? = currentOffering.getMetadataValue(for: "reassurance", default: nil)
+
+        if let callToActionNormal { messages.callToActionNormal = callToActionNormal }
+        if let callToActionTrial { messages.callToActionTrial = callToActionTrial }
+        if let priceInfoNormal { messages.priceInfoNormal = priceInfoNormal }
+        if let priceInfoTrial { messages.priceInfoTrial = priceInfoTrial }
+        if let reassurance { messages.reassurance = reassurance }
     }
 
     func productSelector(_ product: StoreProduct) -> some View {
@@ -212,10 +244,11 @@ public struct PaywallFooter: View {
                 if purchases.inProgress {
                     LoadingIndicator(animation: .circleRunner, size: .small)
                 } else {
-                    let details = selectedProduct?.offerPeriodDetails
-                    let defaultButtonText: String? = purchases.currentOffering?.getMetadataValue(for: "buttonText", default: nil)
-                    
-                    let buttonText = defaultButtonText ?? details.map { "Start your free \($0.value) \($0.period)" } ?? "Continue"
+                    let buttonText = selectedProduct.map { product in
+                        product.offerPeriodDetails != nil
+                            ? messages.callToActionTrial.resolvePaywallVariables(with: product)
+                            : messages.callToActionNormal.resolvePaywallVariables(with: product)
+                    } ?? messages.callToActionNormal
 
                     let animationDuration = Double(buttonText.count) / 4.0
 
@@ -252,18 +285,17 @@ public struct PaywallFooter: View {
             }
             .clipShape(RoundedRectangle(cornerRadius: 12))
             .shimmering(active: purchases.inProgress)
-
         }
-//        .font(.headline)
         .foregroundStyle(.primary)
     }
 
     var priceInfo: some View {
         Group {
-            if let (period, _, value) = selectedProduct?.offerPeriodDetails, let product = selectedProduct {
-                Text("First \(value) \(period) free, then just \(product.pricePerPeriodString)")
-            } else if let product = selectedProduct {
-                Text("Full access for just \(product.pricePerPeriodString)")
+            if let product = selectedProduct {
+                let text = product.offerPeriodDetails != nil
+                    ? messages.priceInfoTrial
+                    : messages.priceInfoNormal
+                Text(text.resolvePaywallVariables(with: product))
             } else {
                 Text("Fetching Price info")
             }
@@ -272,11 +304,11 @@ public struct PaywallFooter: View {
 
     var reassurance: some View {
         ZStack {
-            if (selectedProduct?.offerPeriod) != nil {
+            if selectedProduct?.offerPeriod != nil {
                 HStack(spacing: 4) {
                     Image(systemName: "checkmark.shield")
                         .foregroundStyle(.green)
-                    Text("No payment now.")
+                    Text(messages.reassurance)
                 }
                 .font(.subheadline)
                 .transition(.blurReplace)
@@ -393,5 +425,5 @@ extension URL: @retroactive Identifiable {
     return VStack {
         Spacer()
     }
-    .paywallFooter(messages: PaywallMessages(), actions: PaywallActions())
+    .paywallFooter(actions: PaywallActions())
 }

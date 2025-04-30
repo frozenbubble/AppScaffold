@@ -35,6 +35,7 @@ public protocol PurchaseService {
 @available(iOS 17.0, *)
 @Observable
 public class PurchaseViewModel: PurchaseService {
+    //TODO: add purchaseInProgress, fetchingInProgress
     public var inProgress = false
     public var offerings = [String: Offering]()
     public var isUserSubscribedCached = true

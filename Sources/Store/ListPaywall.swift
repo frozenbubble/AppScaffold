@@ -7,7 +7,6 @@ import AppScaffoldUI
 @available(iOS 17.0, *)
 public struct ListPaywall<HeaderContent: View, HeadlineContent: View, OtherContent: View>: View {
     let features: [FeatureEntry]
-    let messages: PaywallMessages
     let actions: PaywallActions
     let headerContent: HeaderContent
     let headlineContent: HeadlineContent
@@ -15,7 +14,6 @@ public struct ListPaywall<HeaderContent: View, HeadlineContent: View, OtherConte
     
     public init(
         features: [FeatureEntry] = [],
-        messages: PaywallMessages = PaywallMessages(),
         actions: PaywallActions = PaywallActions(),
         @ViewBuilder headerContent: () -> HeaderContent,
         @ViewBuilder headlineContent: () -> HeadlineContent = { EmptyView() },
@@ -25,7 +23,6 @@ public struct ListPaywall<HeaderContent: View, HeadlineContent: View, OtherConte
         self.headerContent = headerContent()
         self.headlineContent = headlineContent()
         self.actions = actions
-        self.messages = messages
         self.otherContent = otherContent()
     }
     

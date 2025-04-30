@@ -94,6 +94,10 @@ public extension StoreProduct {
     }
     
     var pricePerPeriodString: String {
-        "\(localizedPriceString)/\(subscriptionPeriod?.unit.abbreviatedCode ?? "?")"
+        if let subscriptionPeriod {
+            return "\(localizedPriceString)/\(subscriptionPeriod.unit.abbreviatedCode)"
+        } else {
+            return "\(localizedPriceString)"
+        }
     }
 }
