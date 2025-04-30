@@ -1,4 +1,6 @@
 import Foundation
+import SwiftUI
+
 import RevenueCat
 import Resolver
 
@@ -13,14 +15,13 @@ public enum PurchaseError: Error {
     case noCurrentOffering
 }
 
-//TODO: make sure purchase and restore implementations are not dependent on single entitlement name
 @available(iOS 17.0, *)
 public protocol PurchaseService {
-    var inProgress: Bool { get set }
+    var fetchingInProgress: Bool { get set }
+    var purchaseInProgress: Bool { get set }
     var offerings: [String: Offering] { get set }
     var isUserSubscribedCached: Bool { get set }
     var currentOffering: Offering? { get set }
-    var subscriptionPlanForToday: String { get }
     var currentOfferingProducts: [StoreProduct] { get }
 
     @MainActor func fetchOfferings() async throws
@@ -35,8 +36,9 @@ public protocol PurchaseService {
 @available(iOS 17.0, *)
 @Observable
 public class PurchaseViewModel: PurchaseService {
-    //TODO: add purchaseInProgress, fetchingInProgress
-    public var inProgress = false
+    public var fetchingInProgress = false
+    public var purchaseInProgress = false
+
     public var offerings = [String: Offering]()
     public var isUserSubscribedCached = true
     public var currentOffering: Offering?
@@ -45,37 +47,48 @@ public class PurchaseViewModel: PurchaseService {
     @ObservationIgnored
     var statusUpdateTime: Date?
     @ObservationIgnored
-    private var defaultOfferingName: String?
-    @ObservationIgnored
-    private var promoOfferingName: String?
-    @ObservationIgnored
-    private var promoPredicate: () -> Bool
-    @ObservationIgnored
     private var entitlementName: String
 
-    //TODO revise
-    public init(defaultOfferingName: String? = nil, promoOfferingName: String? = nil, entitlement: String = "premium", promoPredicate: @escaping () -> Bool = { false }) {
-        self.defaultOfferingName = defaultOfferingName
-        self.promoOfferingName = promoOfferingName
-        self.promoPredicate = promoPredicate
+    @ObservationIgnored
+    @OptionalInjected var offeringSelector: OfferingSelector?
+
+    public init(entitlement: String = "premium") {
         self.entitlementName = entitlement
         applog.debug("PurchaseViewModel initialized with entitlement: \(entitlement)")
-    }
-
-    public var subscriptionPlanForToday: String {
-        return "" //AppScaffold.defaultOffering
     }
 
     @MainActor
     public func fetchOfferings() async throws {
         applog.debug("Fetching RevenueCat offerings")
-        defer { inProgress = false }
-        inProgress = true
+        withAnimation { fetchingInProgress = true }
+        defer { withAnimation { fetchingInProgress = false } }
+
+        var selectedOfferingName: String?
+        if let selector = offeringSelector {
+            do {
+                selectedOfferingName = try await selector.selectOffering()
+                if let name = selectedOfferingName {
+                    applog.info("Offering selector provided offering name: \(name)")
+                } else {
+                    applog.info("Offering selector did not provide an offering name")
+                }
+            } catch {
+                applog.error("Offering selector failed: \(error.localizedDescription)")
+            }
+        } else {
+            applog.info("No offering selector available")
+        }
 
         do {
             let offeringsResult = try await Purchases.shared.offerings()
             offerings = offeringsResult.all
-            currentOffering = offeringsResult.current
+
+            if let name = selectedOfferingName, let selectedOffering = offerings[name] {
+                currentOffering = selectedOffering
+            } else {
+                currentOffering = offeringsResult.current
+            }
+
             applog.info("Fetched \(offerings.count) offerings. Current offering: \(currentOffering?.identifier ?? "none")")
         } catch {
             applog.error("Failed to fetch offerings: \(error.localizedDescription)")
@@ -150,14 +163,14 @@ public class PurchaseViewModel: PurchaseService {
     @MainActor
     public func fetchCurrentOfferingProducts() async throws {
         applog.debug("Fetching products for current offering")
-        defer { inProgress = false }
-        inProgress = true
+        withAnimation { fetchingInProgress = true }
+        defer { withAnimation { fetchingInProgress = false } }
 
         if currentOffering == nil {
             applog.debug("No current offering available, fetching offerings")
             try await fetchOfferings()
         }
-        
+
         guard let offering = currentOffering else {
             applog.error("No current offering available")
             throw PurchaseError.noCurrentOffering
@@ -171,8 +184,13 @@ public class PurchaseViewModel: PurchaseService {
     @MainActor
     public func purchase(product: StoreProduct) async throws(PurchaseError) -> CustomerInfo {
         applog.info("Attempting to purchase product: \(product.productIdentifier)")
-        defer { inProgress = false }
-        inProgress = true
+        withAnimation { purchaseInProgress = true }
+        defer {
+            withAnimation { purchaseInProgress = false }
+            Task {
+                await updateIsUserSubscribedCached(force: true)
+            }
+        }
 
         do {
             let result = try await Purchases.shared.purchase(product: product)
@@ -180,7 +198,6 @@ public class PurchaseViewModel: PurchaseService {
 
             if let premiumEntitlement = customerInfo.entitlements[entitlementName], premiumEntitlement.isActive {
                 applog.info("Purchase successful for product: \(product.productIdentifier)")
-                await updateIsUserSubscribedCached(force: true)
                 return customerInfo
             } else {
                 applog.error( "Purchase completed but entitlement not found")
@@ -195,15 +212,19 @@ public class PurchaseViewModel: PurchaseService {
     @MainActor
     public func restorePurchases() async throws(PurchaseError) -> CustomerInfo {
         applog.info("Attempting to restore purchases")
-        defer { inProgress = false }
-        inProgress = true
+        withAnimation { purchaseInProgress = true }
+        defer {
+            withAnimation { purchaseInProgress = false }
+            Task {
+                await updateIsUserSubscribedCached(force: true)
+            }
+        }
 
         do {
             let customerInfo = try await Purchases.shared.restorePurchases()
 
             if let premiumEntitlement = customerInfo.entitlements[entitlementName], premiumEntitlement.isActive {
                 applog.info("Successfully restored purchase for entitlement: \(entitlementName)")
-                await updateIsUserSubscribedCached(force: true)
                 return customerInfo
             } else {
                 applog.error("No purchases found to restore")
@@ -215,7 +236,6 @@ public class PurchaseViewModel: PurchaseService {
         }
     }
 }
-
 
 
 public extension AppScaffold {
@@ -237,7 +257,6 @@ public extension AppScaffold {
             Purchases.configure(with: configBuilder.build())
         }
 
-//        Purchases.configure(withAPIKey: revenueCatKey)
         Resolver.register { PurchaseViewModel(entitlement: premiumEntitlement) as PurchaseService }.scope(.shared)
         applog.info("RevenueCat purchases service configured and registered")
     }

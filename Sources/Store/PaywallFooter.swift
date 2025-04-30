@@ -115,11 +115,11 @@ public struct PaywallFooter: View {
             bottomLinks.padding(.top)
         }
         .redactedEffect(active: Binding(
-            get: { purchases.inProgress && purchases.currentOfferingProducts.isEmpty },
+            get: { purchases.fetchingInProgress && purchases.currentOfferingProducts.isEmpty },
             set: {_ in}
         ))
         .padding()
-        .disabled(purchases.inProgress)
+        .disabled(purchases.purchaseInProgress || purchases.fetchingInProgress)
         .infoAlert(infoAlertTitle, message: infoAlertMessage, isPresented: $isInfoAlertPresented) {
             postAlertAction?()
             postAlertAction = nil
@@ -166,7 +166,7 @@ public struct PaywallFooter: View {
         if let priceInfoNormal { messages.priceInfoNormal = priceInfoNormal }
         if let priceInfoTrial { messages.priceInfoTrial = priceInfoTrial }
         if let reassurance { messages.reassurance = reassurance }
-        
+
         alwaysDisplayReassurance = currentOffering.getMetadataValue(for: "alwaysDisplayReassurance", default: false)
     }
 
@@ -244,7 +244,7 @@ public struct PaywallFooter: View {
             }
         } label: {
             ZStack {
-                if purchases.inProgress {
+                if purchases.purchaseInProgress {
                     LoadingIndicator(animation: .circleRunner, size: .small)
                 } else {
                     let buttonText = selectedProduct.map { product in
@@ -272,7 +272,7 @@ public struct PaywallFooter: View {
             .frame(maxWidth: .infinity)
             .background {
                 ZStack {
-                    if purchases.inProgress || purchases.currentOfferingProducts.isEmpty {
+                    if purchases.purchaseInProgress || purchases.currentOfferingProducts.isEmpty {
                         Color.secondary
                     } else {
                         LinearGradient(
@@ -287,7 +287,7 @@ public struct PaywallFooter: View {
                 }
             }
             .clipShape(RoundedRectangle(cornerRadius: 12))
-            .shimmering(active: purchases.inProgress)
+            .shimmering(active: purchases.purchaseInProgress)
         }
         .foregroundStyle(.primary)
     }
@@ -315,7 +315,7 @@ public struct PaywallFooter: View {
                 }
                 .font(.subheadline)
                 .transition(.blurReplace)
-            } else if purchases.inProgress {
+            } else if purchases.fetchingInProgress {
                 Text("Loading...")
                     .font(.subheadline)
                     .transition(.blurReplace)

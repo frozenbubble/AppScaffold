@@ -9,28 +9,28 @@ import AppScaffoldCore
 public class MockPurchaseViewModel: PurchaseService {
     public var currentOfferingProducts: [StoreProduct] = []
     public var currentOfferingMetadata: [String : Any] = [:]
-    
+
     public func purchase(product: RevenueCat.StoreProduct) async throws(PurchaseError) -> CustomerInfo {
-        withAnimation { inProgress = true }
-        defer { withAnimation { inProgress = false } }
+        withAnimation { purchaseInProgress = true }
+        defer { withAnimation { purchaseInProgress = false } }
         try? await Task.sleep(for: .seconds(1))
         return try! await Purchases.shared.customerInfo()
     }
-    
+
     public func restorePurchases() async throws(PurchaseError) -> CustomerInfo {
-        withAnimation { inProgress = true }
-        defer { withAnimation { inProgress = false } }
+        withAnimation { purchaseInProgress = true }
+        defer { withAnimation { purchaseInProgress = false } }
         try? await Task.sleep(for: .seconds(1))
         return try! await Purchases.shared.customerInfo()
     }
-    
+
     public var currentOffering: RevenueCat.Offering? = nil
 
     public func fetchCurrentOfferingProducts() async throws {
-        withAnimation { inProgress = true }
-        defer { withAnimation { inProgress = false } }
+        withAnimation { fetchingInProgress = true }
+        defer { withAnimation { fetchingInProgress = false } }
         try? await Task.sleep(for: .seconds(1.5))
-        
+
         let weekly = createTestProduct(
             identifier: "mock_product_1_week",
             price: 3.99,
@@ -39,7 +39,7 @@ public class MockPurchaseViewModel: PurchaseService {
             localizedTitle: "Weekly",
             subscriptionPeriod: SubscriptionPeriod(value: 1, unit: .week)
         )
-        
+
         let monthly = createTestProduct(
             identifier: "mock_product_1_month",
             price: 4.99,
@@ -48,12 +48,13 @@ public class MockPurchaseViewModel: PurchaseService {
             localizedTitle: "Monthly",
             subscriptionPeriod: SubscriptionPeriod(value: 1, unit: .month)
         )
-        
+
         currentOfferingProducts = [weekly, monthly]
 //        currentOfferingProducts = []
     }
 
-    public var inProgress: Bool
+    public var fetchingInProgress: Bool
+    public var purchaseInProgress: Bool
     public var displayError: Bool
     public var errorMessage: String
     public var offerings: [String: Offering]
@@ -62,14 +63,16 @@ public class MockPurchaseViewModel: PurchaseService {
 //    public var products: [RevenueCat.StoreProduct] = []
 
     public init(
-        inProgress: Bool = false,
+        fetchingInProgress: Bool = false,
+        purchaseInProgress: Bool = false,
         displayError: Bool = false,
         errorMessage: String = "",
         offerings: [String: Offering] = [:],
         isUserSubscribedCached: Bool = false,
         subscriptionPlanForToday: String = "DefaultPlan"
     ) {
-        self.inProgress = inProgress
+        self.fetchingInProgress = fetchingInProgress
+        self.purchaseInProgress = purchaseInProgress
         self.displayError = displayError
         self.errorMessage = errorMessage
         self.offerings = offerings
@@ -79,10 +82,10 @@ public class MockPurchaseViewModel: PurchaseService {
 
     @MainActor public func fetchOfferings() async {
         applog.debug("Fetching offerings")
-        inProgress = true
+        fetchingInProgress = true
         defer {
             applog.debug("Finished fetching offerings")
-            inProgress = false
+            fetchingInProgress = false
         }
 
         // Mock behavior
@@ -133,7 +136,7 @@ fileprivate func createTestProduct(
         introductoryDiscount: nil, // Add mock discounts if needed
         discounts: [] // Add mock discounts if needed
     )
-    
+
     return testProduct.toStoreProduct()
 }
 

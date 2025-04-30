@@ -44,7 +44,7 @@ public struct PaywallScaffold<Content: View>: View {
                         purchaseFailure: handlePurchaseFailure,
                         restoreFailure: handleRestoreFailure
                     )
-                } else if vm.inProgress {
+                } else if vm.purchaseInProgress || vm.fetchingInProgress {
                     ZStack {
                         paywallContent
                         Rectangle()
