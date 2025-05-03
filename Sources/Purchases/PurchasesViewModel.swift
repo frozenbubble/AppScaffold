@@ -179,6 +179,7 @@ public class PurchaseViewModel: PurchaseService {
         let products = offering.availablePackages.map { $0.storeProduct }
         applog.info("Fetched \(products.count) products from offering \(offering.identifier)")
         currentOfferingProducts = products
+        try? await Task.sleep(for: .seconds(0.2))
     }
 
     @MainActor

@@ -113,12 +113,13 @@ public struct PaywallFooter: View {
 
             reassurance.padding(.top, 4)
 
-            bottomLinks.padding(.top)
+            bottomLinks
+                .padding(.top)
+                .redactedEffect(active: Binding(
+                    get: { purchases.fetchingInProgress && purchases.currentOfferingProducts.isEmpty },
+                    set: {_ in}
+                ))
         }
-        .redactedEffect(active: Binding(
-            get: { purchases.fetchingInProgress && purchases.currentOfferingProducts.isEmpty },
-            set: {_ in}
-        ))
         .padding()
         .disabled(purchases.purchaseInProgress || purchases.fetchingInProgress)
         .infoAlert(infoAlertTitle, message: infoAlertMessage, isPresented: $isInfoAlertPresented) {
@@ -174,9 +175,9 @@ public struct PaywallFooter: View {
 
     func productSelector(_ product: StoreProduct) -> some View {
         Button {
-            withAnimation {
+//            withAnimation {
                 selectedProduct = product
-            }
+//            }
         } label: {
             HStack(spacing: 12) {
                 if product == selectedProduct {
@@ -230,69 +231,82 @@ public struct PaywallFooter: View {
     }
 
     var purchaseButton: some View {
-        Button {
-            Task {
-                guard let product = selectedProduct else {
-                    return
-                }
+        ZStack {
+            if purchases.fetchingInProgress {
+                Text("Loading...")
+                    .fontWeight(.medium)
+                    .foregroundStyle(.white)
+                    .padding(12)
+                    .frame(maxWidth: .infinity)
+                    .background(.secondary)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .redactedEffect(active: .constant(true))
+            } else {
+                Button {
+                    Task {
+                        guard let product = selectedProduct else {
+                            return
+                        }
 
-                do throws(PurchaseError) {
-                    let customerInfo = try await purchases.purchase(product: product)
-                    purchaseSuccess(customerInfo)
-                } catch {
-                    applog.error(error)
-                    purchaseFailure(error: error)
-                }
-            }
-        } label: {
-            ZStack {
-                if purchases.purchaseInProgress {
-                    LoadingIndicator(animation: .circleRunner, size: .small)
-                } else {
-                    let buttonText = selectedProduct.map { product in
-                        product.offerPeriodDetails != nil
-                            ? messages.callToActionTrial.resolvePaywallVariables(with: product)
-                            : messages.callToActionNormal.resolvePaywallVariables(with: product)
-                    } ?? messages.callToActionNormal
-
-                    let animationDuration = Double(buttonText.count) / 4.0
-
-                    Text(buttonText)
-                        .fontWeight(.semibold)
-                        .shimmering(
-                            active: enableButtonTextShimmer,
-                            animation: .easeInOut(duration: animationDuration)
-                                .delay(2.5)
-                                .repeatForever(autoreverses: false),
-                            gradient: Gradient(colors: [
-                                .white.opacity(0.85), .white, .white.opacity(0.85)])
-                        )
-                }
-            }
-            .fontWeight(.medium)
-            .foregroundStyle(.white)
-            .padding(12)
-            .frame(maxWidth: .infinity)
-            .background {
-                ZStack {
-                    if purchases.purchaseInProgress || purchases.currentOfferingProducts.isEmpty {
-                        Color.secondary
-                    } else {
-                        LinearGradient(
-                            colors: [
-                                AppScaffoldUI.colors.accent.darken(by: 0.05),
-                                AppScaffoldUI.colors.accent
-                            ],
-                            startPoint: .bottom,
-                            endPoint: .top
-                        )
+                        do throws(PurchaseError) {
+                            let customerInfo = try await purchases.purchase(product: product)
+                            purchaseSuccess(customerInfo)
+                        } catch {
+                            applog.error(error)
+                            purchaseFailure(error: error)
+                        }
                     }
+                } label: {
+                    ZStack {
+                        if purchases.purchaseInProgress {
+                            LoadingIndicator(animation: .circleRunner, size: .small)
+                        } else {
+                            let buttonText = selectedProduct.map { product in
+                                product.offerPeriodDetails != nil
+                                    ? messages.callToActionTrial.resolvePaywallVariables(with: product)
+                                    : messages.callToActionNormal.resolvePaywallVariables(with: product)
+                            } ?? messages.callToActionNormal
+
+                            let animationDuration = Double(buttonText.count) / 4.0
+
+                            Text(buttonText)
+                                .fontWeight(.semibold)
+                                .transition(.opacity)
+                                .shimmering(
+                                    active: enableButtonTextShimmer,
+                                    animation: .easeInOut(duration: animationDuration)
+                                        .delay(2.5)
+                                        .repeatForever(autoreverses: false),
+                                    gradient: Gradient(colors: [
+                                        .white.opacity(0.85), .white, .white.opacity(0.85)])
+                                )
+                        }
+                    }
+                    .fontWeight(.medium)
+                    .foregroundStyle(.white)
+                    .padding(12)
+                    .frame(maxWidth: .infinity)
+                    .background {
+                        ZStack {
+                            if purchases.purchaseInProgress || purchases.currentOfferingProducts.isEmpty {
+                                Color.secondary.opacity(0.5)
+                            } else {
+                                LinearGradient(
+                                    colors: [
+                                        AppScaffoldUI.colors.accent.darken(by: 0.05),
+                                        AppScaffoldUI.colors.accent
+                                    ],
+                                    startPoint: .bottom,
+                                    endPoint: .top
+                                )
+                            }
+                        }
+                    }
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
                 }
+                .foregroundStyle(.primary)
             }
-            .clipShape(RoundedRectangle(cornerRadius: 12))
-            .shimmering(active: purchases.purchaseInProgress)
         }
-        .foregroundStyle(.primary)
     }
 
     var priceInfo: some View {
@@ -304,6 +318,7 @@ public struct PaywallFooter: View {
                 Text(text.resolvePaywallVariables(with: product))
             } else {
                 Text("Fetching Price info")
+                    .redactedEffect(active: .constant(true))
             }
         }
     }
@@ -321,6 +336,7 @@ public struct PaywallFooter: View {
             } else if purchases.fetchingInProgress {
                 Text("Loading...")
                     .font(.subheadline)
+                    .redactedEffect(active: .constant(true))
                     .transition(.blurReplace)
             }
         }
@@ -397,7 +413,7 @@ public struct PaywallFooter: View {
     func purchaseFailure(error: PurchaseError) {
         isInfoAlertPresented = true
         infoAlertTitle = "Purchase failed"
-        infoAlertMessage = "You're all set."
+        infoAlertMessage = "An error happened while processing your purchase."
         applog.error("Purchase failed: \(error)")
         postAlertAction = { actions.purchaseFailure(error) }
     }
