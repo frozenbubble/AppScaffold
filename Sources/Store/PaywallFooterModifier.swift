@@ -26,6 +26,8 @@ public struct PaywallFooterModifier: ViewModifier {
                         .clipShape(RoundedRectangle(cornerRadius: 16))
                         .ignoresSafeArea(edges: .bottom)
                 }
+                .compositingGroup()
+                .shadow(color: .black.opacity(0.15), radius: 3)
         }
     }
 }

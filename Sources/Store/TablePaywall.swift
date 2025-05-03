@@ -6,20 +6,33 @@ import AppScaffoldPurchases
 @available(iOS 17.0, *)
 public struct TablePaywall<HeaderContent: View, HeadlineContent: View>: View {
     let features: [FeatureEntry]
+    let actions: PaywallActions
     let headerContent: HeaderContent
     let headlineContent: HeadlineContent
     
+    @AppService var purchases: PurchaseService
+    
     public init(
         features: [FeatureEntry] = [],
+        actions: PaywallActions = PaywallActions(),
         @ViewBuilder headerContent: () -> HeaderContent,
         @ViewBuilder headlineContent: () -> HeadlineContent = { EmptyView() }
     ) {
         self.features = features
+        self.actions = actions
         self.headerContent = headerContent()
         self.headlineContent = headlineContent()
     }
     
     public var body: some View {
+        if purchases.isUserSubscribedCached {
+            content.paidUserFooter()
+        } else {
+            content.paywallFooter(actions: actions)
+        }
+    }
+    
+    public var content: some View {
         TableComparisonFeatures(
             primaryBackgroundColor: .secondarySystemGroupedBackground,
             secondaryBackgroundColor: .secondarySystemGroupedBackground,
@@ -27,7 +40,6 @@ public struct TablePaywall<HeaderContent: View, HeadlineContent: View>: View {
             headerContent: { headerContent },
             headlineContent: { headlineContent }
         )
-        .paywallFooter()
     }
 }
 

@@ -2,6 +2,7 @@ import SwiftUI
 
 import AppScaffoldCore
 import AppScaffoldPurchases
+import AppScaffoldPurchases
 import AppScaffoldUI
 
 @available(iOS 17.0, *)
@@ -11,6 +12,8 @@ public struct ListPaywall<HeaderContent: View, HeadlineContent: View, OtherConte
     let headerContent: HeaderContent
     let headlineContent: HeadlineContent
     let otherContent: OtherContent
+    
+    @AppService var purchases: PurchaseService
     
     public init(
         features: [FeatureEntry] = [],
@@ -27,6 +30,14 @@ public struct ListPaywall<HeaderContent: View, HeadlineContent: View, OtherConte
     }
     
     public var body: some View {
+        if purchases.isUserSubscribedCached {
+            content.paidUserFooter()
+        } else {
+            content.paywallFooter(actions: actions)
+        }
+    }
+    
+    var content: some View {
         ListedFeatures(
             primaryBackgroundColor: .secondarySystemGroupedBackground,
             secondaryBackgroundColor: .secondarySystemGroupedBackground,
@@ -35,7 +46,6 @@ public struct ListPaywall<HeaderContent: View, HeadlineContent: View, OtherConte
             headlineContent: { headlineContent },
             otherContent: { otherContent }
         )
-        .paywallFooter()
     }
 }
 
