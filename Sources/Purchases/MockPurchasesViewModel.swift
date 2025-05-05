@@ -7,6 +7,7 @@ import AppScaffoldCore
 @available(iOS 17.0, *)
 @Observable
 public class MockPurchaseViewModel: PurchaseService {
+    public var checkingStatus: Bool = false
     public var currentOfferingProducts: [StoreProduct] = []
     public var currentOfferingMetadata: [String : Any] = [:]
 
@@ -94,8 +95,8 @@ public class MockPurchaseViewModel: PurchaseService {
     }
 
     @MainActor public func updateIsUserSubscribedCached(force: Bool = false) async {
-        defer { fetchingInProgress = true }
-        fetchingInProgress = true
+        defer { checkingStatus = false }
+        checkingStatus = true
         
         try? await Task.sleep(for: .seconds(1))
         

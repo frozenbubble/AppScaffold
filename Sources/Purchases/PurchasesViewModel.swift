@@ -19,6 +19,8 @@ public enum PurchaseError: Error {
 public protocol PurchaseService {
     var fetchingInProgress: Bool { get set }
     var purchaseInProgress: Bool { get set }
+    var checkingStatus: Bool { get set }
+    
     var offerings: [String: Offering] { get set }
     var isUserSubscribedCached: Bool { get set }
     var currentOffering: Offering? { get set }
@@ -38,6 +40,7 @@ public protocol PurchaseService {
 public class PurchaseViewModel: PurchaseService {
     public var fetchingInProgress = false
     public var purchaseInProgress = false
+    public var checkingStatus: Bool = false
 
     public var offerings = [String: Offering]()
     public var isUserSubscribedCached = false
@@ -121,6 +124,9 @@ public class PurchaseViewModel: PurchaseService {
 
     @MainActor
     public func isUserSubscribed() async -> Bool {
+        withAnimation { checkingStatus = true }
+        defer { withAnimation { checkingStatus = false }}
+        
         applog.debug("Checking if user is subscribed to \(entitlementName)")
         do {
             let customerInfo = try await Purchases.shared.customerInfo()

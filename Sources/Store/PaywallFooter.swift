@@ -106,8 +106,31 @@ public struct PaywallFooter: View {
             }
         }
         .task {
-            await purchases.updateIsUserSubscribedCached(force: true)
+            async let status: () = checkStatus()
+            async let products: () = fetchProducts()
+            
+            _ = await [status, products]
         }
+    }
+    
+    func fetchProducts() async {
+        do {
+            try await purchases.fetchCurrentOfferingProducts()
+            
+            useMetadata()
+            highestPriceProduct = purchases.currentOfferingProducts.max(by: { $0.price > $1.price })
+            bestValueProduct = getBestValueProduct(from: purchases.currentOfferingProducts)
+            selectedProduct = bestValueProduct
+        } catch {
+            applog.error(error)
+            isInfoAlertPresented = true
+            infoAlertTitle = "Error"
+            infoAlertMessage = "Failed to fetch product information. If the issue persists, please reach out to us."
+        }
+    }
+    
+    func checkStatus() async {
+        await purchases.updateIsUserSubscribedCached(force: true)
     }
     
     var unpaidUserContent: some View {
@@ -131,7 +154,7 @@ public struct PaywallFooter: View {
             bottomLinks
                 .padding(.top)
                 .redactedEffect(active: Binding(
-                    get: { purchases.fetchingInProgress && purchases.currentOfferingProducts.isEmpty },
+                    get: { purchases.checkingStatus || (purchases.fetchingInProgress && purchases.currentOfferingProducts.isEmpty) },
                     set: {_ in}
                 ))
         }
@@ -140,20 +163,6 @@ public struct PaywallFooter: View {
         .infoAlert(infoAlertTitle, message: infoAlertMessage, isPresented: $isInfoAlertPresented) {
             postAlertAction?()
             postAlertAction = nil
-        }
-        .task {
-            do {
-                try await purchases.fetchCurrentOfferingProducts()
-                useMetadata()
-                highestPriceProduct = purchases.currentOfferingProducts.max(by: { $0.price > $1.price })
-                bestValueProduct = getBestValueProduct(from: purchases.currentOfferingProducts)
-                selectedProduct = bestValueProduct
-            } catch {
-                applog.error(error)
-                isInfoAlertPresented = true
-                infoAlertTitle = "Error"
-                infoAlertMessage = "Failed to fetch product information. If the issue persists, please reach out to us."
-            }
         }
     }
     
@@ -265,7 +274,7 @@ public struct PaywallFooter: View {
 
     var purchaseButton: some View {
         ZStack {
-            if purchases.fetchingInProgress {
+            if purchases.fetchingInProgress || purchases.checkingStatus {
                 Text("Loading...")
                     .fontWeight(.medium)
                     .foregroundStyle(.white)
@@ -366,7 +375,7 @@ public struct PaywallFooter: View {
                 }
                 .font(.subheadline)
                 .transition(.blurReplace)
-            } else if purchases.fetchingInProgress {
+            } else if purchases.fetchingInProgress || purchases.checkingStatus {
                 Text("Loading...")
                     .font(.subheadline)
                     .redactedEffect(active: .constant(true))
