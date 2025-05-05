@@ -105,6 +105,10 @@ public struct PaywallFooter: View {
                 unpaidUserContent.transition(.blurReplace)
             }
         }
+        .infoAlert(infoAlertTitle, message: infoAlertMessage, isPresented: $isInfoAlertPresented) {
+            postAlertAction?()
+            postAlertAction = nil
+        }
         .task {
             async let status: () = checkStatus()
             async let products: () = fetchProducts()
@@ -160,19 +164,15 @@ public struct PaywallFooter: View {
         }
         .padding()
         .disabled(purchases.purchaseInProgress || purchases.fetchingInProgress)
-        .infoAlert(infoAlertTitle, message: infoAlertMessage, isPresented: $isInfoAlertPresented) {
-            postAlertAction?()
-            postAlertAction = nil
-        }
     }
     
     var paidUserContent: some View {
         VStack(spacing: 20) {
-            Text("You already have Premium")
+            Text("You have Premium")
                 .font(.title2)
                 .fontWeight(.semibold)
             VStack(spacing: 8) {
-                Text("You can always manage your subscription in")
+                Text("You can manage your subscription in")
                 Button("Settings") {
                     UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
                 }
