@@ -11,18 +11,28 @@ public class MockPurchaseViewModel: PurchaseService {
     public var currentOfferingProducts: [StoreProduct] = []
     public var currentOfferingMetadata: [String : Any] = [:]
 
-    public func purchase(product: RevenueCat.StoreProduct) async throws(PurchaseError) -> CustomerInfo {
+    public func purchase(product: RevenueCat.StoreProduct) async throws(PurchaseError) -> CustomerInfo? {
         withAnimation { purchaseInProgress = true }
         defer { withAnimation { purchaseInProgress = false } }
         try? await Task.sleep(for: .seconds(1))
-        return try! await Purchases.shared.customerInfo()
+        
+        withAnimation {
+            isUserSubscribedCached = true
+        }
+        
+        return nil
     }
 
-    public func restorePurchases() async throws(PurchaseError) -> CustomerInfo {
+    public func restorePurchases() async throws(PurchaseError) -> CustomerInfo? {
         withAnimation { purchaseInProgress = true }
         defer { withAnimation { purchaseInProgress = false } }
         try? await Task.sleep(for: .seconds(1))
-        return try! await Purchases.shared.customerInfo()
+        
+        withAnimation {
+            isUserSubscribedCached = true
+        }
+        
+        return nil
     }
 
     public var currentOffering: RevenueCat.Offering? = nil

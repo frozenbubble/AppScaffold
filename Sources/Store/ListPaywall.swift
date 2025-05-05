@@ -30,11 +30,7 @@ public struct ListPaywall<HeaderContent: View, HeadlineContent: View, OtherConte
     }
     
     public var body: some View {
-        if purchases.isUserSubscribedCached {
-            content.paidUserFooter()
-        } else {
-            content.paywallFooter(actions: actions)
-        }
+        content.paywallFooter(actions: actions)
     }
     
     var content: some View {

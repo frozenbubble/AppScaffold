@@ -49,15 +49,15 @@ class PaywallMessages {
 }
 
 public struct PaywallActions {
-    let purchaseSuccess: (CustomerInfo) -> Void
-    let restoreSuccess: (CustomerInfo) -> Void
+    let purchaseSuccess: (CustomerInfo?) -> Void
+    let restoreSuccess: (CustomerInfo?) -> Void
     let purchaseFailure: (PurchaseError) -> Void
     let restoreFailure: (PurchaseError) -> Void
 
     public init(
-        purchaseSuccess: @escaping (CustomerInfo) -> Void = { _ in },
+        purchaseSuccess: @escaping (CustomerInfo?) -> Void = { _ in },
         purchaseFailure: @escaping (PurchaseError) -> Void = { _ in },
-        restoreSuccess: @escaping (CustomerInfo) -> Void = { _ in },
+        restoreSuccess: @escaping (CustomerInfo?) -> Void = { _ in },
         restoreFailure: @escaping (PurchaseError) -> Void = { _ in }
     ) {
         self.purchaseSuccess = purchaseSuccess
@@ -444,15 +444,12 @@ public struct PaywallFooter: View {
         }
     }
 
-    func purchaseSuccess(_ customerInfo: CustomerInfo) {
+    func purchaseSuccess(_ customerInfo: CustomerInfo?) {
         isInfoAlertPresented = true
         infoAlertTitle = "Purchase successful"
         infoAlertMessage = "You're all set."
         applog.info("Purchase successful")
-        postAlertAction = {
-            actions.purchaseSuccess(customerInfo)
-            Task { await purchases.updateIsUserSubscribedCached(force: true) }
-        }
+        postAlertAction = { actions.purchaseSuccess(customerInfo) }
     }
 
     func purchaseFailure(error: PurchaseError) {
@@ -460,21 +457,15 @@ public struct PaywallFooter: View {
         infoAlertTitle = "Purchase failed"
         infoAlertMessage = "An error happened while processing your purchase."
         applog.error("Purchase failed: \(error)")
-        postAlertAction = {
-            actions.purchaseFailure(error)
-            Task { await purchases.updateIsUserSubscribedCached(force: true) }
-        }
+        postAlertAction = { actions.purchaseFailure(error) }
     }
 
-    func restoreSuccess(_ customerInfo: CustomerInfo) {
+    func restoreSuccess(_ customerInfo: CustomerInfo?) {
         isInfoAlertPresented = true
         infoAlertTitle = "Restore successful"
         infoAlertMessage = "Your purchases have been restored."
         applog.info("Restore successful")
-        postAlertAction = {
-            actions.restoreSuccess(customerInfo)
-            Task { await purchases.updateIsUserSubscribedCached(force: true) }
-        }
+        postAlertAction = { actions.restoreSuccess(customerInfo) }
     }
 
     func restoreFailure(error: PurchaseError) {
@@ -482,10 +473,7 @@ public struct PaywallFooter: View {
         infoAlertTitle = "Restore failed"
         infoAlertMessage = "There was a problem restoring your purchases."
         applog.error("Restore failed: \(error)")
-        postAlertAction = {
-            actions.restoreFailure(error)
-            Task { await purchases.updateIsUserSubscribedCached(force: true) }
-        }
+        postAlertAction = { actions.restoreFailure(error) }
     }
 }
 

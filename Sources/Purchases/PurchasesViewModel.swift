@@ -31,8 +31,8 @@ public protocol PurchaseService {
     func isUserSubscribed() async -> Bool
     func isUserEligibleForTrial() async -> Bool
     @MainActor func fetchCurrentOfferingProducts() async throws
-    @MainActor func purchase(product: StoreProduct) async throws(PurchaseError) -> CustomerInfo
-    @MainActor func restorePurchases() async throws(PurchaseError) -> CustomerInfo
+    @MainActor func purchase(product: StoreProduct) async throws(PurchaseError) -> CustomerInfo?
+    @MainActor func restorePurchases() async throws(PurchaseError) -> CustomerInfo?
 }
 
 @available(iOS 17.0, *)
@@ -197,7 +197,7 @@ public class PurchaseViewModel: PurchaseService {
     }
 
     @MainActor
-    public func purchase(product: StoreProduct) async throws(PurchaseError) -> CustomerInfo {
+    public func purchase(product: StoreProduct) async throws(PurchaseError) -> CustomerInfo? {
         applog.info("Attempting to purchase product: \(product.productIdentifier)")
         withAnimation { purchaseInProgress = true }
         defer {
@@ -225,7 +225,7 @@ public class PurchaseViewModel: PurchaseService {
     }
 
     @MainActor
-    public func restorePurchases() async throws(PurchaseError) -> CustomerInfo {
+    public func restorePurchases() async throws(PurchaseError) -> CustomerInfo? {
         applog.info("Attempting to restore purchases")
         withAnimation { purchaseInProgress = true }
         defer {

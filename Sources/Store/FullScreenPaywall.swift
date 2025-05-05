@@ -1,4 +1,5 @@
 import SwiftUI
+import AppScaffoldUI
 
 import AppScaffoldCore
 
@@ -65,13 +66,13 @@ public struct FullScreenPaywall: View {
             features: config.features,
             actions: .init(
                 purchaseSuccess: { customerInfo in
-                    dismiss()
                     config.actions.purchaseSuccess(customerInfo)
+                    dismiss()
                     onPurchase?()
                 },
                 restoreSuccess: { customerInfo in
-                    dismiss()
                     config.actions.purchaseSuccess(customerInfo)
+                    dismiss()
                     onPurchase?()
                 }
             ),
@@ -101,4 +102,47 @@ public extension View {
             }
         }
     }
+}
+
+@available(iOS 17.0, *)
+struct FullScreenPaywallPreview: View {
+    @State var displayPaywall = true
+    
+    var body: some View {
+        Button("Present") {
+            displayPaywall.toggle()
+        }
+        .fullScreenPaywall(isPresented: $displayPaywall)
+    }
+}
+
+@available(iOS 17.0, *)
+#Preview {
+    _ = AppScaffold.useMockPurchases()
+    AppScaffoldUI.configure(colors: .init(
+        accent: .yellow
+    ), defaultTheme: .light)
+    
+    Resolver.register {
+        PaywallConfiguration(
+            type: .list,
+            features: [
+                FeatureEntry(icon: "trash", name: "Dummy", description: "Dummy description", basic: .missing, pro: .unlimited),
+            ],
+            actions: .init(),
+            headerContent: {Color.yellow}
+        )
+    }
+    
+    return FullScreenPaywallPreview()
+    
+//    return ListPaywall(features: [
+//        FeatureEntry(icon: "trash", name: "Dummy", description: "Dummy description", basic: .missing, pro: .unlimited),
+//    ]) {
+//        Rectangle().fill(.yellow)
+//    } headlineContent: {
+//        Text("This is a headline")
+//    } otherContent: {
+//        Image(systemName: "carrot")
+//    }
 }
