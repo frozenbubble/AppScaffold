@@ -11,7 +11,7 @@ public enum PaywallType {
 @available(iOS 17.0, *)
 public extension AppScaffold {
     func configurePaywall(paywallConfiguration: PaywallConfiguration) {
-        Resolver.register { }.scope(.application)
+        Resolver.register { paywallConfiguration }.scope(.application)
     }
 }
 

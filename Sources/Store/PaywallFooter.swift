@@ -450,6 +450,7 @@ public struct PaywallFooter: View {
         infoAlertMessage = "You're all set."
         applog.info("Purchase successful")
         postAlertAction = { actions.purchaseSuccess(customerInfo) }
+        Task { await purchases.updateIsUserSubscribedCached(force: true) }
     }
 
     func purchaseFailure(error: PurchaseError) {
@@ -458,6 +459,7 @@ public struct PaywallFooter: View {
         infoAlertMessage = "An error happened while processing your purchase."
         applog.error("Purchase failed: \(error)")
         postAlertAction = { actions.purchaseFailure(error) }
+        Task { await purchases.updateIsUserSubscribedCached(force: true) }
     }
 
     func restoreSuccess(_ customerInfo: CustomerInfo) {
@@ -466,6 +468,7 @@ public struct PaywallFooter: View {
         infoAlertMessage = "Your purchases have been restored."
         applog.info("Restore successful")
         postAlertAction = { actions.restoreSuccess(customerInfo) }
+        Task { await purchases.updateIsUserSubscribedCached(force: true) }
     }
 
     func restoreFailure(error: PurchaseError) {
@@ -474,6 +477,7 @@ public struct PaywallFooter: View {
         infoAlertMessage = "There was a problem restoring your purchases."
         applog.error("Restore failed: \(error)")
         postAlertAction = { actions.restoreFailure(error) }
+        Task { await purchases.updateIsUserSubscribedCached(force: true) }
     }
 }
 

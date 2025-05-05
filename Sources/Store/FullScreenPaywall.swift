@@ -8,6 +8,7 @@ struct FullScreenPaywall: View {
     
     @Environment(\.dismiss) var dismiss
     @OptionalInjected var config: PaywallConfiguration?
+    @AppService var purchases: PurchaseService
     
     var body: some View {
         ZStack(alignment: .topLeading) {
