@@ -10,6 +10,10 @@ public struct FullScreenPaywall: View {
     @OptionalInjected var config: PaywallConfiguration?
     @AppService var purchases: PurchaseService
     
+    public init(onPurchase: (() -> Void)? = nil) {
+        self.onPurchase = onPurchase
+    }
+    
     public var body: some View {
         ZStack(alignment: .topLeading) {
             if let config {
