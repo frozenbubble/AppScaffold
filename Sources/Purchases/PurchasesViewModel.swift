@@ -256,7 +256,7 @@ public class PurchaseViewModel: PurchaseService {
 public extension AppScaffold {
     @available(iOS 17.0, *)
     @MainActor
-    static func usePurchases(revenueCatKey: String, premiumEntitlement: String = "premium") {
+    static func usePurchases(revenueCatKey: String, premiumEntitlement: String = "premium", offerSelector: OfferingSelector? = nil) {
         applog.info("Configuring RevenueCat with premium entitlement: \(premiumEntitlement)")
         Purchases.logLevel = .info
         let configBuilder = Configuration.Builder(withAPIKey: revenueCatKey)
@@ -274,6 +274,11 @@ public extension AppScaffold {
 
         Resolver.register { PurchaseViewModel(entitlement: premiumEntitlement) as PurchaseService }.scope(.shared)
         applog.info("RevenueCat purchases service configured and registered")
+        
+        if let offerSelector = offerSelector {
+            applog.info("Using custom offer selector")
+            Resolver.register { offerSelector }.scope(.application)
+        }
     }
 }
 
