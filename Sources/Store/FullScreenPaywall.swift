@@ -3,14 +3,14 @@ import SwiftUI
 import AppScaffoldCore
 
 @available(iOS 17.0, *)
-struct FullScreenPaywall: View {
+public struct FullScreenPaywall: View {
     var onPurchase: (() -> Void)? = nil
     
     @Environment(\.dismiss) var dismiss
     @OptionalInjected var config: PaywallConfiguration?
     @AppService var purchases: PurchaseService
     
-    var body: some View {
+    public var body: some View {
         ZStack(alignment: .topLeading) {
             if let config {
                 switch config.type {
