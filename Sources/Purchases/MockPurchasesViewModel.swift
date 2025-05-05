@@ -94,7 +94,14 @@ public class MockPurchaseViewModel: PurchaseService {
     }
 
     @MainActor public func updateIsUserSubscribedCached(force: Bool = false) async {
-        isUserSubscribedCached = force //TODO: revise
+        defer { fetchingInProgress = true }
+        fetchingInProgress = true
+        
+        try? await Task.sleep(for: .seconds(1))
+        
+        withAnimation {
+            isUserSubscribedCached = false
+        }
     }
 
     public func isUserSubscribed() async -> Bool {

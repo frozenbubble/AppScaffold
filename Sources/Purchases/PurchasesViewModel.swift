@@ -40,7 +40,7 @@ public class PurchaseViewModel: PurchaseService {
     public var purchaseInProgress = false
 
     public var offerings = [String: Offering]()
-    public var isUserSubscribedCached = true
+    public var isUserSubscribedCached = false
     public var currentOffering: Offering?
     public var currentOfferingProducts: [StoreProduct] = []
 
@@ -102,10 +102,18 @@ public class PurchaseViewModel: PurchaseService {
             applog.debug("Skipping subscription status update (last update was \(Int(-statusUpdateTime.timeIntervalSinceNow))s ago)")
             return
         }
+        
         applog.debug("Updating cached subscription status (force: \(force))")
+        
         let wasSubscribed = isUserSubscribedCached
-        isUserSubscribedCached = await isUserSubscribed()
+        let isSubscribed = await isUserSubscribed()
+        
+        withAnimation {
+            isUserSubscribedCached = isSubscribed
+        }
+        
         statusUpdateTime = Date()
+        
         if wasSubscribed != isUserSubscribedCached {
             applog.info("Subscription status changed: \(wasSubscribed) -> \(isUserSubscribedCached)")
         }

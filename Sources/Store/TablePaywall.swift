@@ -25,11 +25,7 @@ public struct TablePaywall<HeaderContent: View, HeadlineContent: View>: View {
     }
     
     public var body: some View {
-        if purchases.isUserSubscribedCached {
-            content.paidUserFooter()
-        } else {
-            content.paywallFooter(actions: actions)
-        }
+        content.paywallFooter(actions: actions)
     }
     
     public var content: some View {

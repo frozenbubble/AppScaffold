@@ -2,6 +2,8 @@ import SwiftUI
 import SwiftUIX
 import RevenueCatUI
 
+
+
 @available(iOS 16.0, *)
 public struct PaidUserFooterModifier: ViewModifier {
     public func body(content: Content) -> some View {

@@ -73,6 +73,8 @@ public struct PaywallFooter: View {
     let links: PaywallLinks
 
     @AppService var purchases: PurchaseService
+    
+    @State private var initialised: Bool = false
 
     @State var messages = PaywallMessages()
     @State var selectedProduct: StoreProduct?
@@ -96,6 +98,19 @@ public struct PaywallFooter: View {
     }
 
     public var body: some View {
+        ZStack {
+            if purchases.isUserSubscribedCached {
+                paidUserContent.transition(.blurReplace)
+            } else {
+                unpaidUserContent.transition(.blurReplace)
+            }
+        }
+        .task {
+            await purchases.updateIsUserSubscribedCached(force: true)
+        }
+    }
+    
+    var unpaidUserContent: some View {
         VStack {
             if displayAllPlans {
                 VStack(spacing: 14) {
@@ -140,6 +155,24 @@ public struct PaywallFooter: View {
                 infoAlertMessage = "Failed to fetch product information. If the issue persists, please reach out to us."
             }
         }
+    }
+    
+    var paidUserContent: some View {
+        VStack(spacing: 20) {
+            Text("You already have Premium")
+                .font(.title2)
+                .fontWeight(.semibold)
+            VStack(spacing: 8) {
+                Text("You can always manage your subscription in")
+                Button("Settings") {
+                    UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!)
+                }
+                .fontWeight(.semibold)
+            }
+            Spacer()
+        }
+        .padding(.vertical)
+        .frame(maxWidth: .infinity, maxHeight: 200)
     }
 
     /// Returns the product with the lowest monthly price
