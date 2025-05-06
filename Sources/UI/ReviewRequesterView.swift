@@ -367,15 +367,30 @@ public struct ScaleButtonStyle: ButtonStyle {
 @available(iOS 17.0, *)
 public extension View {
     func reviewRequester(isPresented: Binding<Bool>) -> some View {
-        self
-            .sheet(isPresented: isPresented) {
-                ReviewRequesterView()
-                    .presentationDetents([.medium])
-            }
+        modifier(ReviewRequesterModifier(isPresented: isPresented))
+//        self
+//            .sheet(isPresented: isPresented) {
+//                ReviewRequesterView()
+//                    .presentationDetents([.medium])
+//            }
     }
 
     func autoReviewRequester() -> some View {
         modifier(AutoReviewRequesterModifier())
+    }
+}
+
+@available(iOS 17.0, *)
+struct ReviewRequesterModifier: ViewModifier {
+    @Binding var isPresented: Bool
+
+    public func body(content: Content) -> some View {
+        content
+            .sheet(isPresented: $isPresented) {
+                ReviewRequesterView()
+                    .presentationDetents([.medium])
+            }
+            .onDisappear { isPresented = false }
     }
 }
 
