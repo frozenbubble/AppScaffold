@@ -47,7 +47,7 @@ public struct CustomizableOnboardingScreen<TopContent: View, BottomContent: View
             .padding()
             .frame(maxWidth: .infinity)
             .frame(height: Self.bottomSheetHeight)
-            .background(VisualEffectBlurView(blurStyle: .systemThickMaterial))
+            .background(VisualEffectBlurView(blurStyle: .systemMaterial))
             .clipShape(RoundedRectangle(cornerRadius: 20))
             .ignoresSafeArea(edges: .bottom)
             .compositingGroup()

@@ -76,7 +76,7 @@ public struct OnboardingScreen<Content: View>: View {
             .frame(height: Self.bottomSheetHeight)
             .background {
 //                AppScaffoldUI.colors.onboardingOverlayColor
-                VisualEffectBlurView(blurStyle: .systemThickMaterial)
+                VisualEffectBlurView(blurStyle: .systemMaterial)
             }
             .clipShape(RoundedRectangle(cornerRadius: 20))
             .ignoresSafeArea(edges: .bottom)
