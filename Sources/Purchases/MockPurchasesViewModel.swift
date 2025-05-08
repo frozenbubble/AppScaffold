@@ -4,6 +4,7 @@ import Resolver
 
 import AppScaffoldCore
 
+//TODO: make subscription status a parameter
 @available(iOS 17.0, *)
 @Observable
 public class MockPurchaseViewModel: PurchaseService {
@@ -57,7 +58,8 @@ public class MockPurchaseViewModel: PurchaseService {
             currencyCode: "USD",
             localizedPrice: "$4.99",
             localizedTitle: "Monthly",
-            subscriptionPeriod: SubscriptionPeriod(value: 1, unit: .month)
+            subscriptionPeriod: SubscriptionPeriod(value: 1, unit: .month),
+            trial: true
         )
 
         currentOfferingProducts = [weekly, monthly]
@@ -140,8 +142,19 @@ fileprivate func createTestProduct(
     currencyCode: String,
     localizedPrice: String,
     localizedTitle: String = "Mock Product",
-    subscriptionPeriod: SubscriptionPeriod? = nil
+    subscriptionPeriod: SubscriptionPeriod? = nil,
+    trial: Bool = false
 ) -> StoreProduct {
+    let threeDayTrial = TestStoreProductDiscount(
+        identifier: "identifier_trial",
+        price: 0.0,
+        localizedPriceString: "$0.00",
+        paymentMode: .freeTrial,
+        subscriptionPeriod: SubscriptionPeriod(value: 3, unit: .day),
+        numberOfPeriods: 1,
+        type: .introductory
+    )
+    
     let testProduct = TestStoreProduct(
         localizedTitle: localizedTitle,
         price: price,
@@ -151,7 +164,7 @@ fileprivate func createTestProduct(
         localizedDescription: "This is a mock product description.",
         subscriptionGroupIdentifier: subscriptionPeriod != nil ? "mock_group" : nil,
         subscriptionPeriod: subscriptionPeriod,
-        introductoryDiscount: nil, // Add mock discounts if needed
+        introductoryDiscount: trial ? threeDayTrial : nil,
         discounts: [] // Add mock discounts if needed
     )
 

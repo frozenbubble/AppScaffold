@@ -47,14 +47,14 @@ public struct CustomizableOnboardingScreen<TopContent: View, BottomContent: View
             .padding()
             .frame(maxWidth: .infinity)
             .frame(height: Self.bottomSheetHeight)
-            .background(AppScaffoldUI.colors.onboardingOverlayColor)
+            .background(VisualEffectBlurView(blurStyle: .systemThickMaterial))
             .clipShape(RoundedRectangle(cornerRadius: 20))
             .ignoresSafeArea(edges: .bottom)
             .compositingGroup()
             .shadow(color: .black.opacity(0.15), radius: 4)
         }
         .ignoresSafeArea(edges: .bottom)
-        .background(AppScaffoldUI.colors.onboardingBackgroundColor)
+        .background(AppScaffoldUI.colors.defaultBackground)
     }
 }
 

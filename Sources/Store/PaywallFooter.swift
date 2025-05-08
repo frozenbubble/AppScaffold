@@ -217,9 +217,9 @@ public struct PaywallFooter: View {
 
     func productSelector(_ product: StoreProduct) -> some View {
         Button {
-//            withAnimation {
+            withAnimation(.linear(duration: 0.14)) {
                 selectedProduct = product
-//            }
+            }
         } label: {
             HStack(spacing: 12) {
                 if product == selectedProduct {
@@ -235,8 +235,13 @@ public struct PaywallFooter: View {
                 VStack(alignment: .leading) {
                     Text(product.localizedTitle)
                         .fontWeight(.medium)
+                    
                     if let subscriptionPeriod = product.subscriptionPeriod {
-                        Text("Full access for just \(product.localizedPriceString)/\(subscriptionPeriod.unit.abbreviatedCode)")
+                        let text = product.offerPeriodDetails != nil
+                            ? messages.priceInfoTrial
+                            : messages.priceInfoNormal
+                        
+                        Text(text.resolvePaywallVariables(with: product))
                     } else {
                         Text("Full access for \(product.localizedPriceString)")
                     }
@@ -335,11 +340,11 @@ public struct PaywallFooter: View {
                             } else {
                                 LinearGradient(
                                     colors: [
-                                        AppScaffoldUI.colors.accent.darken(by: 0.05),
-                                        AppScaffoldUI.colors.accent
+                                        AppScaffoldUI.colors.actionButtonColor1,
+                                        AppScaffoldUI.colors.actionButtonColor2,
                                     ],
-                                    startPoint: .bottom,
-                                    endPoint: .top
+                                    startPoint: .bottomLeading,
+                                    endPoint: .topTrailing
                                 )
                             }
                         }

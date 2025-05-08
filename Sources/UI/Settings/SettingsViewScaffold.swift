@@ -107,7 +107,7 @@ public struct SettingsViewScaffold<TopContent: View, BotttomContent: View, Paywa
                     paywallContent
                 }
                 
-                if let appUrl = URL(string: "https://apps.apple.com/hu/app/id\(appId)") {
+                if let appUrl = URL(string: "https://apps.apple.com/app/id\(appId)") {
                     
                     HStack {
                         Button {
@@ -140,7 +140,7 @@ public struct SettingsViewScaffold<TopContent: View, BotttomContent: View, Paywa
                     .sheet(isPresented: $displayFeedback) {
                         FeedbackView()
                             .padding(.top)
-                            .presentationDetents([.fraction(0.42)])
+                            .presentationDetents([.medium])
                     }
                 }
                 .buttonStyle(BorderlessButtonStyle())

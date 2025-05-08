@@ -178,9 +178,10 @@ public struct FeedbackView: View {
                 .frame(maxWidth: .infinity)
                 .background(
                     LinearGradient(
-                        colors: [AppScaffoldUI.accent, AppScaffoldUI.accent.darken(by: 0.02)],
-                        startPoint: .top,
-                        endPoint: .bottom
+                        colors: [AppScaffoldUI.colors.accent.darken(by: 0.05), AppScaffoldUI.colors.accent
+                        ],
+                        startPoint: .bottom,
+                        endPoint: .top
                     )
                 )
                 .foregroundStyle(.white)
@@ -409,10 +410,8 @@ fileprivate struct ReviewRequesterPreview: View {
     @State var present: Bool = false
 
     var body: some View {
-        ZStack {
-            Button("Present") {
-                present.toggle()
-            }
+        VStack {
+            Button("Present") { present.toggle() }
         }
         .reviewRequester(isPresented: $present)
     }

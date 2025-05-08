@@ -9,14 +9,13 @@ public struct AppColorScheme {
     public let secondaryAccent2: Color
     public let secondaryAccent3: Color
     
-    public let onboardingBackgroundColor: Color
-    public let onboardingOverlayColor: Color
+    public let defaultBackground: Color
     
-    public let onboardingButtonColor1: Color
-    public let onboardingButtonColor2: Color
-    public let onboardingButtonShimmer: Bool
+    public let actionButtonColor1: Color
+    public let actionButtonColor2: Color
+    public let actionButtonShimmer: Bool
     
-    public let paywallButtonTextColor: Color
+    public let actionButtonTextColor: Color
     
     public init(
         accent: Color = .blue,
@@ -25,12 +24,11 @@ public struct AppColorScheme {
         secondaryAccent: Color = .green,
         secondaryAccent2: Color = .green,
         secondaryAccent3: Color = .green,
-        onboardingBackgroundColor: Color? = nil,
-        onboardingOverlayColor: Color? = nil,
-        onboardingButtonColor1: Color? = nil,
-        onboardingButtonColor2: Color? = nil,
-        onboardingButtonShimmer: Bool = false,
-        paywallButtonTextColor: Color? = nil
+        defaultBackground: Color? = nil,
+        actionButtonColor1: Color? = nil,
+        actionButtonColor2: Color? = nil,
+        actionButtonShimmer: Bool = false,
+        actionButtonTextColor: Color? = nil
     ) {
         self.accent = accent
         self.accent2 = accent2
@@ -39,11 +37,11 @@ public struct AppColorScheme {
         self.secondaryAccent2 = secondaryAccent2
         self.secondaryAccent3 = secondaryAccent3
         
-        self.onboardingBackgroundColor = onboardingBackgroundColor ?? Color(.systemBackground)
-        self.onboardingOverlayColor = onboardingOverlayColor ?? Color(.systemGray6)
-        self.onboardingButtonColor1 = onboardingButtonColor1 ?? accent
-        self.onboardingButtonColor2 = onboardingButtonColor2 ?? accent
-        self.onboardingButtonShimmer = onboardingButtonShimmer
-        self.paywallButtonTextColor = paywallButtonTextColor ?? .white
+        self.defaultBackground = defaultBackground ?? Color(.systemBackground)
+
+        self.actionButtonColor1 = actionButtonColor1 ?? accent.darken(by: 0.05)
+        self.actionButtonColor2 = actionButtonColor2 ?? accent.lighten(by: 0.07)
+        self.actionButtonShimmer = actionButtonShimmer
+        self.actionButtonTextColor = actionButtonTextColor ?? .white
     }
 }

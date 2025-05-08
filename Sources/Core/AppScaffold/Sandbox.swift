@@ -60,5 +60,5 @@ struct Sandbox: View {
 }
 
 #Preview {
-    Sandbox()
+    Rectangle()
 }

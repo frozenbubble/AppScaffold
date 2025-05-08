@@ -32,7 +32,7 @@ public struct OnboardingButton: View {
                 .font(.title3)
                 .fontWeight(.bold)
                 .shimmering(
-                    active: AppScaffoldUI.colors.onboardingButtonShimmer,
+                    active: AppScaffoldUI.colors.actionButtonShimmer,
                     animation: .easeInOut(duration: 2.0).repeatForever(autoreverses: false),
                     gradient: Gradient(colors: [.white.opacity(0.8), .white, .white.opacity(0.8)]),
                     bandSize: 0.3,
@@ -44,11 +44,11 @@ public struct OnboardingButton: View {
                 .background {
                     LinearGradient(
                         colors: [
-                            AppScaffoldUI.colors.onboardingButtonColor1,
-                            AppScaffoldUI.colors.onboardingButtonColor2,
+                            AppScaffoldUI.colors.actionButtonColor1,
+                            AppScaffoldUI.colors.actionButtonColor2,
                         ],
-                        startPoint: .top,
-                        endPoint: .bottom
+                        startPoint: .bottomLeading,
+                        endPoint: .topTrailing
                     )
                 }
                 .clipShape(RoundedRectangle(cornerRadius: 12))
@@ -60,9 +60,9 @@ public struct OnboardingButton: View {
 #Preview {
     AppScaffold.configureUI(
         colors: .init(
-            onboardingButtonColor1: .cyan,
-            onboardingButtonColor2: .blue,
-            onboardingButtonShimmer: true
+            actionButtonColor1: .cyan,
+            actionButtonColor2: .blue,
+            actionButtonShimmer: true
         ),
         defaultTheme: .light
     )

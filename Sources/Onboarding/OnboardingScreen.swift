@@ -45,22 +45,22 @@ public struct OnboardingScreen<Content: View>: View {
             }
             
             VStack(spacing: 8) {
-                Text(title)
+                Text(LocalizedStringKey(title))
                     .multilineTextAlignment(.center)
                     .font(.title3)
                     .fontWeight(.medium)
                     .padding(.top, 10)
                     .padding(.bottom, 14)
                 if textAlignment == .center {
-                    Text(subTitle)
+                    Text(LocalizedStringKey(subTitle))
                         .multilineTextAlignment(.leading)
                         .frame(maxHeight: .infinity, alignment: .top)
                 } else if textAlignment == .leading {
-                    Text(subTitle)
+                    Text(LocalizedStringKey(subTitle))
                         .multilineTextAlignment(.leading)
                         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
                 } else if textAlignment == .trailing {
-                    Text(subTitle)
+                    Text(LocalizedStringKey(subTitle))
                         .multilineTextAlignment(.trailing)
                         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
                 }
@@ -75,8 +75,8 @@ public struct OnboardingScreen<Content: View>: View {
             .frame(maxWidth: .infinity)
             .frame(height: Self.bottomSheetHeight)
             .background {
-                AppScaffoldUI.colors.onboardingOverlayColor
-//                VisualEffectBlurView(blurStyle: .systemThickMaterial)
+//                AppScaffoldUI.colors.onboardingOverlayColor
+                VisualEffectBlurView(blurStyle: .systemThickMaterial)
             }
             .clipShape(RoundedRectangle(cornerRadius: 20))
             .ignoresSafeArea(edges: .bottom)
@@ -84,7 +84,7 @@ public struct OnboardingScreen<Content: View>: View {
             .shadow(color: .black.opacity(0.15), radius: 4)
         }
         .ignoresSafeArea(edges: .bottom)
-        .background(AppScaffoldUI.colors.onboardingBackgroundColor)
+        .background(AppScaffoldUI.colors.defaultBackground)
     }
 }
 
@@ -101,14 +101,14 @@ public extension OnboardingScreen where Content == AnyView {
 #Preview {
     AppScaffold.configureUI(
         colors: .init(
-            onboardingButtonColor1: .cyan,
-            onboardingButtonColor2: .blue,
-            onboardingButtonShimmer: true
+            actionButtonColor1: .cyan,
+            actionButtonColor2: .blue,
+            actionButtonShimmer: true
         ),
         defaultTheme: .light
     )
     
-    return OnboardingScreen(title: "Title", subTitle: "SubTitle", textAlignment: .leading) {
+    return OnboardingScreen(title: "Title", subTitle: "SubTitle with **bold text**", textAlignment: .leading) {
         ScrollView {
             Circle()
             Circle()

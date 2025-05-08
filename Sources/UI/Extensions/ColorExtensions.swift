@@ -60,39 +60,90 @@ public extension Color {
     /// Adjusts the brightness of the `Color`.
     /// - Parameter amount: The amount to adjust the brightness, where `-1.0` darkens fully and `1.0` brightens fully.
     /// - Returns: A new `Color` with the adjusted brightness.
-    func adjustBrightness(by amount: Double) -> Color {
-        let clampedAmount = min(max(amount, -1.0), 1.0) // Clamp amount to [-1, 1]
+//    func adjustBrightness(by amount: Double) -> Color {
+//        let clampedAmount = min(max(amount, -1.0), 1.0) // Clamp amount to [-1, 1]
+//        
+//        let uiColor = UIColor(self)
+//        var hue: CGFloat = 0
+//        var saturation: CGFloat = 0
+//        var brightness: CGFloat = 0
+//        var alpha: CGFloat = 0
+//        
+//        guard uiColor.getHue(&hue, saturation: &saturation, brightness: &brightness, alpha: &alpha) else {
+//            return self // Return the original color if HSB conversion fails
+//        }
+//        
+//        // Adjust brightness and clamp to [0, 1]
+//        let adjustedBrightness = min(max(brightness + CGFloat(clampedAmount), 0), 1)
+//        
+//        let adjustedUIColor = UIColor(hue: hue, saturation: saturation, brightness: adjustedBrightness, alpha: alpha)
+//        return Color(adjustedUIColor)
+//    }
+    func adjustLightness(by amount: Double) -> Color {
+        let clampedAmount = min(max(amount, -1.0), 1.0)
         
         let uiColor = UIColor(self)
-        var hue: CGFloat = 0
-        var saturation: CGFloat = 0
-        var brightness: CGFloat = 0
-        var alpha: CGFloat = 0
+        var r: CGFloat = 0
+        var g: CGFloat = 0
+        var b: CGFloat = 0
+        var a: CGFloat = 0
         
-        guard uiColor.getHue(&hue, saturation: &saturation, brightness: &brightness, alpha: &alpha) else {
-            return self // Return the original color if HSB conversion fails
+        uiColor.getRed(&r, green: &g, blue: &b, alpha: &a)
+        
+        // Convert RGB to HSL
+        let max = Swift.max(r, g, b)
+        let min = Swift.min(r, g, b)
+        let delta = max - min
+        
+        // Calculate hue
+        var h: CGFloat = 0
+        if delta != 0 {
+            if max == r {
+                h = ((g - b) / delta).truncatingRemainder(dividingBy: 6)
+            } else if max == g {
+                h = ((b - r) / delta) + 2
+            } else {
+                h = ((r - g) / delta) + 4
+            }
+            h *= 60
+            if h < 0 { h += 360 }
         }
         
-        // Adjust brightness and clamp to [0, 1]
-        let adjustedBrightness = min(max(brightness + CGFloat(clampedAmount), 0), 1)
+        // Calculate lightness
+        let l = (max + min) / 2
         
-        let adjustedUIColor = UIColor(hue: hue, saturation: saturation, brightness: adjustedBrightness, alpha: alpha)
-        return Color(adjustedUIColor)
+        // Calculate saturation
+        var s: CGFloat = 0
+        if delta != 0 {
+            s = delta / (1 - abs(2 * l - 1))
+        }
+        
+        // Adjust lightness
+        
+//        let adjustedL = min(max(l.0 + clampedAmount, 0.0), 1.0)
+//        let adjustedL = (1.0 + clampedAmount).clamped(to: 0.0...1.0)
+        let adjustedL = (l + CGFloat(clampedAmount)).clamped(to: 0.0...1.0)
+        
+        // Convert back to RGB using the UIColor initializer
+        let newUIColor = UIColor(hue: h/360, saturation: s, lightness: adjustedL, alpha: a)
+        return Color(newUIColor)
     }
     
     /// Darkens the `Color` by a specified amount.
     /// - Parameter amount: The amount to darken the color (0.0 to 1.0).
     /// - Returns: A new `Color` that is darker.
     func darken(by amount: Double) -> Color {
-        adjustBrightness(by: -amount)
+        adjustLightness(by: -amount)
     }
     
     /// Lightens the `Color` by a specified amount.
     /// - Parameter amount: The amount to lighten the color (0.0 to 1.0).
     /// - Returns: A new `Color` that is lighter.
     func lighten(by amount: Double) -> Color {
-        adjustBrightness(by: amount)
+        adjustLightness(by: amount)
     }
+
+
     
     // MARK: - Alpha Component
     
@@ -110,5 +161,18 @@ public extension Color {
             return alpha
         }
         return nil // Return nil if RGBA extraction fails
+    }
+}
+
+extension UIColor {
+    convenience init(hue: CGFloat, saturation: CGFloat, lightness: CGFloat, alpha: CGFloat) {
+        var s = saturation
+        let l = lightness
+        
+        let t = s * ((l < 0.5) ? l : (1.0 - l))
+        let b = l + t
+        s = (l > 0.0) ? (2.0 * t / b) : 0.0
+        
+        self.init(hue: hue, saturation: s, brightness: b, alpha: alpha)
     }
 }
