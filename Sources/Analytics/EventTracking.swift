@@ -44,6 +44,14 @@ public struct EventTrackingService {
             trackAction()
         }
     }
+    
+    public func triggerReviewRequest() {
+        let defaults = UserDefaults.scaffold
+        let requestCount = defaults.integer(forKey: AppScaffoldStorageKeys.reviewRequests)
+        
+        defaults.set(requestCount + 1, forKey: AppScaffoldStorageKeys.reviewRequests)
+        defaults.set(true, forKey: AppScaffoldStorageKeys.displayReviewRequest)
+    }
 }
 
 public extension AppScaffold {
