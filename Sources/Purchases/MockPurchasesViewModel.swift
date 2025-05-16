@@ -41,7 +41,7 @@ public class MockPurchaseViewModel: PurchaseService {
     public func fetchCurrentOfferingProducts() async throws {
         withAnimation { fetchingInProgress = true }
         defer { withAnimation { fetchingInProgress = false } }
-        try? await Task.sleep(for: .seconds(1.5))
+//        try? await Task.sleep(for: .seconds(1.5))
 
         let weekly = createTestProduct(
             identifier: "mock_product_1_week",
@@ -61,8 +61,18 @@ public class MockPurchaseViewModel: PurchaseService {
             subscriptionPeriod: SubscriptionPeriod(value: 1, unit: .month),
             trial: true
         )
+        
+        let annual = createTestProduct(
+            identifier: "mock_product_1_year",
+            price: 49.99,
+            currencyCode: "USD",
+            localizedPrice: "$49.99",
+            localizedTitle: "Annual",
+            subscriptionPeriod: SubscriptionPeriod(value: 1, unit: .year),
+            trial: true
+        )
 
-        currentOfferingProducts = [weekly, monthly]
+        currentOfferingProducts = [weekly, monthly, annual]
 //        currentOfferingProducts = []
     }
 

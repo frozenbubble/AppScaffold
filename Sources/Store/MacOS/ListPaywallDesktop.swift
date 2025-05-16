@@ -12,7 +12,7 @@ struct ListPaywallDesktop<HeaderContent: View, OtherContent: View>: View {
     let otherContent: OtherContent
 
     @AppService var purchases: PurchaseService
-    
+
     @State var availableProducts: [StoreProduct] = []
     @State var selectedProduct: StoreProduct?
     @State var highestPriceProduct: StoreProduct?
@@ -30,27 +30,79 @@ struct ListPaywallDesktop<HeaderContent: View, OtherContent: View>: View {
     var body: some View {
         ZStack(alignment: .bottom) {
             ScrollView {
+                // Header content with proper visibility
                 headerContent
-                    .frame(height: 230) //TODO: remove
                     .frame(maxWidth: .infinity)
-                    .background(.secondarySystemFill)
+                    .padding(.vertical, 20)
+                    .background(
+                        RoundedRectangle(cornerRadius: 8)
+                            .fill(Color(.windowBackgroundColor).opacity(0.8))
+                    )
                     .clipShape(RoundedRectangle(cornerRadius: 8))
                     .padding()
-                
-                VStack(alignment: .leading) {
+
+                VStack(alignment: .leading, spacing: 16) {
                     Text("Pick a plan that suits you")
-                    
-                    HStack {
+                        .font(.headline)
+                        .padding(.horizontal)
+
+                    // Use VStack for product selectors to ensure uniform width
+                    HStack(spacing: 12) {
                         ForEach(purchases.currentOfferingProducts, id: \.productIdentifier) { product in
                             productSelector(product)
                         }
                     }
+                    .padding(.horizontal)
                 }
+                
+                // Features
+                VStack(alignment: .leading) {
+                    Text("What do you get with Premium?")
+                        .font(.headline)
+                    
+                    ForEach(features, id: \.name) { f in
+                        HStack(alignment: .center, spacing: 16) {
+                            Image(systemName: f.icon)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 24, height: 24)
+                                .foregroundStyle(f.color.gradient)
+                            
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(f.name)
+                                    .fontWeight(.medium)
+                                Text(f.description)
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding()
+                        .background {
+                            RoundedRectangle(cornerRadius: 8)
+                                .fill(Color.secondary.opacity(0.1))
+                        }
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding()
 
-//                VStack {
-//                }
-//                .padding()
-//                .background(.cyan)
+                HStack {
+                    Button("Privacy") {
+                        
+                    }
+                    .buttonStyle(.link)
+                    
+                    Text("·")
+                    
+                    Button("Terms") {
+                        
+                    }
+                    .buttonStyle(.link)
+                }
+                .padding()
+                // Other content section
+//                otherContent
+//                    .padding()
             }
 
             HStack {
@@ -80,19 +132,15 @@ struct ListPaywallDesktop<HeaderContent: View, OtherContent: View>: View {
         do {
             try await purchases.fetchCurrentOfferingProducts()
             availableProducts = purchases.currentOfferingProducts
-            
-//            useMetadata()
+
             highestPriceProduct = purchases.currentOfferingProducts.max(by: { $0.price > $1.price })
             let bestValueProduct = getBestValueProduct(from: purchases.currentOfferingProducts)
             selectedProduct = bestValueProduct
         } catch {
-//            applog.error(error)
-//            isInfoAlertPresented = true
-//            infoAlertTitle = "Error"
-//            infoAlertMessage = "Failed to fetch product information. If the issue persists, please reach out to us."
+            // Error handling
         }
     }
-    
+
     /// Returns the product with the lowest monthly price
     /// If products have different subscription periods, prices are normalized to monthly value
     func getBestValueProduct(from products: [StoreProduct]) -> StoreProduct? {
@@ -106,65 +154,73 @@ struct ListPaywallDesktop<HeaderContent: View, OtherContent: View>: View {
     func checkStatus() async {
         await purchases.updateIsUserSubscribedCached(force: true)
     }
-    
+
     func productSelector(_ product: StoreProduct) -> some View {
         Button {
             withAnimation(.linear(duration: 0.14)) {
                 selectedProduct = product
             }
         } label: {
-            HStack(spacing: 12) {
+            HStack(alignment: .top, spacing: 4) {
                 if product == selectedProduct {
                     Image(systemName: "checkmark.circle.fill")
-                        .imageScale(.large)
+                        .imageScale(.medium)
                         .foregroundStyle(.blue)
                 } else {
                     Image(systemName: "circle")
-                        .imageScale(.large)
+                        .imageScale(.medium)
                         .foregroundStyle(.secondary)
                 }
 
-                VStack(alignment: .leading) {
+                VStack(alignment: .leading, spacing: 4) {
                     Text(product.localizedTitle)
                         .fontWeight(.medium)
-                    
+
                     if let subscriptionPeriod = product.subscriptionPeriod {
                         let text = product.offerPeriodDetails != nil
                             ? messages.priceInfoTrial
                             : messages.priceInfoNormal
-                        
+
                         Text(text.resolvePaywallVariables(with: product))
+                            .font(.subheadline)
                     } else {
                         Text("Full access for \(product.localizedPriceString)")
+                            .font(.subheadline)
                     }
                 }
                 .multilineTextAlignment(.leading)
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
-            .padding()
-            .overlay{
-                let frameColor = selectedProduct == product ? AppScaffoldUI.colors.accent : Color.secondary
-
-                RoundedRectangle(cornerRadius: 12)
-                    .stroke(frameColor, lineWidth: 2)
+            .padding(10)
+            .frame(height: 72, alignment: .top)
+            .background {
+                RoundedRectangle(cornerRadius: 12).fill(.secondary.opacity(0.2))
             }
+//            .overlay{
+//                let frameColor = selectedProduct == product ? AppScaffoldUI.colors.accent : Color.secondary
+//
+//                RoundedRectangle(cornerRadius: 12)
+//                    .stroke(frameColor, lineWidth: 2)
+//            }
             .overlay {
                 if let highestPriceProduct {
                     let discount = product.discount(comparedTo: highestPriceProduct)
                     if discount > 0 {
                         Text("Save \(discount, format: .percent.precision(.fractionLength(0)))")
-                            .font(.caption)
+                            .font(.system(size: 9))
                             .foregroundColor(.white)
-                            .padding(.horizontal, 6)
-                            .padding(.vertical, 4)
+                            .padding(.horizontal, 4)
+                            .padding(.vertical, 3)
                             .background(selectedProduct == product ? AppScaffoldUI.colors.accent : .secondary)
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                            .clipShape(RoundedRectangle(cornerRadius: 6))
                             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
-                            .padding(4)
+                            .padding(6)
                     }
                 }
             }
+            .frame(maxWidth: .infinity)
         }
+        .buttonStyle(.plain)
         .foregroundStyle(.primary)
         .contentShape(Rectangle())
     }
@@ -173,9 +229,18 @@ struct ListPaywallDesktop<HeaderContent: View, OtherContent: View>: View {
 @available(macOS 14.0, *)
 #Preview {
     _ = AppScaffold.useMockPurchases()
+    let features: [FeatureEntry] = [
+        .init(icon: "star.fill", color: .yellow, name: "Feature 1", description: "Super amazing feature", basic: .missing, pro: .present),
+        
+            .init(icon: "person.fill", color: .cyan, name: "Feature 2", description: "Super more amazing feature", basic: .missing, pro: .present)
+    ]
 
-    return ListPaywallDesktop(features: []) {
-
-    } otherContent: {}
+    return ListPaywallDesktop(features: features) {
+        Text("Header Content 2")
+            .font(.title)
+            .foregroundColor(.white)
+    } otherContent: {
+        Text("Other content here")
+    }
 }
 #endif

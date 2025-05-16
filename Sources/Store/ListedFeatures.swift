@@ -15,6 +15,7 @@ public enum PlanComparisonValue {
 @available(iOS 17.0, macOS 14.0, *)
 public struct FeatureEntry {
     let icon: String
+    let color: Color
     let name: String
     var description: String
     let basic: PlanComparisonValue
@@ -22,6 +23,7 @@ public struct FeatureEntry {
     
     public init(
         icon: String,
+        color: Color? = nil,
         name: String,
         description: String,
         basic: PlanComparisonValue,
@@ -32,6 +34,7 @@ public struct FeatureEntry {
         self.description = description
         self.basic = basic
         self.pro = pro
+        self.color = color ?? AppScaffoldUI.accent
     }
 }
 
