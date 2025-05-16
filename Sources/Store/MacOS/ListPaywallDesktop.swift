@@ -58,6 +58,11 @@ struct ListPaywallDesktop<HeaderContent: View, OtherContent: View>: View {
                 }
 
                 footerLinksView
+                
+                //Bottom bar placeholder
+                Rectangle()
+                    .fill(.clear)
+                    .frame(height: 68)
             }
 
             bottomBar
@@ -77,10 +82,11 @@ struct ListPaywallDesktop<HeaderContent: View, OtherContent: View>: View {
     private var headerView: some View {
         headerContent
             .frame(maxWidth: .infinity)
+            .frame(height: 140)
             .padding(.vertical, 20)
             .background(
                 RoundedRectangle(cornerRadius: PaywallLayout.cornerRadius)
-                    .fill(PaywallColors.headerBackground)
+                    .fill(PaywallColors.itemBackground)
             )
             .clipShape(RoundedRectangle(cornerRadius: PaywallLayout.cornerRadius))
             .padding(PaywallLayout.padding)
@@ -156,7 +162,7 @@ struct ListPaywallDesktop<HeaderContent: View, OtherContent: View>: View {
             RoundedRectangle(cornerRadius: PaywallLayout.cornerRadius - 4)
                 .fill(PaywallColors.itemBackground)
         }
-        .padding(PaywallLayout.padding)
+        .padding(.horizontal, PaywallLayout.padding)
     }
 
     private var bottomBar: some View {
