@@ -1,5 +1,6 @@
 import SwiftUI
 
+#if os(iOS)
 @available(iOS 15.0, *)
 public extension Image {
     /// Initializes a SwiftUI `Image` from data.
@@ -21,3 +22,4 @@ public extension Image {
         #endif
     }
 }
+#endif

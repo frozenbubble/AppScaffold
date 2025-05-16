@@ -1,3 +1,5 @@
+#if os(iOS) || os(tvOS) || targetEnvironment(macCatalyst)
+
 import SwiftUI
 
 import AppScaffoldCore
@@ -62,3 +64,4 @@ public struct ListPaywall<HeaderContent: View, HeadlineContent: View, OtherConte
         Image(systemName: "carrot")
     }
 }
+#endif

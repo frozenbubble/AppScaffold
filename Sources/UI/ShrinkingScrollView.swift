@@ -1,3 +1,5 @@
+#if os(iOS)
+
 import SwiftUI
 
 @available(iOS 16.4, *)
@@ -146,3 +148,5 @@ public struct ShrinkingScrollView<Content: View>: View {
     }
     .background(.blue)
 }
+
+#endif

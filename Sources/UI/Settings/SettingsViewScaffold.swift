@@ -1,9 +1,10 @@
+#if os(iOS)
 import SwiftUI
 import SwiftUIX
 
 import AppScaffoldCore
 
-@available(iOS 17.0, *)
+@available(iOS 17.0, macOS 14, *)
 public struct ColoredLabelStyle: LabelStyle {
     var iconColor = AppScaffoldUI.colors.accent
     var textColor = Color.primary
@@ -28,7 +29,7 @@ public struct ColoredLabelStyle: LabelStyle {
     }
 }
 
-@available(iOS 17.0, *)
+@available(iOS 17.0, macOS 14, *)
 public extension LabelStyle where Self == ColoredLabelStyle {
     static func colored(iconColor: Color = AppScaffoldUI.colors.accent, textColor: Color = .primary) -> Self {
         ColoredLabelStyle(iconColor: iconColor, textColor: textColor)
@@ -37,7 +38,7 @@ public extension LabelStyle where Self == ColoredLabelStyle {
 
 //TODO: what's new page
 //TODO: extract SettingsButton
-@available(iOS 17.0, *)
+@available(iOS 17.0, macOS 14, *)
 public struct SettingsViewScaffold<TopContent: View, BotttomContent: View, PaywallContent: View>: View {
     let appId: String
     let topContent: TopContent
@@ -195,7 +196,7 @@ public struct SettingsViewScaffold<TopContent: View, BotttomContent: View, Paywa
     }
 }
 
-@available(iOS 17.0, *)
+@available(iOS 17.0, macOS 14, *)
 #Preview {
     UserDefaults.standard.reset()
     AppScaffold.useEventTracking()
@@ -218,4 +219,4 @@ public struct SettingsViewScaffold<TopContent: View, BotttomContent: View, Paywa
     }
     .themeAware()
 }
-
+#endif

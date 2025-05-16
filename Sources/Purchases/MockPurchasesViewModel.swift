@@ -5,7 +5,7 @@ import Resolver
 import AppScaffoldCore
 
 //TODO: make subscription status a parameter
-@available(iOS 17.0, *)
+@available(iOS 17.0, macOS 14.0, *)
 @Observable
 public class MockPurchaseViewModel: PurchaseService {
     public var checkingStatus: Bool = false
@@ -127,7 +127,7 @@ public class MockPurchaseViewModel: PurchaseService {
 }
 
 public extension AppScaffold {
-    @available(iOS 17.0, *)
+    @available(iOS 17.0, macOS 14.0, *)
     static func useMockPurchases() -> MockPurchaseViewModel {
         let vm = MockPurchaseViewModel()
         Resolver.register { vm as PurchaseService }.scope(.shared)

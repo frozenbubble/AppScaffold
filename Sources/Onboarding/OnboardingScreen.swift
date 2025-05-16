@@ -1,3 +1,4 @@
+#if os(iOS) || os(tvOS) || targetEnvironment(macCatalyst)
 import SwiftUI
 
 import SwiftUIX
@@ -120,3 +121,4 @@ public extension OnboardingScreen where Content == AnyView {
     }
 //    .padding(.top)
 }
+#endif

@@ -1,7 +1,7 @@
 import SwiftUI
 
 //TODO: rename
-@available(iOS 16.0, *)
+@available(iOS 16.0, macOS 14, *)
 public struct BumpAnimation: ViewModifier {
     let duration: Double
     let scale: Double
@@ -31,7 +31,7 @@ public struct BumpAnimation: ViewModifier {
     }
 }
 
-@available(iOS 16.0, *)
+@available(iOS 16.0, macOS 14, *)
 public extension View {
     func bumpAnimation(
         duration: Double = 1.5,
@@ -42,7 +42,7 @@ public extension View {
     }
 }
 
-@available(iOS 16.0, *)
+@available(iOS 16.0, macOS 14, *)
 #Preview {
     RoundedRectangle(cornerRadius: 12)
         .fill(Color.blue)

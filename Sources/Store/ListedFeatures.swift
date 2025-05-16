@@ -4,7 +4,7 @@ import SwiftUI
 import AppScaffoldCore
 import AppScaffoldUI
 
-@available(iOS 17.0, *)
+@available(iOS 17.0, macOS 14.0, *)
 public enum PlanComparisonValue {
     case present
     case missing
@@ -12,7 +12,7 @@ public enum PlanComparisonValue {
     case unlimited
 }
 
-@available(iOS 17.0, *)
+@available(iOS 17.0, macOS 14.0, *)
 public struct FeatureEntry {
     let icon: String
     let name: String
@@ -35,7 +35,8 @@ public struct FeatureEntry {
     }
 }
 
-@available(iOS 17.0, *)
+#if os(iOS) || os(tvOS) || targetEnvironment(macCatalyst)
+@available(iOS 17.0, macOS 14.0, *)
 @resultBuilder
 public struct FeatureEntryBuilder {
     public static func buildBlock(_ components: FeatureEntry...) -> [FeatureEntry] {
@@ -43,7 +44,7 @@ public struct FeatureEntryBuilder {
     }
 }
 
-@available(iOS 17.0, *)
+@available(iOS 17.0, macOS 14.0, *)
 public struct PlanComparisonItem: View {
     let value: PlanComparisonValue
     
@@ -69,7 +70,7 @@ public struct PlanComparisonItem: View {
     }
 }
 
-@available(iOS 17.0, *)
+@available(iOS 17.0, macOS 14.0, *)
 public struct ListedFeatures<HeaderContent: View, HeadlineContent: View, OtherContent: View>: View {
     let primaryBackgroundColor: Color
     let secondaryBackgroundColor: Color
@@ -170,7 +171,7 @@ public struct ListedFeatures<HeaderContent: View, HeadlineContent: View, OtherCo
     }
 }
 
-@available(iOS 17.0, *)
+@available(iOS 17.0, macOS 14.0,  *)
 public struct TableComparisonFeatures<HeaderContent: View, HeadlineContent: View, TrialContent: View>: View {
     let iconSize = 24.0
     
@@ -318,7 +319,7 @@ public struct TableComparisonFeatures<HeaderContent: View, HeadlineContent: View
     }
 }
 
-@available(iOS 17.0, *)
+@available(iOS 17.0, macOS 14.0, *)
 #Preview {
     ListedFeatures {
         FeatureEntry(icon: "trash", name: "Unlimited Dummy 1", description: "Dummy 1 description", basic: .missing, pro: .present)
@@ -345,3 +346,4 @@ public struct TableComparisonFeatures<HeaderContent: View, HeadlineContent: View
     .accentColor(Color.yellow)
 }
 
+#endif

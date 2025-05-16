@@ -4,7 +4,7 @@ import AppScaffoldCore
 import AppScaffoldUI
 import Shimmer
 
-@available(iOS 16.0, *)
+@available(iOS 16.0, macOS 13.0, *)
 public struct OnboardingButton: View {
     let text: String
     let animation: Animation?
@@ -56,7 +56,7 @@ public struct OnboardingButton: View {
     }
 }
 
-@available(iOS 16.0, *)
+@available(iOS 16.0, macOS 13.0, *)
 #Preview {
     AppScaffold.configureUI(
         colors: .init(

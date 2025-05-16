@@ -57,7 +57,11 @@ public struct EventTrackingService {
 public extension AppScaffold {
     static func useEventTracking(mixPanelKey: String? = nil, thresholds: [Int] = [15, 80]){
         if let mixPanelKey {
-            Mixpanel.initialize(token: mixPanelKey, trackAutomaticEvents: true) //TODO: check
+#if os(iOS)
+            Mixpanel.initialize(token: mixPanelKey, trackAutomaticEvents: true)
+#elseif os(macOS)
+            Mixpanel.initialize(token: mixPanelKey)
+#endif
         } else if !isPreview {
             applog.error("Mixpanel key is required for event tracking. Please provide a key.")
         }

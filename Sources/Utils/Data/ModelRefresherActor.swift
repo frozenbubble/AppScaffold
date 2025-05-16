@@ -3,7 +3,7 @@ import SwiftData
 
 import AppScaffoldCore
 
-@available(iOS 17, *)
+@available(iOS 17, macOS 14, *)
 public actor ModelRefresherActor <T: PersistentModel>: ModelActor {
     public let modelContainer: ModelContainer
     public let modelExecutor: any ModelExecutor

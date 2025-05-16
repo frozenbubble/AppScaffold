@@ -37,10 +37,19 @@ public struct AppColorScheme {
         self.secondaryAccent2 = secondaryAccent2
         self.secondaryAccent3 = secondaryAccent3
         
+#if os(iOS)
         self.defaultBackground = defaultBackground ?? Color(.systemBackground)
+#else
+        self.defaultBackground = defaultBackground ?? Color.white
+#endif
 
+#if os(iOS)
         self.actionButtonColor1 = actionButtonColor1 ?? accent.darken(by: 0.05)
         self.actionButtonColor2 = actionButtonColor2 ?? accent.lighten(by: 0.07)
+#else
+        self.actionButtonColor1 = actionButtonColor1 ?? accent
+        self.actionButtonColor2 = actionButtonColor2 ?? accent
+#endif
         self.actionButtonShimmer = actionButtonShimmer
         self.actionButtonTextColor = actionButtonTextColor ?? .white
     }

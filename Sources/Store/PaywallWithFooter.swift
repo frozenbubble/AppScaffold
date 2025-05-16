@@ -3,7 +3,7 @@ import SwiftUI
 import AppScaffoldCore
 import AppScaffoldPurchases
 
-@available(iOS 17.0, *)
+@available(iOS 17.0, macOS 14.0, *)
 public struct PaywallWithFooter<PaywallContent: View>: View {
     let content: PaywallContent
     

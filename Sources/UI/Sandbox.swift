@@ -5,12 +5,12 @@ private struct SandboxView: View {
         VStack {
             Rectangle()
                 .fill(
-                    .blue.darken(by: 0.2)
+                    .blue
                 )
             
             Rectangle()
                 .fill(
-                    .blue.lighten(by: 0.0)
+                    .blue
                 )
         }
     }

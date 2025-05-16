@@ -1,7 +1,7 @@
 import SwiftUI
 import Foundation
 
-@available(iOS 16.0, *)
+@available(iOS 16.0, macOS 14, *)
 public struct SinglePulseEffect: ViewModifier {
     let delay: TimeInterval
     let duration: TimeInterval
@@ -51,7 +51,7 @@ public struct SinglePulseEffect: ViewModifier {
     }
 }
 
-@available(iOS 16.0, *)
+@available(iOS 16.0, macOS 14, *)
 public extension View {
     func singlePulseEffect(
         delay: TimeInterval = 0,
@@ -70,7 +70,7 @@ public extension View {
     }
 }
 
-@available(iOS 16.0, *)
+@available(iOS 16.0, macOS 14, *)
 #Preview {
     Circle()
         .frame(width: 100, height: 100)

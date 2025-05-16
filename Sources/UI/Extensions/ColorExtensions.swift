@@ -1,3 +1,4 @@
+#if os(iOS)
 import SwiftUI
 
 @available(iOS 15.0, *)
@@ -176,3 +177,4 @@ extension UIColor {
         self.init(hue: hue, saturation: s, brightness: b, alpha: alpha)
     }
 }
+#endif

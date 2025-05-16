@@ -1,3 +1,4 @@
+#if os(iOS)
 import UIKit
 
 import AppScaffoldCore
@@ -57,3 +58,4 @@ public final class NetworkDownloader: Sendable {
         }
     }
 }
+#endif

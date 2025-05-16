@@ -1,3 +1,4 @@
+#if os(iOS)
 import Foundation
 import UIKit
 
@@ -30,3 +31,4 @@ public struct EmailService {
         return "Version not available"
     }
 }
+#endif

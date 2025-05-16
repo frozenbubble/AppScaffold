@@ -1,3 +1,4 @@
+#if os(iOS) || os(tvOS) || targetEnvironment(macCatalyst)
 import SwiftUI
 
 import AppScaffoldCore
@@ -54,3 +55,4 @@ public struct TablePaywall<HeaderContent: View, HeadlineContent: View>: View {
             .padding()
     }
 }
+#endif

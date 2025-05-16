@@ -2,7 +2,7 @@ import SwiftUI
 
 import AppScaffoldCore
 
-@available(iOS 17.0, *)
+@available(iOS 17.0, macOS 14.0, *)
 public struct OnboardingViewModifier<OnboardingView: View>: ViewModifier {
     var onboardingView: OnboardingView
 
@@ -31,14 +31,14 @@ public struct OnboardingViewModifier<OnboardingView: View>: ViewModifier {
     }
 }
 
-@available(iOS 17.0, *)
+@available(iOS 17.0, macOS 14.0, *)
 public extension View {
     func withOnboarding<OnboardingView: View>(@ViewBuilder _ onboardingViewGenerator: @escaping () -> OnboardingView) -> some View {
         modifier(OnboardingViewModifier(onboardingView: onboardingViewGenerator))
     }
 }
 
-@available(iOS 17.0, *)
+@available(iOS 17.0, macOS 14.0, *)
 #Preview {
     Color.pink
         .withOnboarding {

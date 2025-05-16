@@ -1,8 +1,8 @@
+#if os(iOS) || os(tvOS) || targetEnvironment(macCatalyst)
 import SwiftUI
 import SwiftUIX
+
 import RevenueCatUI
-
-
 
 @available(iOS 16.0, *)
 public struct PaidUserFooterModifier: ViewModifier {
@@ -47,3 +47,4 @@ public extension View {
     .paidUserFooter()
     .ignoresSafeArea()
 }
+#endif

@@ -24,7 +24,7 @@ public struct PaywallLinks {
     }
 }
 
-@available(iOS 17.0, *)
+@available(iOS 17.0, macOS 14.0, *)
 @Observable
 class PaywallMessages {
     var callToActionNormal: String
@@ -67,7 +67,8 @@ public struct PaywallActions {
     }
 }
 
-@available(iOS 17.0, *)
+#if os(iOS) || os(tvOS) || targetEnvironment(macCatalyst)
+@available(iOS 17.0, macOS 14.0, *)
 public struct PaywallFooter: View {
     let actions: PaywallActions
     let links: PaywallLinks
@@ -486,7 +487,7 @@ extension URL: @retroactive Identifiable {
     public var id: String { absoluteString }
 }
 
-@available(iOS 17.0, *)
+@available(iOS 17.0, macOS 14.0, *)
 #Preview {
     AppScaffold.useConsoleLogger(minLevel: .verbose, logPrintWay: .print)
     _ = AppScaffold.useMockPurchases()
@@ -496,3 +497,5 @@ extension URL: @retroactive Identifiable {
     }
     .paywallFooter(actions: PaywallActions())
 }
+
+#endif

@@ -1,3 +1,5 @@
+#if os(iOS)
+
 import SwiftUI
 
 @available(iOS 15.0, *)
@@ -10,6 +12,7 @@ public struct AppIcon: View {
     
     public var body: some View {
         ZStack {
+            //TODO: Bundle.main.url(forResource: imageName, withExtension: "png", subdirectory: "Assets.xcassets/\(imageName).imageset") != nil
             if let uIImage = UIImage(named: imageName) {
                 Image(uiImage: uIImage)
                     .resizable()
@@ -26,3 +29,5 @@ public struct AppIcon: View {
 #Preview {
     AppIcon()
 }
+
+#endif

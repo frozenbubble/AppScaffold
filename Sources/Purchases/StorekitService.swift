@@ -3,7 +3,7 @@ import SwiftUI
 
 import AppScaffoldCore
 
-@available(iOS 17.0, *)
+@available(iOS 17.0, macOS 14.0, *)
 @Observable
 public class StorekitService {
     public private(set) var products: [Product] = []

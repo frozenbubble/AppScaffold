@@ -1,3 +1,4 @@
+#if os(iOS) || os(tvOS) || targetEnvironment(macCatalyst)
 import SwiftUI
 
 import RevenueCat
@@ -32,7 +33,7 @@ public struct PaywallFooterModifier: ViewModifier {
     }
 }
 
-@available(iOS 17.0, *)
+@available(iOS 17.0, macOS 14.0, *)
 public extension View {
     /// Adds a paywall footer to the bottom of the view
     /// - Parameters:
@@ -46,7 +47,7 @@ public extension View {
     }
 }
 
-@available(iOS 17.0, *)
+@available(iOS 17.0, macOS 14.0, *)
 #Preview {
     _ = AppScaffold.useMockPurchases()
 
@@ -64,3 +65,4 @@ public extension View {
     }
     .paywallFooter()
 }
+#endif

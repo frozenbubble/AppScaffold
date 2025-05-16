@@ -4,7 +4,7 @@ import SwiftUI
 
 import AppScaffoldCore
 
-@available(iOS 17, *)
+@available(iOS 17, macOS 14, *)
 @MainActor
 func createPreviewContainer(for types: any PersistentModel.Type...) -> ModelContainer {
     let config = ModelConfiguration(isStoredInMemoryOnly: true)
@@ -18,7 +18,7 @@ func createPreviewContainer(for types: any PersistentModel.Type...) -> ModelCont
     }
 }
 
-@available(iOS 17, *)
+@available(iOS 17, macOS 14, *)
 @MainActor
 public extension View {
     func withPreviewContainer(for types: any PersistentModel.Type..., autoSave: Bool = true) -> some View {

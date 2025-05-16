@@ -15,7 +15,7 @@ public enum PurchaseError: Error {
     case noCurrentOffering
 }
 
-@available(iOS 17.0, *)
+@available(iOS 17.0, macOS 14.0, *)
 public protocol PurchaseService {
     var fetchingInProgress: Bool { get set }
     var purchaseInProgress: Bool { get set }
@@ -35,7 +35,7 @@ public protocol PurchaseService {
     @MainActor func restorePurchases() async throws(PurchaseError) -> CustomerInfo?
 }
 
-@available(iOS 17.0, *)
+@available(iOS 17.0, macOS 14.0, *)
 @Observable
 public class PurchaseViewModel: PurchaseService {
     public var fetchingInProgress = false
@@ -254,7 +254,7 @@ public class PurchaseViewModel: PurchaseService {
 
 
 public extension AppScaffold {
-    @available(iOS 17.0, *)
+    @available(iOS 17.0, macOS 14.0, *)
     @MainActor
     static func usePurchases(revenueCatKey: String, premiumEntitlement: String = "premium", offerSelector: OfferingSelector? = nil) {
         applog.info("Configuring RevenueCat with premium entitlement: \(premiumEntitlement)")

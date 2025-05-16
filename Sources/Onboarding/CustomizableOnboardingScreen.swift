@@ -1,3 +1,5 @@
+#if os(iOS)
+
 import SwiftUI
 
 import AppScaffoldCore
@@ -92,3 +94,4 @@ public extension CustomizableOnboardingScreen where TopContent == AnyView {
 //    .padding(.top)
 }
 
+#endif

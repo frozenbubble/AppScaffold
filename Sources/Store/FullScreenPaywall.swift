@@ -1,3 +1,5 @@
+#if os(iOS) || os(tvOS) || targetEnvironment(macCatalyst)
+
 import SwiftUI
 import AppScaffoldUI
 
@@ -146,3 +148,4 @@ struct FullScreenPaywallPreview: View {
 //        Image(systemName: "carrot")
 //    }
 }
+#endif

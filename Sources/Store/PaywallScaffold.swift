@@ -1,3 +1,4 @@
+#if os(iOS) || os(tvOS) || targetEnvironment(macCatalyst)
 import SwiftUI
 import Resolver
 import RevenueCatUI
@@ -138,7 +139,7 @@ public struct PaywallScaffold<Content: View>: View {
     }
 }
 
-@available(iOS 17.0, *)
+@available(iOS 17.0, macOS 14.0, *)
 #Preview {
     _ = AppScaffold.useMockPurchases()
     AppScaffold.useEventTracking()
@@ -147,4 +148,4 @@ public struct PaywallScaffold<Content: View>: View {
         
     }
 }
-
+#endif

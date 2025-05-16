@@ -8,14 +8,14 @@ public enum PaywallType {
     case table
 }
 
-@available(iOS 17.0, *)
+@available(iOS 17.0, macOS 14.0, *)
 public extension AppScaffold {
     func configurePaywall(paywallConfiguration: PaywallConfiguration) {
         Resolver.register { paywallConfiguration }.scope(.application)
     }
 }
 
-@available(iOS 17.0, *)
+@available(iOS 17.0, macOS 14.0, *)
 public struct PaywallConfiguration {
     var type: PaywallType
     var features: [FeatureEntry]

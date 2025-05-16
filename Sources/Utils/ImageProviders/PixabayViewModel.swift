@@ -1,3 +1,4 @@
+#if os(iOS)
 import SwiftUI
 import Resolver
 
@@ -36,7 +37,7 @@ public enum PixabayTypeEnum: String, Sendable, Codable {
     case illustration = "illustration"
 }
 
-@available(iOS 17.0, *)
+@available(iOS 17, macOS 14, *)
 @MainActor
 @Observable
 public class PixabayViewModel {
@@ -79,3 +80,4 @@ public extension AppScaffold {
         Resolver.register { PixabayViewModel() }.scope(.shared)
     }
 }
+#endif

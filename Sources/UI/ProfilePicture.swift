@@ -1,6 +1,7 @@
 import SwiftUI
 import PhotosUI
 
+#if os(iOS)
 @available(iOS 17.0, *)
 public struct ProfilePicturePicker: View {
     private let onPick: ((Data) -> Void)?
@@ -73,3 +74,4 @@ public struct ProfilePicturePicker: View {
     .frame(width: 160, height: 160)
     .foregroundStyle(.yellow)
 }
+#endif

@@ -1,3 +1,4 @@
+#if os(iOS)
 import Foundation
 import BackgroundTasks
 import SwiftData
@@ -56,3 +57,4 @@ public class BackgroundTaskManager {
         }
     }
 }
+#endif

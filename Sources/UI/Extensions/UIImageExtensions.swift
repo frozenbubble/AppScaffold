@@ -1,3 +1,4 @@
+#if os(iOS)
 import SwiftUI
 import AVFoundation
 import CryptoKit
@@ -89,3 +90,4 @@ extension UIImage: @retroactive Identifiable {
         return hash.compactMap { String(format: "%02x", $0) }.joined()
     }
 }
+#endif

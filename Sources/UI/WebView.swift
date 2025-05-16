@@ -1,3 +1,5 @@
+#if os(iOS)
+
 import SwiftUI
 import WebKit
 
@@ -118,3 +120,5 @@ public struct LoadingWebView: View {
 
     return PreviewWrapper()
 }
+
+#endif

@@ -1,3 +1,4 @@
+#if os(iOS) || os(tvOS) || targetEnvironment(macCatalyst)
 import SwiftUI
 
 @available(iOS 16.0, *)
@@ -34,3 +35,4 @@ fileprivate struct DummyScreen2: View {
     //     SomeScreen() {  }
     // }
 }
+#endif

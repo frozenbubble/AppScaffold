@@ -1,3 +1,5 @@
+#if os(iOS)
+
 import SwiftUI
 import Resolver
 import StoreKit
@@ -427,3 +429,4 @@ fileprivate struct ReviewRequesterPreview: View {
     return ReviewRequesterPreview()
 }
 
+#endif

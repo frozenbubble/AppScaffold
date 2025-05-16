@@ -34,7 +34,7 @@ public class FirebaseCaller<Parameter: Codable, ResultDTO: Codable> {
     }
 }
 
-@available(iOS 16.0, *)
+@available(iOS 16.0, macOS 13, *)
 public class MockFirebaseCaller<Parameter: Codable, ResultDTO: Codable>: FirebaseCaller<Parameter, ResultDTO> {
     private let delaySecondds: Double
     private let result: ResultDTO
