@@ -16,6 +16,20 @@ private struct SandboxView: View {
     }
 }
 
+struct SandboxPreview: View {
+    @State var isPresented = false
+    
+    var body: some View {
+        VStack {
+            Button("Present") { isPresented = true }
+        }
+        .sheet(isPresented: $isPresented) {
+            SandboxView()
+        }
+    }
+}
+
 #Preview {
-    SandboxView()
+    SandboxPreview()
+        .frame(width: 400, height: 400)
 }

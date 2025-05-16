@@ -81,7 +81,6 @@ public struct PaywallFooter: View {
     @State var selectedProduct: StoreProduct?
     @State var highestPriceProduct: StoreProduct?
     @State var bestValueProduct: StoreProduct?
-    @State var isEligibleForTrial: Bool = false
     @State var displayAllPlans: Bool = false
     @State var displayPrivacyPolicy: Bool = false
     @State var displayUrl: URL?
