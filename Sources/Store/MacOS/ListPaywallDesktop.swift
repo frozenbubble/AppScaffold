@@ -26,7 +26,7 @@ private enum PaywallColors {
 }
 
 @available(macOS 14.0, *)
-struct ListPaywallDesktop<HeaderContent: View, OtherContent: View>: View {
+public struct ListPaywallDesktop<HeaderContent: View, OtherContent: View>: View {
     // MARK: - Properties
     let features: [FeatureEntry]
     let headerContent: HeaderContent
@@ -47,7 +47,7 @@ struct ListPaywallDesktop<HeaderContent: View, OtherContent: View>: View {
     @State private var postAlertAction: (() -> Void)? = nil
 
     // MARK: - Initialization
-    init(
+    public init(
         features: [FeatureEntry],
         actions: PaywallActions = PaywallActions(),
         links: PaywallLinks = PaywallLinks(),
@@ -69,7 +69,7 @@ struct ListPaywallDesktop<HeaderContent: View, OtherContent: View>: View {
     }
 
     // MARK: - Body
-    var body: some View {
+    public var body: some View {
         ZStack(alignment: .bottom) {
             ScrollView {
                 VStack(spacing: PaywallLayout.spacing) {
