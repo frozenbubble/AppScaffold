@@ -10,7 +10,7 @@ public enum PaywallType {
 
 @available(iOS 17.0, macOS 14.0, *)
 public extension AppScaffold {
-    func configurePaywall(paywallConfiguration: PaywallConfiguration) {
+    static func configurePaywall(paywallConfiguration: PaywallConfiguration) {
         Resolver.register { paywallConfiguration }.scope(.application)
     }
 }
