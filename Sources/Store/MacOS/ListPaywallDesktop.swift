@@ -3,6 +3,8 @@ import SwiftUIX
 
 import RevenueCat
 import AppScaffoldUI
+import AppScaffoldCore
+import AppScaffoldPurchases
 
 #if os(macOS)
 // MARK: - Design Constants
@@ -29,6 +31,8 @@ struct ListPaywallDesktop<HeaderContent: View, OtherContent: View>: View {
     let features: [FeatureEntry]
     let headerContent: HeaderContent
     let otherContent: OtherContent
+    let actions: PaywallActions
+    let links: PaywallLinks
 
     @AppService var purchases: PurchaseService
 
@@ -37,12 +41,21 @@ struct ListPaywallDesktop<HeaderContent: View, OtherContent: View>: View {
     @State var highestPriceProduct: StoreProduct?
     @State var messages = PaywallMessages()
 
+    @State private var isInfoAlertPresented: Bool = false
+    @State private var infoAlertTitle: String = ""
+    @State private var infoAlertMessage: String = ""
+    @State private var postAlertAction: (() -> Void)? = nil
+
     // MARK: - Initialization
     init(
         features: [FeatureEntry],
+        actions: PaywallActions = PaywallActions(),
+        links: PaywallLinks = PaywallLinks(),
         @ViewBuilder headerContent: () -> HeaderContent,
         @ViewBuilder otherContent: () -> OtherContent) {
         self.features = features
+        self.actions = actions
+        self.links = links
         self.headerContent = headerContent()
         self.otherContent = otherContent()
     }
@@ -58,7 +71,7 @@ struct ListPaywallDesktop<HeaderContent: View, OtherContent: View>: View {
                 }
 
                 footerLinksView
-                
+
                 //Bottom bar placeholder
                 Rectangle()
                     .fill(.clear)
@@ -69,6 +82,14 @@ struct ListPaywallDesktop<HeaderContent: View, OtherContent: View>: View {
         }
         .frame(width: 500, height: 600)
         .background(.secondarySystemBackground)
+        .alert(infoAlertTitle, isPresented: $isInfoAlertPresented) {
+            Button("OK") {
+                postAlertAction?()
+                postAlertAction = nil
+            }
+        } message: {
+            Text(infoAlertMessage)
+        }
         .task {
             async let status: () = checkStatus()
             async let products: () = fetchProducts()
@@ -148,13 +169,21 @@ struct ListPaywallDesktop<HeaderContent: View, OtherContent: View>: View {
             Text("Legal")
                 .font(.headline)
             Spacer()
-            Button("Privacy") {}
-//                .buttonStyle(.link)
 
-//            Text("·")
+            Button("Privacy") {
+                if let privacyURL = links.privacyPolicy {
+                    openURL(privacyURL)
+                }
+            }
+            .disabled(links.privacyPolicy == nil)
 
-            Button("Terms") {}
-//                .buttonStyle(.link)
+            Button("Terms") {
+                if let termsURL = links.termsOfService {
+                    openURL(termsURL)
+                } else {
+                    openURL(URL(string: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/")!)
+                }
+            }
         }
         .font(.footnote)
         .padding(10)
@@ -171,15 +200,38 @@ struct ListPaywallDesktop<HeaderContent: View, OtherContent: View>: View {
             Spacer()
 
             HStack(spacing: PaywallLayout.spacing) {
-                Button("Restore") {}
-                Button("Start your free 1 week") {}
-                    .buttonStyle(.borderedProminent)
+                Button("Restore") {
+                    Task {
+                        await handleRestore()
+                    }
+                }
+                .disabled(purchases.purchaseInProgress || purchases.fetchingInProgress)
+
+                Button(purchaseButtonText) {
+                    Task {
+                        await handlePurchase()
+                    }
+                }
+                .buttonStyle(.borderedProminent)
+                .disabled(purchases.purchaseInProgress ||
+                          purchases.fetchingInProgress ||
+                          selectedProduct == nil)
             }
         }
         .padding(PaywallLayout.padding)
         .background(.secondarySystemBackground)
         .compositingGroup()
         .shadow(color: .primary.opacity(0.1), radius: 2)
+    }
+
+    private var purchaseButtonText: String {
+        guard let product = selectedProduct else {
+            return "Subscribe"
+        }
+
+        return product.offerPeriodDetails != nil
+            ? messages.callToActionTrial.resolvePaywallVariables(with: product)
+            : messages.callToActionNormal.resolvePaywallVariables(with: product)
     }
 
     // MARK: - Functions
@@ -191,9 +243,33 @@ struct ListPaywallDesktop<HeaderContent: View, OtherContent: View>: View {
             highestPriceProduct = purchases.currentOfferingProducts.max(by: { $0.price > $1.price })
             let bestValueProduct = getBestValueProduct(from: purchases.currentOfferingProducts)
             selectedProduct = bestValueProduct
+
+            useMetadata()
         } catch {
-            // Error handling
+            applog.error(error)
+            showAlert(
+                title: "Error",
+                message: "Failed to fetch product information. If the issue persists, please reach out to us."
+            )
         }
+    }
+
+    func useMetadata() {
+        guard let currentOffering = purchases.currentOffering else {
+            return
+        }
+
+        let callToActionNormal: String? = currentOffering.getMetadataValue(for: "callToActionNormal", default: nil)
+        let callToActionTrial: String? = currentOffering.getMetadataValue(for: "callToActionTrial", default: nil)
+        let priceInfoNormal: String? = currentOffering.getMetadataValue(for: "priceInfoNormal", default: nil)
+        let priceInfoTrial: String? = currentOffering.getMetadataValue(for: "priceInfoTrial", default: nil)
+        let reassurance: String? = currentOffering.getMetadataValue(for: "reassurance", default: nil)
+
+        if let callToActionNormal { messages.callToActionNormal = callToActionNormal }
+        if let callToActionTrial { messages.callToActionTrial = callToActionTrial }
+        if let priceInfoNormal { messages.priceInfoNormal = priceInfoNormal }
+        if let priceInfoTrial { messages.priceInfoTrial = priceInfoTrial }
+        if let reassurance { messages.reassurance = reassurance }
     }
 
     /// Returns the product with the lowest monthly price
@@ -208,6 +284,73 @@ struct ListPaywallDesktop<HeaderContent: View, OtherContent: View>: View {
 
     func checkStatus() async {
         await purchases.updateIsUserSubscribedCached(force: true)
+    }
+
+    func handlePurchase() async {
+        guard let product = selectedProduct else {
+            return
+        }
+
+        do throws(PurchaseError) {
+            let customerInfo = try await purchases.purchase(product: product)
+            purchaseSuccess(customerInfo)
+        } catch {
+            applog.error(error)
+            purchaseFailure(error: error)
+        }
+    }
+
+    func handleRestore() async {
+        do throws(PurchaseError) {
+            let customerInfo = try await purchases.restorePurchases()
+            restoreSuccess(customerInfo)
+        } catch {
+            applog.error(error)
+            restoreFailure(error: error)
+        }
+    }
+
+    func showAlert(title: String, message: String, action: (() -> Void)? = nil) {
+        isInfoAlertPresented = true
+        infoAlertTitle = title
+        infoAlertMessage = message
+        postAlertAction = action
+    }
+
+    func purchaseSuccess(_ customerInfo: CustomerInfo?) {
+        showAlert(
+            title: "Purchase successful",
+            message: "You're all set.",
+            action: { actions.purchaseSuccess(customerInfo) }
+        )
+        applog.info("Purchase successful")
+    }
+
+    func purchaseFailure(error: PurchaseError) {
+        showAlert(
+            title: "Purchase failed",
+            message: "An error happened while processing your purchase.",
+            action: { actions.purchaseFailure(error) }
+        )
+        applog.error("Purchase failed: \(error)")
+    }
+
+    func restoreSuccess(_ customerInfo: CustomerInfo?) {
+        showAlert(
+            title: "Restore successful",
+            message: "Your purchases have been restored.",
+            action: { actions.restoreSuccess(customerInfo) }
+        )
+        applog.info("Restore successful")
+    }
+
+    func restoreFailure(error: PurchaseError) {
+        showAlert(
+            title: "Restore failed",
+            message: "There was a problem restoring your purchases.",
+            action: { actions.restoreFailure(error) }
+        )
+        applog.error("Restore failed: \(error)")
     }
 
     func productSelector(_ product: StoreProduct) -> some View {
@@ -277,6 +420,10 @@ struct ListPaywallDesktop<HeaderContent: View, OtherContent: View>: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
             .padding(6)
     }
+
+    private func openURL(_ url: URL) {
+        NSWorkspace.shared.open(url)
+    }
 }
 
 @available(macOS 14.0, *)
@@ -287,7 +434,14 @@ struct ListPaywallDesktop<HeaderContent: View, OtherContent: View>: View {
         .init(icon: "person.fill", color: .cyan, name: "Feature 2", description: "Super more amazing feature", basic: .missing, pro: .present)
     ]
 
-    return ListPaywallDesktop(features: features) {
+    return ListPaywallDesktop(
+        features: features,
+        actions: PaywallActions(),
+        links: PaywallLinks(
+            privacyPolicy: URL(string: "https://www.example.com/privacy"),
+            termsOfService: URL(string: "https://www.example.com/terms")
+        )
+    ) {
         Text("Header Content")
             .font(.title)
             .foregroundColor(.white)
