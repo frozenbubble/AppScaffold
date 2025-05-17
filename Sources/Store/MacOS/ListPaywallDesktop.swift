@@ -34,6 +34,7 @@ public struct ListPaywallDesktop<HeaderContent: View, OtherContent: View>: View 
     let actions: PaywallActions
     let links: PaywallLinks
 
+    @Environment(\.dismiss) var dismiss
     @AppService var purchases: PurchaseService
 
     @State var availableProducts: [StoreProduct] = []
@@ -240,7 +241,7 @@ public struct ListPaywallDesktop<HeaderContent: View, OtherContent: View>: View 
 
     private var bottomBar: some View {
         HStack {
-            Button("Cancel") {}
+            Button("Cancel") { dismiss() }
             Spacer()
 
             HStack(spacing: PaywallLayout.spacing) {
