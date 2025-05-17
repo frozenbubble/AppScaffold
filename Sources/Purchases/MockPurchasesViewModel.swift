@@ -16,11 +16,11 @@ public class MockPurchaseViewModel: PurchaseService {
         withAnimation { purchaseInProgress = true }
         defer { withAnimation { purchaseInProgress = false } }
         try? await Task.sleep(for: .seconds(1))
-        
+
         withAnimation {
             isUserSubscribedCached = true
         }
-        
+
         return nil
     }
 
@@ -28,11 +28,11 @@ public class MockPurchaseViewModel: PurchaseService {
         withAnimation { purchaseInProgress = true }
         defer { withAnimation { purchaseInProgress = false } }
         try? await Task.sleep(for: .seconds(1))
-        
+
         withAnimation {
             isUserSubscribedCached = true
         }
-        
+
         return nil
     }
 
@@ -41,7 +41,7 @@ public class MockPurchaseViewModel: PurchaseService {
     public func fetchCurrentOfferingProducts() async throws {
         withAnimation { fetchingInProgress = true }
         defer { withAnimation { fetchingInProgress = false } }
-//        try? await Task.sleep(for: .seconds(1.5))
+       try? await Task.sleep(for: .seconds(1.5))
 
         let weekly = createTestProduct(
             identifier: "mock_product_1_week",
@@ -61,7 +61,7 @@ public class MockPurchaseViewModel: PurchaseService {
             subscriptionPeriod: SubscriptionPeriod(value: 1, unit: .month),
             trial: true
         )
-        
+
         let annual = createTestProduct(
             identifier: "mock_product_1_year",
             price: 49.99,
@@ -119,9 +119,9 @@ public class MockPurchaseViewModel: PurchaseService {
     @MainActor public func updateIsUserSubscribedCached(force: Bool = false) async {
         defer { checkingStatus = false }
         checkingStatus = true
-        
+
         try? await Task.sleep(for: .seconds(1))
-        
+
         withAnimation {
             isUserSubscribedCached = false
         }
@@ -164,7 +164,7 @@ fileprivate func createTestProduct(
         numberOfPeriods: 1,
         type: .introductory
     )
-    
+
     let testProduct = TestStoreProduct(
         localizedTitle: localizedTitle,
         price: price,

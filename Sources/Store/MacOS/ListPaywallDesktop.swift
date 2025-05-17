@@ -53,11 +53,19 @@ struct ListPaywallDesktop<HeaderContent: View, OtherContent: View>: View {
         links: PaywallLinks = PaywallLinks(),
         @ViewBuilder headerContent: () -> HeaderContent,
         @ViewBuilder otherContent: () -> OtherContent) {
-        self.features = features
-        self.actions = actions
-        self.links = links
-        self.headerContent = headerContent()
-        self.otherContent = otherContent()
+            self.features = features
+            self.actions = actions
+            self.links = links
+            self.headerContent = headerContent()
+            self.otherContent = otherContent()
+        }
+
+    private var isLoading: Bool {
+        purchases.checkingStatus || purchases.fetchingInProgress
+    }
+
+    private var isProductsEmpty: Bool {
+        purchases.currentOfferingProducts.isEmpty
     }
 
     // MARK: - Body
@@ -119,13 +127,47 @@ struct ListPaywallDesktop<HeaderContent: View, OtherContent: View>: View {
                 .font(.headline)
                 .padding(.horizontal, PaywallLayout.padding)
 
-            HStack(spacing: PaywallLayout.spacing) {
-                ForEach(purchases.currentOfferingProducts, id: \.productIdentifier) { product in
-                    productSelector(product)
+            if isLoading || isProductsEmpty {
+                HStack(spacing: PaywallLayout.spacing) {
+                    ForEach(0..<2, id: \.self) { _ in
+                        placeholderProductSelector
+                    }
                 }
+                .padding(.horizontal, PaywallLayout.padding)
+            } else {
+                HStack(spacing: PaywallLayout.spacing) {
+                    ForEach(purchases.currentOfferingProducts, id: \.productIdentifier) { product in
+                        productSelector(product)
+                    }
+                }
+                .padding(.horizontal, PaywallLayout.padding)
             }
-            .padding(.horizontal, PaywallLayout.padding)
         }
+    }
+
+    private var placeholderProductSelector: some View {
+        HStack(alignment: .top, spacing: PaywallLayout.smallSpacing) {
+            Image(systemName: "circle")
+                .imageScale(.medium)
+                .foregroundStyle(.secondary)
+
+            VStack(alignment: .leading, spacing: PaywallLayout.smallSpacing) {
+                Text("Product Name")
+                    .fontWeight(.medium)
+                Text("Product details and pricing information")
+                    .font(.subheadline)
+            }
+            .multilineTextAlignment(.leading)
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .padding(PaywallLayout.smallPadding)
+        .frame(height: PaywallLayout.productSelectorHeight, alignment: .top)
+        .frame(maxWidth: .infinity)
+        .background {
+            RoundedRectangle(cornerRadius: PaywallLayout.cornerRadius)
+                .fill(PaywallColors.itemBackground)
+        }
+        .redacted(reason: .placeholder)
     }
 
     private var featuresView: some View {
@@ -175,7 +217,7 @@ struct ListPaywallDesktop<HeaderContent: View, OtherContent: View>: View {
                     openURL(privacyURL)
                 }
             }
-            .disabled(links.privacyPolicy == nil)
+            .disabled(links.privacyPolicy == nil || isLoading)
 
             Button("Terms") {
                 if let termsURL = links.termsOfService {
@@ -184,6 +226,7 @@ struct ListPaywallDesktop<HeaderContent: View, OtherContent: View>: View {
                     openURL(URL(string: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/")!)
                 }
             }
+            .disabled(isLoading)
         }
         .font(.footnote)
         .padding(10)
@@ -192,6 +235,7 @@ struct ListPaywallDesktop<HeaderContent: View, OtherContent: View>: View {
                 .fill(PaywallColors.itemBackground)
         }
         .padding(.horizontal, PaywallLayout.padding)
+        .redacted(reason: isLoading ? .placeholder : [])
     }
 
     private var bottomBar: some View {
@@ -200,22 +244,40 @@ struct ListPaywallDesktop<HeaderContent: View, OtherContent: View>: View {
             Spacer()
 
             HStack(spacing: PaywallLayout.spacing) {
-                Button("Restore") {
-                    Task {
-                        await handleRestore()
-                    }
-                }
-                .disabled(purchases.purchaseInProgress || purchases.fetchingInProgress)
+                if isLoading {
+                    HStack(spacing: PaywallLayout.spacing) {
+                        Text("Restore")
+                            .fontWeight(.medium)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 6)
 
-                Button(purchaseButtonText) {
-                    Task {
-                        await handlePurchase()
+                        Text("Loading...")
+                            .fontWeight(.medium)
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 6)
+                            .background {
+                                RoundedRectangle(cornerRadius: 6)
+                                    .fill(Color.secondary.opacity(0.7))
+                            }
                     }
+                    .redacted(reason: .placeholder)
+                } else {
+                    Button("Restore") {
+                        Task {
+                            await handleRestore()
+                        }
+                    }
+                    .disabled(purchases.purchaseInProgress)
+
+                    Button(purchaseButtonText) {
+                        Task {
+                            await handlePurchase()
+                        }
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .disabled(purchases.purchaseInProgress ||
+                              selectedProduct == nil)
                 }
-                .buttonStyle(.borderedProminent)
-                .disabled(purchases.purchaseInProgress ||
-                          purchases.fetchingInProgress ||
-                          selectedProduct == nil)
             }
         }
         .padding(PaywallLayout.padding)
@@ -230,8 +292,8 @@ struct ListPaywallDesktop<HeaderContent: View, OtherContent: View>: View {
         }
 
         return product.offerPeriodDetails != nil
-            ? messages.callToActionTrial.resolvePaywallVariables(with: product)
-            : messages.callToActionNormal.resolvePaywallVariables(with: product)
+        ? messages.callToActionTrial.resolvePaywallVariables(with: product)
+        : messages.callToActionNormal.resolvePaywallVariables(with: product)
     }
 
     // MARK: - Functions
@@ -376,8 +438,8 @@ struct ListPaywallDesktop<HeaderContent: View, OtherContent: View>: View {
 
                     if product.subscriptionPeriod != nil {
                         let text = product.offerPeriodDetails != nil
-                            ? messages.priceInfoTrial
-                            : messages.priceInfoNormal
+                        ? messages.priceInfoTrial
+                        : messages.priceInfoNormal
 
                         Text(text.resolvePaywallVariables(with: product))
                             .font(.subheadline)
