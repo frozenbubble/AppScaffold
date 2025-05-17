@@ -17,7 +17,9 @@ public extension AppScaffold {
 
 @available(iOS 17.0, macOS 14.0, *)
 public struct PaywallConfiguration {
+    #if os(iOS) || targetEnvironment(macCatalyst)
     var type: PaywallType
+    #endif
     var features: [FeatureEntry]
     var actions: PaywallActions
     
@@ -26,6 +28,7 @@ public struct PaywallConfiguration {
     var headlineContent: () -> AnyView
     var otherContent: () -> AnyView
     
+#if os(iOS) || targetEnvironment(macCatalyst)
     public init(
         type: PaywallType,
         features: [FeatureEntry],
@@ -41,4 +44,19 @@ public struct PaywallConfiguration {
         self.headlineContent = { AnyView(headlineContent()) }
         self.otherContent = { AnyView(otherContent()) }
     }
+#else
+    public init(
+        features: [FeatureEntry],
+        actions: PaywallActions,
+        @ViewBuilder headerContent: @escaping () -> some View,
+        @ViewBuilder headlineContent: @escaping () -> some View = { EmptyView() },
+        @ViewBuilder otherContent: @escaping () -> some View = { EmptyView() }
+    ) {
+        self.features = features
+        self.actions = actions
+        self.headerContent = { AnyView(headerContent()) }
+        self.headlineContent = { AnyView(headlineContent()) }
+        self.otherContent = { AnyView(otherContent()) }
+    }
+#endif
 }
