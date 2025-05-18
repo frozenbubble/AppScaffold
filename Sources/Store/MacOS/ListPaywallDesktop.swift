@@ -26,10 +26,11 @@ private enum PaywallColors {
 }
 
 @available(macOS 14.0, *)
-public struct ListPaywallDesktop<HeaderContent: View, OtherContent: View>: View {
+public struct ListPaywallDesktop<HeaderContent: View, HeadlineContent: View, OtherContent: View>: View {
     // MARK: - Properties
     let features: [FeatureEntry]
     let headerContent: HeaderContent
+    let headlineContent: HeadlineContent
     let otherContent: OtherContent
     let actions: PaywallActions
     let links: PaywallLinks
@@ -53,13 +54,20 @@ public struct ListPaywallDesktop<HeaderContent: View, OtherContent: View>: View 
         actions: PaywallActions = PaywallActions(),
         links: PaywallLinks = PaywallLinks(),
         @ViewBuilder headerContent: () -> HeaderContent,
-        @ViewBuilder otherContent: () -> OtherContent) {
-            self.features = features
-            self.actions = actions
-            self.links = links
-            self.headerContent = headerContent()
-            self.otherContent = otherContent()
-        }
+        @ViewBuilder headlineContent: () -> HeadlineContent = {
+            Text("Unlock all features with Premium")
+                .font(.title2)
+                .padding(.bottom)
+        },
+        @ViewBuilder otherContent: () -> OtherContent
+    ) {
+        self.features = features
+        self.actions = actions
+        self.links = links
+        self.headerContent = headerContent()
+        self.headlineContent = headlineContent()
+        self.otherContent = otherContent()
+    }
 
     private var isLoading: Bool {
         purchases.checkingStatus || purchases.fetchingInProgress
@@ -75,6 +83,7 @@ public struct ListPaywallDesktop<HeaderContent: View, OtherContent: View>: View 
             ScrollView {
                 VStack(spacing: PaywallLayout.spacing) {
                     headerView
+                    headlineContent
                     productsView
                     featuresView
                 }
