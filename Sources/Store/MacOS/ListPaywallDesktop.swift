@@ -250,7 +250,7 @@ public struct ListPaywallDesktop<HeaderContent: View, HeadlineContent: View, Oth
 
     private var bottomBar: some View {
         HStack {
-            Button("Cancel") { dismiss() }
+            Button("Not now") { dismiss() }
             Spacer()
 
             HStack(spacing: PaywallLayout.spacing) {
@@ -392,7 +392,7 @@ public struct ListPaywallDesktop<HeaderContent: View, HeadlineContent: View, Oth
     func purchaseSuccess(_ customerInfo: CustomerInfo?) {
         showAlert(
             title: "Purchase successful",
-            message: "You're all set.",
+            message: "Thank you for choosing us.",
             action: { actions.purchaseSuccess(customerInfo) }
         )
         applog.info("Purchase successful")
@@ -410,7 +410,7 @@ public struct ListPaywallDesktop<HeaderContent: View, HeadlineContent: View, Oth
     func restoreSuccess(_ customerInfo: CustomerInfo?) {
         showAlert(
             title: "Restore successful",
-            message: "Your purchases have been restored.",
+            message: "Thank you for coming back.",
             action: { actions.restoreSuccess(customerInfo) }
         )
         applog.info("Restore successful")

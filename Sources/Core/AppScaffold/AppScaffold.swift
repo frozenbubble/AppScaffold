@@ -1,4 +1,5 @@
 @_exported import Resolver
+@_exported import SwiftyUserDefaults
 import SwiftUI
 //import SwiftUIX
 

@@ -54,6 +54,7 @@ let package = Package(
         .package(url: "https://github.com/google/GoogleSignIn-iOS.git", .upToNextMajor(from: "8.0.0")),
         .package(url: "https://github.com/SwiftfulThinking/SwiftfulLoadingIndicators.git", .upToNextMajor(from: "0.0.4")),
         .package(url: "https://github.com/markiv/SwiftUI-Shimmer.git", .upToNextMajor(from: "1.5.1")),
+        .package(url: "https://github.com/sunshinejr/SwiftyUserDefaults", .upToNextMajor(from: "5.3.0")),
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -63,6 +64,7 @@ let package = Package(
             dependencies: [
                 .product(name: "Resolver", package: "Resolver"),
                 .product(name: "SwiftyBeaver", package: "SwiftyBeaver"),
+                .product(name: "SwiftyUserDefaults", package: "SwiftyUserDefaults")
             ],
             path: "Sources/Core"
         ),
