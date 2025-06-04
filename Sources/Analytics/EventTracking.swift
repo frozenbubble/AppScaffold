@@ -7,6 +7,10 @@ import AppScaffoldCore
 public struct EventTrackingService {
     let thresholds: [Int]
     
+    var reviewRequests: Int {
+        UserDefaults.scaffold.integer(forKey: AppScaffoldStorageKeys.reviewRequests)
+    }
+    
     public init(thresholds: [Int]) {
         self.thresholds = thresholds
     }
