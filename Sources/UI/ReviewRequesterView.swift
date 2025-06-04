@@ -17,16 +17,16 @@ enum IssueType: String, Identifiable, CaseIterable {
 
     var id: String { self.rawValue }
 
-    var emoji: String {
+    var icon: String {
         switch self {
         case .userExperience:
-            return "🧑‍💻"
+            return "gear"
         case .featureRequest:
-            return "🔍"
+            return "lightbulb"
         case .bug:
-            return "🐞"
+            return "exclamationmark.triangle"
         case .general:
-            return "💡"
+            return "bubble.left"
         }
     }
 
@@ -47,6 +47,8 @@ enum IssueType: String, Identifiable, CaseIterable {
 @available(iOS 17.0, *)
 public struct FeedbackView: View {
     var title: String
+    var unifiedCompletion: Bool
+    var onCompletion: (() -> Void)?
 
     @Environment(\.dismiss) var dismiss
     @AppService var tracking: EventTrackingService
@@ -54,8 +56,10 @@ public struct FeedbackView: View {
     @State var issueType: IssueType? = nil
     @State var feedback: String = ""
 
-    public init(title: String = "What best describes your experience?") {
+    public init(title: String = "What best describes your experience?", unifiedCompletion: Bool = false, onCompletion: (() -> Void)? = nil) {
         self.title = title
+        self.unifiedCompletion = unifiedCompletion
+        self.onCompletion = onCompletion
     }
 
     public var body: some View {
@@ -76,7 +80,6 @@ public struct FeedbackView: View {
         }
         .padding(.top)
         .frame(maxWidth: .infinity)
-        .background(Color(.systemBackground))
         .onAppear {}
     }
 
@@ -97,8 +100,10 @@ public struct FeedbackView: View {
                         tracking.trackEvent("User Issue", [ "Type": type.rawValue ], isAction: false)
                     } label: {
                         HStack {
-                            Text(type.emoji)
+                            Image(systemName: type.icon)
                                 .font(.title2)
+                                .foregroundStyle(.white)
+                                .frame(width: 24)
                             Text(type.rawValue)
 //                                .font(.title3)
                                 .fontWeight(.semibold)
@@ -113,6 +118,7 @@ public struct FeedbackView: View {
                     .buttonStyle(FeedbackButtonStyle())
                 }
             }
+            .padding(.horizontal)
             .foregroundStyle(.white)
             .frame(maxHeight: .infinity, alignment: .top)
         }
@@ -161,14 +167,20 @@ public struct FeedbackView: View {
                 .padding(.horizontal)
 
             Button {
-                withAnimation {
-                    self.issueType = nil
-                    dismiss()
-                }
                 tracking.trackEvent("Written Feedback", [
                     "Type": issueType?.rawValue ?? "",
                     "Feedback": feedback
                 ])
+
+                if unifiedCompletion {
+                    // Navigate to completion view
+                    onCompletion?()
+                } else {
+                    withAnimation {
+                        self.issueType = nil
+                        dismiss()
+                    }
+                }
             } label: {
                 HStack {
                     Image(systemName: "paperplane.fill")
@@ -200,9 +212,11 @@ public struct FeedbackView: View {
 @available(iOS 17.0, *)
 public struct ReviewRequesterView: View {
     var onNegativeFeedback: (() -> Void)?
+    var unifiedCompletion: Bool
 
-    public init(onNegativeFeedback: (() -> Void)? = nil) {
+    public init(onNegativeFeedback: (() -> Void)? = nil, unifiedCompletion: Bool = false) {
         self.onNegativeFeedback = onNegativeFeedback
+        self.unifiedCompletion = unifiedCompletion
     }
 
     @Environment(\.dismiss) var dismiss
@@ -210,15 +224,28 @@ public struct ReviewRequesterView: View {
     @AppService var tracking: EventTrackingService
 
     @State var displayFeedbackRequest = false
+    @State var showCompletion = false
 
     public var body: some View {
         ZStack {
-            if displayFeedbackRequest {
-                FeedbackView()
+            if showCompletion {
+                completionView
                     .transition(.asymmetric(
-                        insertion: .move(edge: .trailing).combined(with: .opacity),
-                        removal: .move(edge: .leading).combined(with: .opacity)
+                        insertion: .move(edge: .leading).combined(with: .opacity),
+                        removal: .move(edge: .trailing).combined(with: .opacity)
                     ))
+            } else if displayFeedbackRequest {
+                FeedbackView(unifiedCompletion: unifiedCompletion) {
+                    // Called when feedback is submitted and unifiedCompletion is true
+                    withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+                        displayFeedbackRequest = false
+                        showCompletion = true
+                    }
+                }
+                .transition(.asymmetric(
+                    insertion: .move(edge: .trailing).combined(with: .opacity),
+                    removal: .move(edge: .leading).combined(with: .opacity)
+                ))
             } else {
                 feedbackSelector
                     .transition(.asymmetric(
@@ -230,6 +257,84 @@ public struct ReviewRequesterView: View {
         .tint(AppScaffoldUI.accent)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color(.systemBackground))
+    }
+
+    var completionView: some View {
+        VStack(spacing: 32) {
+            // App Icon and header
+            VStack(spacing: 16) {
+                AppIcon(imageName: "AppIcon_1")
+                    .frame(width: 80, height: 80)
+                    .clipShape(RoundedRectangle(cornerRadius: 18))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 18)
+                            .stroke(Color(.systemGray5), lineWidth: 1)
+                    )
+                    .shadow(color: Color.black.opacity(0.1), radius: 6, x: 0, y: 2)
+
+                VStack(spacing: 8) {
+                    Text("Thank you!")
+                        .font(.title2)
+                        .fontWeight(.semibold)
+
+                    Text("If you like \(AppScaffold.appName) and have the time, a review would really help us out.")
+                        .font(.callout)
+                        .multilineTextAlignment(.center)
+                        .foregroundStyle(.secondary)
+                        .padding(.horizontal)
+//                        .frame(height: 50)
+                        .lineLimit(2)
+//                        .frame(maxHeight: .infinity)
+                }
+            }
+            .padding(.top, 12)
+
+            // Action buttons
+            VStack(spacing: 16) {
+                // Write Review button
+                Button {
+                    tracking.trackEvent("Review Action", ["Action": "write_review"])
+                    openAppStoreReview()
+                    dismiss()
+                } label: {
+                    HStack {
+                        Image(systemName: "square.and.pencil")
+                        Text("Write Review")
+                    }
+                    .font(.headline)
+                    .fontWeight(.semibold)
+                }
+                .buttonStyle(FeedbackButtonStyle())
+
+                // Rate App button
+                Button {
+                    tracking.trackEvent("Review Action", ["Action": "rate_app"])
+                    requestReview()
+                    dismiss()
+                } label: {
+                    HStack {
+                        Image(systemName: "star.fill")
+                        Text("Rate App")
+                    }
+                    .font(.headline)
+                    .fontWeight(.semibold)
+                }
+                .buttonStyle(FeedbackButtonStyle())
+            }
+            .foregroundStyle(.white)
+
+            // Not now button
+            Button {
+                tracking.trackEvent("Review Action", ["Action": "not_now"])
+                dismiss()
+            } label: {
+                Text("Not now")
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .padding(.horizontal)
+        .padding(.bottom)
     }
 
     var feedbackSelector: some View {
@@ -291,10 +396,16 @@ public struct ReviewRequesterView: View {
                 // Positive feedback button
                 Button {
                     tracking.trackEvent("Feedback", [ "Sentiment": "positive" ])
-                    withAnimation {
-                        dismiss()
+                    if unifiedCompletion {
+                        withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+                            showCompletion = true
+                        }
+                    } else {
+                        withAnimation {
+                            dismiss()
+                        }
+                        requestReview()
                     }
-                    requestReview()
                 } label: {
                     VStack(spacing: 12) {
                         Text("😍")
@@ -302,7 +413,7 @@ public struct ReviewRequesterView: View {
                             .padding(8)
                             .background(
                                 Circle()
-                                    .fill(AppScaffoldUI.accent.opacity(0.15))
+                                    .fill(.pink.opacity(0.15))
                             )
 
                         Text("Loving it!")
@@ -327,12 +438,29 @@ public struct ReviewRequesterView: View {
         }
         .padding(.bottom, 24)
     }
+
+    /// Opens the App Store review page for the current app
+    private func openAppStoreReview() {
+        guard let appID = Bundle.main.object(forInfoDictionaryKey: "AppStoreID") as? String,
+              let url = URL(string: "https://apps.apple.com/app/id\(appID)?action=write-review") else {
+            // Fallback: just request review if no App Store ID configured
+            requestReview()
+            return
+        }
+
+        if UIApplication.shared.canOpenURL(url) {
+            UIApplication.shared.open(url)
+        } else {
+            // Fallback: request review
+            requestReview()
+        }
+    }
 }
 
 @available(iOS 17.0, *)
 public struct FeedbackButtonStyle: ButtonStyle {
     var cornerRadius: CGFloat = 12
-    var padding: CGFloat = 16
+    var padding: CGFloat = 12
 
     public func makeBody(configuration: Configuration) -> some View {
         configuration.label
@@ -342,15 +470,17 @@ public struct FeedbackButtonStyle: ButtonStyle {
                 RoundedRectangle(cornerRadius: cornerRadius)
                     .fill(
                         LinearGradient(
-                            colors: [AppScaffoldUI.accent, AppScaffoldUI.accent.darken(by: 0.05)],
-                            startPoint: .top,
-                            endPoint: .bottom
+                            colors: [
+                                AppScaffoldUI.colors.actionButtonColor1,
+                                AppScaffoldUI.colors.actionButtonColor2,
+                            ],
+                            startPoint: .bottomLeading,
+                            endPoint: .topTrailing
                         )
                     )
             )
             .opacity(configuration.isPressed ? 0.8 : 1.0)
             .contentShape(RoundedRectangle(cornerRadius: cornerRadius))
-            .padding(.horizontal)
             .scaleEffect(configuration.isPressed ? 0.97 : 1.0)
             .animation(.easeInOut(duration: 0.2), value: configuration.isPressed)
             .shadow(color: AppScaffoldUI.accent.opacity(0.3), radius: 3, y: 2)
@@ -369,28 +499,24 @@ public struct ScaleButtonStyle: ButtonStyle {
 
 @available(iOS 17.0, *)
 public extension View {
-    func reviewRequester(isPresented: Binding<Bool>) -> some View {
-        modifier(ReviewRequesterModifier(isPresented: isPresented))
-//        self
-//            .sheet(isPresented: isPresented) {
-//                ReviewRequesterView()
-//                    .presentationDetents([.medium])
-//            }
+    func reviewRequester(isPresented: Binding<Bool>, unifiedCompletion: Bool = false) -> some View {
+        modifier(ReviewRequesterModifier(isPresented: isPresented, unifiedCompletion: unifiedCompletion))
     }
 
-    func autoReviewRequester() -> some View {
-        modifier(AutoReviewRequesterModifier())
+    func autoReviewRequester(unifiedCompletion: Bool = false) -> some View {
+        modifier(AutoReviewRequesterModifier(unifiedCompletion: unifiedCompletion))
     }
 }
 
 @available(iOS 17.0, *)
 struct ReviewRequesterModifier: ViewModifier {
     @Binding var isPresented: Bool
+    var unifiedCompletion: Bool
 
     public func body(content: Content) -> some View {
         content
             .sheet(isPresented: $isPresented) {
-                ReviewRequesterView()
+                ReviewRequesterView(unifiedCompletion: unifiedCompletion)
                     .presentationDetents([.medium])
             }
             .onDisappear { isPresented = false }
@@ -400,29 +526,33 @@ struct ReviewRequesterModifier: ViewModifier {
 @available(iOS 17.0, *)
 struct AutoReviewRequesterModifier: ViewModifier {
     @AppStorage(AppScaffoldStorageKeys.displayReviewRequest, store: .scaffold) private var displayReviewRequest: Bool = false
+    var unifiedCompletion: Bool
 
     public func body(content: Content) -> some View {
         content
-            .reviewRequester(isPresented: $displayReviewRequest)
+            .reviewRequester(isPresented: $displayReviewRequest, unifiedCompletion: unifiedCompletion)
     }
 }
 
 @available(iOS 17.0, *)
 fileprivate struct ReviewRequesterPreview: View {
     @State var present: Bool = false
+    @State var presentUnified: Bool = false
 
     var body: some View {
-        VStack {
-            Button("Present") { present.toggle() }
+        VStack(spacing: 20) {
+            Button("Present (Legacy)") { present.toggle() }
+            Button("Present (Unified)") { presentUnified.toggle() }
         }
-        .reviewRequester(isPresented: $present)
+        .reviewRequester(isPresented: $present, unifiedCompletion: false)
+        .reviewRequester(isPresented: $presentUnified, unifiedCompletion: true)
     }
 }
 
 @available(iOS 17.0, *)
 #Preview {
     AppScaffold.configure(appName: "AppScaffold")
-    AppScaffold.configureUI(colors: .init(accent: Color.yellow), defaultTheme: .system)
+    AppScaffold.configureUI(colors: .init(accent: Color.cyan), defaultTheme: .system)
 
     AppScaffold.useEventTracking()
 

@@ -10,7 +10,7 @@ public extension DefaultsKey {
 
 //@AppStorage("lofasz") var lofasz
 
-@available(macOS 14.0, *)
+@available(iOS 17, macOS 14.0, *)
 public extension AppStorage {
     init<RowValue>(
         wrappedValue: Value = TableColumnCustomization<RowValue>(),
