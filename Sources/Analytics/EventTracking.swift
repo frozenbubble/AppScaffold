@@ -5,9 +5,9 @@ import Resolver
 import AppScaffoldCore
 
 public struct EventTrackingService {
-    let thresholds: [Int]
+    public let thresholds: [Int]
     
-    var reviewRequests: Int {
+    public var reviewRequests: Int {
         UserDefaults.scaffold.integer(forKey: AppScaffoldStorageKeys.reviewRequests)
     }
     
