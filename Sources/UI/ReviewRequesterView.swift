@@ -213,10 +213,12 @@ public struct FeedbackView: View {
 public struct ReviewRequesterView: View {
     var onNegativeFeedback: (() -> Void)?
     var unifiedCompletion: Bool
+    var onDismiss: (() -> Void)?
 
-    public init(onNegativeFeedback: (() -> Void)? = nil, unifiedCompletion: Bool = false) {
+    public init(onNegativeFeedback: (() -> Void)? = nil, unifiedCompletion: Bool = false, onDismiss: (() -> Void)? = nil) {
         self.onNegativeFeedback = onNegativeFeedback
         self.unifiedCompletion = unifiedCompletion
+        self.onDismiss = onDismiss
     }
 
     @Environment(\.dismiss) var dismiss
@@ -257,6 +259,9 @@ public struct ReviewRequesterView: View {
         .tint(AppScaffoldUI.accent)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color(.systemBackground))
+        .onDisappear {
+            onDismiss?()
+        }
     }
 
     var completionView: some View {
@@ -293,7 +298,7 @@ public struct ReviewRequesterView: View {
             VStack(spacing: 16) {
                 // Write Review button
                 Button {
-                    tracking.trackEvent("Review Action", ["Action": "write_review"])
+                    tracking.trackEvent("Review Action", ["Action": "write_review"], isAction: false)
                     openAppStoreReview()
                     dismiss()
                 } label: {
@@ -308,7 +313,7 @@ public struct ReviewRequesterView: View {
 
                 // Rate App button
                 Button {
-                    tracking.trackEvent("Review Action", ["Action": "rate_app"])
+                    tracking.trackEvent("Review Action", ["Action": "rate_app"], isAction: false)
                     requestReview()
                     dismiss()
                 } label: {
@@ -495,12 +500,12 @@ public struct ScaleButtonStyle: ButtonStyle {
 
 @available(iOS 17.0, *)
 public extension View {
-    func reviewRequester(isPresented: Binding<Bool>, unifiedCompletion: Bool = false) -> some View {
-        modifier(ReviewRequesterModifier(isPresented: isPresented, unifiedCompletion: unifiedCompletion))
+    func reviewRequester(isPresented: Binding<Bool>, unifiedCompletion: Bool = false, onDismiss: (() -> Void)? = nil) -> some View {
+        modifier(ReviewRequesterModifier(isPresented: isPresented, unifiedCompletion: unifiedCompletion, onDismiss: onDismiss))
     }
 
-    func autoReviewRequester(unifiedCompletion: Bool = false) -> some View {
-        modifier(AutoReviewRequesterModifier(unifiedCompletion: unifiedCompletion))
+    func autoReviewRequester(unifiedCompletion: Bool = false, onDismiss: (() -> Void)? = nil) -> some View {
+        modifier(AutoReviewRequesterModifier(unifiedCompletion: unifiedCompletion, onDismiss: onDismiss))
     }
 }
 
@@ -508,11 +513,12 @@ public extension View {
 struct ReviewRequesterModifier: ViewModifier {
     @Binding var isPresented: Bool
     var unifiedCompletion: Bool
+    var onDismiss: (() -> Void)?
 
     public func body(content: Content) -> some View {
         content
-            .sheet(isPresented: $isPresented) {
-                ReviewRequesterView(unifiedCompletion: unifiedCompletion)
+            .sheet(isPresented: $isPresented, onDismiss: onDismiss) {
+                ReviewRequesterView(unifiedCompletion: unifiedCompletion, onDismiss: onDismiss)
                     .presentationDetents([.medium])
             }
             .onDisappear { isPresented = false }
@@ -523,10 +529,11 @@ struct ReviewRequesterModifier: ViewModifier {
 struct AutoReviewRequesterModifier: ViewModifier {
     @AppStorage(AppScaffoldStorageKeys.displayReviewRequest, store: .scaffold) private var displayReviewRequest: Bool = false
     var unifiedCompletion: Bool
+    var onDismiss: (() -> Void)?
 
     public func body(content: Content) -> some View {
         content
-            .reviewRequester(isPresented: $displayReviewRequest, unifiedCompletion: unifiedCompletion)
+            .reviewRequester(isPresented: $displayReviewRequest, unifiedCompletion: unifiedCompletion, onDismiss: onDismiss)
     }
 }
 
