@@ -284,6 +284,7 @@ public struct ReviewRequesterView: View {
                         .multilineTextAlignment(.center)
                         .foregroundStyle(.secondary)
                         .padding(.horizontal)
+                        .frame(minHeight: 70)
                 }
             }
             .frame(maxHeight: .infinity)
