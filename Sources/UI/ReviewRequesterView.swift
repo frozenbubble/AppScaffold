@@ -269,12 +269,9 @@ public struct ReviewRequesterView: View {
             // App Icon and header
             VStack(spacing: 16) {
                 AppIcon(imageName: "AppIcon_1")
-                    .frame(width: 80, height: 80)
+                    .frame(width: 70, height: 70)
                     .clipShape(RoundedRectangle(cornerRadius: 18))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 18)
-                            .stroke(Color(.systemGray5), lineWidth: 1)
-                    )
+                    .padding(.top)
                     .shadow(color: Color.black.opacity(0.1), radius: 6, x: 0, y: 2)
 
                 VStack(spacing: 8) {
@@ -287,13 +284,11 @@ public struct ReviewRequesterView: View {
                         .multilineTextAlignment(.center)
                         .foregroundStyle(.secondary)
                         .padding(.horizontal)
-//                        .frame(height: 50)
-                        .lineLimit(3)
-//                        .frame(maxHeight: .infinity)
                 }
             }
+            .frame(maxHeight: .infinity)
             .padding(.top, 12)
-
+            
             // Action buttons
             VStack(spacing: 16) {
                 // Write Review button
