@@ -7,6 +7,7 @@ public enum AppScaffold {
     @MainActor static var initialised: Bool = false
     
     nonisolated(unsafe) public private(set) static var appName: String = ""
+    nonisolated(unsafe) public private(set) static var appId: String = ""
     nonisolated(unsafe) public private(set) static var supportEmail: String = ""
     
     nonisolated(unsafe) public private(set) static var defaultsPrefix: String = ""
@@ -15,11 +16,13 @@ public enum AppScaffold {
     @MainActor
     public static func configure(
         appName: String,
+        appId: String,
         defaultsPrefix: String = "",
         appGroupName: String = "",
-        supportEmail: String = "pszappdev@gmail.com"
+        supportEmail: String = "peter@pszapps.com"
     ) {
         Self.appName = appName
+        Self.appId = appId
         Self.supportEmail = supportEmail
         Self.defaultsPrefix = defaultsPrefix
         Self.appGroupName = appGroupName

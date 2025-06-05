@@ -277,13 +277,13 @@ public struct ReviewRequesterView: View {
                         .font(.title2)
                         .fontWeight(.semibold)
 
-                    Text("If you like \(AppScaffold.appName) and have the time, a review would really help us out.")
+                    Text("If you like \(AppScaffold.appName) and have the time, a review or a quick rating would mean the world to us!")
                         .font(.callout)
                         .multilineTextAlignment(.center)
                         .foregroundStyle(.secondary)
                         .padding(.horizontal)
 //                        .frame(height: 50)
-                        .lineLimit(2)
+                        .lineLimit(3)
 //                        .frame(maxHeight: .infinity)
                 }
             }
@@ -441,17 +441,13 @@ public struct ReviewRequesterView: View {
 
     /// Opens the App Store review page for the current app
     private func openAppStoreReview() {
-        guard let appID = Bundle.main.object(forInfoDictionaryKey: "AppStoreID") as? String,
-              let url = URL(string: "https://apps.apple.com/app/id\(appID)?action=write-review") else {
-            // Fallback: just request review if no App Store ID configured
-            requestReview()
-            return
-        }
-
-        if UIApplication.shared.canOpenURL(url) {
+        if let url = URL(string: "https://apps.apple.com/app/id\(AppScaffold.appId)?action=write-review"),
+              !AppScaffold.appId.isEmpty,
+              UIApplication.shared.canOpenURL(url) {
+            applog.debug("Opening App Store review page for \(AppScaffold.appId)...")
             UIApplication.shared.open(url)
         } else {
-            // Fallback: request review
+            applog.error("Could not open App Store review page: Invalid App ID or URL scheme not supported...")
             requestReview()
         }
     }
@@ -551,7 +547,8 @@ fileprivate struct ReviewRequesterPreview: View {
 
 @available(iOS 17.0, *)
 #Preview {
-    AppScaffold.configure(appName: "AppScaffold")
+    AppScaffold.configure(appName: "Test App", appId: "6711358397")
+    AppScaffold.useConsoleLogger(minLevel: .verbose, logPrintWay: .print)
     AppScaffold.configureUI(colors: .init(accent: Color.cyan), defaultTheme: .system)
 
     AppScaffold.useEventTracking()

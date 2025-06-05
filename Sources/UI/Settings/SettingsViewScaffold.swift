@@ -40,7 +40,6 @@ public extension LabelStyle where Self == ColoredLabelStyle {
 //TODO: extract SettingsButton
 @available(iOS 17.0, macOS 14, *)
 public struct SettingsViewScaffold<TopContent: View, BotttomContent: View, PaywallContent: View>: View {
-    let appId: String
     let topContent: TopContent
     let bottomContent: BotttomContent
     let paywallContent: PaywallContent
@@ -61,17 +60,15 @@ public struct SettingsViewScaffold<TopContent: View, BotttomContent: View, Paywa
     @State var displayFeedback = false
     
     public init(
-        appId: String,
         @ViewBuilder topContent: () -> TopContent = { EmptyView() },
         @ViewBuilder bottomContent: () -> BotttomContent = { EmptyView() },
         paywallContent: () -> PaywallContent
     ) {
-        self.appId = appId
         self.topContent = topContent()
         self.paywallContent = paywallContent()
         self.bottomContent = bottomContent()
         
-        if appId.isEmpty {
+        if AppScaffold.appId.isEmpty {
             applog.warning("App Id not set, sharing and rating will not work.")
         }
     }
@@ -108,7 +105,7 @@ public struct SettingsViewScaffold<TopContent: View, BotttomContent: View, Paywa
                     paywallContent
                 }
                 
-                if let appUrl = URL(string: "https://apps.apple.com/app/id\(appId)") {
+                if let appUrl = URL(string: "https://apps.apple.com/app/id\(AppScaffold.appId)") {
                     
                     HStack {
                         Button {
@@ -198,12 +195,13 @@ public struct SettingsViewScaffold<TopContent: View, BotttomContent: View, Paywa
 
 @available(iOS 17.0, macOS 14, *)
 #Preview {
+    AppScaffold.configure(appName: "Test app", appId: "test id")
     UserDefaults.standard.reset()
     AppScaffold.useEventTracking()
     AppScaffold.configureUI(colors: .init(), defaultTheme: .dark)
     
     return NavigationStack {
-        SettingsViewScaffold(appId: "") {
+        SettingsViewScaffold {
             Image(systemName: "person")
             
             Section {
