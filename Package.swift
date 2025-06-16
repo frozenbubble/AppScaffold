@@ -55,7 +55,7 @@ let package = Package(
         .package(url: "https://github.com/SwiftfulThinking/SwiftfulLoadingIndicators.git", .upToNextMajor(from: "0.0.4")),
         .package(url: "https://github.com/markiv/SwiftUI-Shimmer.git", .upToNextMajor(from: "1.5.1")),
         .package(url: "https://github.com/sunshinejr/SwiftyUserDefaults", .upToNextMajor(from: "5.3.0")),
-        .package(url: "https://github.com/kylebshr/ScreenCorners", branch: "main"),
+        .package(url: "https://github.com/kylebshr/ScreenCorners", revision: "2b41661aeb8d29a826e881d4af17abd92ff74c2d"),
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
