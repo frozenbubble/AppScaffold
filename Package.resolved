@@ -1,5 +1,5 @@
 {
-  "originHash" : "9f609934c52ccd1da6298efe0d3c3e868a1f7e5595bd585e20fcade2bcd68f11",
+  "originHash" : "4a3b74d7f0db7d1d4f2ca475fa488f5c40dde042ba805d2fec1efc4c2b959138",
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
@@ -170,15 +170,6 @@
       "state" : {
         "revision" : "47602af1ac8d7952299fbd0bda3cfbd12cf3a8ca",
         "version" : "1.5.1"
-      }
-    },
-    {
-      "identity" : "screencorners",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/kylebshr/ScreenCorners",
-      "state" : {
-        "branch" : "main",
-        "revision" : "2b41661aeb8d29a826e881d4af17abd92ff74c2d"
       }
     },
     {

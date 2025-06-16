@@ -4,7 +4,7 @@ import SwiftUI
 
 import AppScaffoldCore
 import AppScaffoldUI
-import ScreenCorners
+//import ScreenCorners
 
 @available(iOS 16.0, *)
 public struct CustomizableOnboardingScreen<TopContent: View, BottomContent: View>: View {

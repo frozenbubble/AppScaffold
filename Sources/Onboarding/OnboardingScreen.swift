@@ -4,7 +4,7 @@ import SwiftUIX
 import AppScaffoldCore
 import AppScaffoldUI
 
-import ScreenCorners
+//import ScreenCorners
 
 enum backgroundType {
     case solid
