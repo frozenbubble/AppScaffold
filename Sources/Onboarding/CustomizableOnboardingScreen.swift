@@ -12,6 +12,8 @@ public struct CustomizableOnboardingScreen<TopContent: View, BottomContent: View
     var content: TopContent
     var bottomContent: BottomContent
     var onFinish: (() -> Void)? = nil
+    
+    @Environment(\.colorScheme) var colorScheme
 
     public init(title: String = "", @ViewBuilder topContent: () -> TopContent, @ViewBuilder bottomContent: () -> BottomContent, onFinish: (() -> Void)? = nil) {
         self.title = title
@@ -54,7 +56,7 @@ public struct CustomizableOnboardingScreen<TopContent: View, BottomContent: View
             .clipShape(RoundedRectangle(cornerRadius: UIScreen.main.displayCornerRadius - 8))
             .ignoresSafeArea(edges: .bottom)
             .compositingGroup()
-            .shadow(color: .primary.opacity(0.25), radius: 4)
+            .shadow(color: .primary.opacity(colorScheme == .light ? 0.15 : 0.35), radius: 4)
             .padding(8)
         }
         .ignoresSafeArea(edges: .bottom)

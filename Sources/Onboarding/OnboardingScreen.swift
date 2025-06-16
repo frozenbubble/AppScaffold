@@ -3,6 +3,7 @@ import SwiftUI
 import SwiftUIX
 import AppScaffoldCore
 import AppScaffoldUI
+
 import ScreenCorners
 
 enum backgroundType {
@@ -18,6 +19,8 @@ public struct OnboardingScreen<Content: View>: View {
     var buttonText: String
     var content: Content
     var onFinish: (() -> Void)? = nil
+    
+    @Environment(\.colorScheme) var colorScheme
 
 //    let cornerRadiusOffset =
 
@@ -80,13 +83,12 @@ public struct OnboardingScreen<Content: View>: View {
                 .frame(maxWidth: .infinity)
                 .frame(height: Self.bottomSheetHeight)
                 .background {
-    //                AppScaffoldUI.colors.onboardingOverlayColor
                     VisualEffectBlurView(blurStyle: .systemMaterial)
                 }
                 .clipShape(RoundedRectangle(cornerRadius: UIScreen.main.displayCornerRadius - 8))
                 .ignoresSafeArea(edges: .bottom)
                 .compositingGroup()
-                .shadow(color: .primary.opacity(0.25), radius: 4)
+                .shadow(color: .primary.opacity(colorScheme == .light ? 0.15 : 0.35), radius: 4)
                 .padding(8)
             }
             .ignoresSafeArea(edges: .bottom)
