@@ -55,6 +55,7 @@ let package = Package(
         .package(url: "https://github.com/SwiftfulThinking/SwiftfulLoadingIndicators.git", .upToNextMajor(from: "0.0.4")),
         .package(url: "https://github.com/markiv/SwiftUI-Shimmer.git", .upToNextMajor(from: "1.5.1")),
         .package(url: "https://github.com/sunshinejr/SwiftyUserDefaults", .upToNextMajor(from: "5.3.0")),
+        .package(url: "https://github.com/kylebshr/ScreenCorners", branch: "main"),
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -128,7 +129,8 @@ let package = Package(
                 .product(name: "SwiftUIX", package: "SwiftUIX"),
                 .product(name: "MarkdownUI", package: "swift-markdown-ui"),
                 .product(name: "SwiftfulLoadingIndicators", package: "SwiftfulLoadingIndicators"),
-                .product(name: "Shimmer", package: "SwiftUI-Shimmer")
+                .product(name: "Shimmer", package: "SwiftUI-Shimmer"),
+                .product(name: "ScreenCorners", package: "ScreenCorners")
             ],
             path: "Sources/UI"
         ),
