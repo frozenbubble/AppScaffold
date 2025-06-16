@@ -1,6 +1,6 @@
 import SwiftUI
 
-@available(iOS 17.0, *)
+@available(iOS 17.0, macOS 14.0, *)
 struct WhatsNewView: View {
     let manager: WhatsNewManager
 
@@ -41,7 +41,9 @@ struct WhatsNewView: View {
             .padding(.bottom)
         }
         .padding()
+#if os(iOS) || os(tvOS) || targetEnvironment(macCatalyst)
         .background(Color(uiColor: .systemBackground))
+#endif
         .clipShape(RoundedRectangle(cornerRadius: 16))
         .shadow(radius: 10)
         .padding()
@@ -50,7 +52,7 @@ struct WhatsNewView: View {
     }
 }
 
-@available(iOS 17.0, *)
+@available(iOS 17.0, macOS 14.0, *)
 #Preview {
     let items = [
         WhatsNewItem(

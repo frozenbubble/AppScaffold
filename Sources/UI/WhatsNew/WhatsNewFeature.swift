@@ -19,7 +19,7 @@ public struct WhatsNewItem: Identifiable {
 }
 
 /// Manages the state and configuration of the What's New feature
-@available(iOS 17.0, *)
+@available(iOS 17.0, macOS 14.0, *)
 @Observable
 public final class WhatsNewManager {
     var isPresented = false
@@ -50,7 +50,7 @@ public final class WhatsNewManager {
     }
 }
 
-@available(iOS 17.0, *)
+@available(iOS 17.0, macOS 14.0, *)
 public extension AppScaffold {
     static func configureWhatsNew(version: String, items: [WhatsNewItem]) {
         let manager = WhatsNewManager(currentVersion: version, items: items)

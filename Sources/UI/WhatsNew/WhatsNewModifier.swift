@@ -1,7 +1,7 @@
 import SwiftUI
 import Resolver
 
-@available(iOS 17.0, *)
+@available(iOS 17.0, macOS 14.0, *)
 public extension View {
     /// Shows a "What's New" popup when new features are available
     /// - Parameter exceptWhen: Conditions that prevent the popup from showing
@@ -10,7 +10,7 @@ public extension View {
     }
 }
 
-@available(iOS 17.0, *)
+@available(iOS 17.0, macOS 14.0, *)
 struct WhatsNewModifier: ViewModifier {
     @State private var isPresented = false
     private let suppressWhen: Bool
@@ -41,7 +41,7 @@ struct WhatsNewModifier: ViewModifier {
     }
 }
 
-@available(iOS 17.0, *)
+@available(iOS 17.0, macOS 14.0, *)
 #Preview {
     let items = [
         WhatsNewItem(
